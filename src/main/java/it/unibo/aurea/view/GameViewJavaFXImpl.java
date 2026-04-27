@@ -8,8 +8,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import it.unibo.aurea.model.api.Card;
+import it.unibo.aurea.model.api.CharacterType;
 import it.unibo.aurea.model.api.ParameterType;
 import it.unibo.aurea.view.api.GameView;
+import javafx.animation.FadeTransition;
+import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -30,6 +33,7 @@ import javafx.scene.paint.RadialGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 /**
  * JavaFX implementation of the GameView, mimicking the Reigns UI/UX.
@@ -53,10 +57,16 @@ public final class GameViewJavaFXImpl implements GameView {
     private static final int PADDING_BOTTOM = 20;
     private static final int CHAR_H = 220;
     private static final int CHAR_W = 220;
+    private static final int PORTRAIT_W = 200;
     private static final int TEXT_MAX_W = 260;
     private static final int CARD_MAX_W = 340;
     private static final int CARD_MAX_H = 520;
     private static final int BOX_SPACING = 12;
+
+    private static final int FLIGHT_DURATION = 250;
+    private static final int SNAP_DURATION = 150;
+    private static final int FADE_DURATION = 400;
+    private static final int EXIT_X_POS = 1000;
 
     private static final Logger LOGGER = Logger.getLogger(GameViewJavaFXImpl.class.getName());
 
@@ -64,10 +74,6 @@ public final class GameViewJavaFXImpl implements GameView {
     private it.unibo.aurea.controller.api.GameController controller;
     private Card currentCard;
 
-    private VBox financesBox;
-    private VBox studentsBox;
-    private VBox professorsBox;
-    private VBox reputationBox;
     private Label financesLabel;
     private Label studentsLabel;
     private Label professorsLabel;
@@ -80,6 +86,7 @@ public final class GameViewJavaFXImpl implements GameView {
     private VBox cardVisual;
     private Label cardMainText;
     private Label decisionHintLabel;
+    private StackPane characterPlaceholder;
     private double startX;
 
     /**
@@ -98,10 +105,10 @@ public final class GameViewJavaFXImpl implements GameView {
 
             initLabelsAndDots();
 
-            this.financesBox = createParameterBox("param_finances.png", financesLabel, finDot);
-            this.studentsBox = createParameterBox("param_students.png", studentsLabel, stuDot);
-            this.professorsBox = createParameterBox("param_professors.png", professorsLabel, proDot);
-            this.reputationBox = createParameterBox("param_reputation.png", reputationLabel, repDot);
+            final VBox financesBox = createParameterBox("param_finances.png", financesLabel, finDot);
+            final VBox professorsBox = createParameterBox("param_professors.png", professorsLabel, proDot);
+            final VBox studentsBox = createParameterBox("param_students.png", studentsLabel, stuDot);
+            final VBox reputationBox = createParameterBox("param_reputation.png", reputationLabel, repDot);
 
             final HBox topBar = new HBox(TOP_BAR_SPACING);
             topBar.setAlignment(Pos.CENTER);
@@ -150,10 +157,9 @@ public final class GameViewJavaFXImpl implements GameView {
     }
 
     private void setupCard() {
-        final StackPane characterPlaceholder = new StackPane();
-        characterPlaceholder.setPrefSize(CHAR_W, CHAR_H);
-        characterPlaceholder.setStyle("-fx-background-color: #dcdde1; -fx-background-radius: 10; "
-                + "-fx-border-color: #7f8c8d; -fx-border-width: 1;");
+        this.characterPlaceholder = new StackPane();
+        this.characterPlaceholder.setPrefSize(CHAR_W, CHAR_H);
+        this.characterPlaceholder.setStyle("-fx-background-color: transparent;");
 
         this.cardMainText.setWrapText(true);
         this.cardMainText.setStyle("-fx-font-size: 19px; -fx-font-family: 'Verdana'; "
@@ -197,7 +203,7 @@ public final class GameViewJavaFXImpl implements GameView {
                 iconStack.getChildren().add(new Label("?"));
             }
         } catch (final IOException e) {
-            LOGGER.log(Level.SEVERE, "Could not load image resource", e);
+            LOGGER.log(Level.SEVERE, "Could not load image resource: " + fileName, e);
             iconStack.getChildren().add(new Label("?"));
         }
 
@@ -228,10 +234,22 @@ public final class GameViewJavaFXImpl implements GameView {
     private void handleRelease(final javafx.scene.input.MouseEvent event) {
         final double offsetX = event.getSceneX() - startX;
         if (Math.abs(offsetX) > DRAG_THRESHOLD && controller != null) {
-            this.controller.makeDecision(offsetX > 0);
+            final TranslateTransition exit = new TranslateTransition(Duration.millis(FLIGHT_DURATION), cardVisual);
+            exit.setToX(offsetX > 0 ? EXIT_X_POS : -EXIT_X_POS);
+            exit.setOnFinished(e -> {
+                if (this.controller != null) {
+                    this.controller.makeDecision(offsetX > 0);
+                }
+                this.cardVisual.setTranslateX(0);
+                this.cardVisual.setRotate(0);
+            });
+            exit.play();
+        } else {
+            final TranslateTransition back = new TranslateTransition(Duration.millis(SNAP_DURATION), cardVisual);
+            back.setToX(0);
+            this.cardVisual.setRotate(0);
+            back.play();
         }
-        this.cardVisual.setTranslateX(0);
-        this.cardVisual.setRotate(0);
         this.decisionHintLabel.setOpacity(0);
         resetHighlights();
     }
@@ -265,10 +283,29 @@ public final class GameViewJavaFXImpl implements GameView {
         this.currentCard = card;
         Platform.runLater(() -> {
             if (this.cardMainText != null && card != null) {
-                this.cardMainText.setText("Decision needed for "
-                    + "university management.");
+                this.cardMainText.setText(card.getDescription());
+                updateCharacterPortrait(card.getCharacter());
+                final FadeTransition fadeIn = new FadeTransition(Duration.millis(FADE_DURATION), cardVisual);
+                fadeIn.setFromValue(0);
+                fadeIn.setToValue(1);
+                fadeIn.play();
             }
         });
+    }
+
+    private void updateCharacterPortrait(final CharacterType type) {
+        this.characterPlaceholder.getChildren().clear();
+        final String path = type.getImagePath();
+        try (InputStream is = getClass().getResourceAsStream(path)) {
+            if (Objects.nonNull(is)) {
+                final ImageView img = new ImageView(new Image(is));
+                img.setFitWidth(PORTRAIT_W);
+                img.setPreserveRatio(true);
+                this.characterPlaceholder.getChildren().add(img);
+            }
+        } catch (final IOException e) {
+            LOGGER.log(Level.WARNING, "Portrait image not found: " + path, e);
+        }
     }
 
     @Override
