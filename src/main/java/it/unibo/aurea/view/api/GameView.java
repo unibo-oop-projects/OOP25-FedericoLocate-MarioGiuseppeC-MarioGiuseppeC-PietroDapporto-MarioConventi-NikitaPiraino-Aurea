@@ -1,6 +1,7 @@
 package it.unibo.aurea.view.api;
 
 import it.unibo.aurea.model.api.Card;
+import it.unibo.aurea.model.api.ParameterType;
 
 /**
  * Represents the main interface for the game's View.
@@ -16,14 +17,12 @@ public interface GameView {
     void displayCard(Card card);
 
     /**
-     * Updates the UI bars/icons for a specific parameter.
-     *
-     * @param finances the current level of Finances
-     * @param students the current level of Students
-     * @param professors the current level of Professors
-     * @param reputation the current level of Reputation
+     * Updates the UI for a single specific parameter.
+     * 
+     * @param type the type of the parameter to update
+     * @param newValue the new value to display
      */
-    void updateParameters(int finances, int students, int professors, int reputation);
+    void updateSingleParameter(ParameterType type, int newValue);
 
     /**
      * Displays the Game Over screen.

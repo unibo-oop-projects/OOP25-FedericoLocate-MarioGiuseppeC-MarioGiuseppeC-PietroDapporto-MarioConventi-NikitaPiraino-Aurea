@@ -309,13 +309,30 @@ public final class GameViewJavaFXImpl implements GameView {
     }
 
     @Override
-    public void updateParameters(final int f, final int s, final int p, final int r) {
+    public void updateSingleParameter(final ParameterType type, final int newValue) {
         Platform.runLater(() -> {
-            if (this.financesLabel != null) {
-                this.financesLabel.setText(String.valueOf(f));
-                this.studentsLabel.setText(String.valueOf(s));
-                this.professorsLabel.setText(String.valueOf(p));
-                this.reputationLabel.setText(String.valueOf(r));
+            final String valStr = String.valueOf(newValue);
+            switch (type) {
+                case FINANCES -> {
+                    if (this.financesLabel != null) {
+                        this.financesLabel.setText(valStr);
+                    }
+                }
+                case STUDENTS -> {
+                    if (this.studentsLabel != null) {
+                        this.studentsLabel.setText(valStr);
+                    }
+                }
+                case PROFESSORS -> {
+                    if (this.professorsLabel != null) {
+                        this.professorsLabel.setText(valStr);
+                    }
+                }
+                case REPUTATION -> {
+                    if (this.reputationLabel != null) {
+                        this.reputationLabel.setText(valStr);
+                    }
+                }
             }
         });
     }

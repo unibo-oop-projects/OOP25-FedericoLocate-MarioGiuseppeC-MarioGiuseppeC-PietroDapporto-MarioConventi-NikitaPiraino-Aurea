@@ -40,5 +40,12 @@ public interface Parameter {
      * @param observer the {@code ParameterObserver} to add
      */
     void addObserver(ParameterObserver observer);
+
+    /**
+     * Retrieves the specific reason for the parameter's depletion or saturation.
+     *
+     * @return a String detailing the cause of game over related to this parameter.
+     */
+    String getDeathReason();
 }
 

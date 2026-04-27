@@ -45,19 +45,10 @@ public final class GameControllerImpl implements GameController {
         this.view = view;
         this.model = model;
 
-        // Create a Map to access the parameters in constant time O(1)
         this.parametersMap = model.getParameters().stream()
             .collect(Collectors.toMap(Parameter::getName, p -> p));
 
-        // Pattern OBSERVER -> Subscribe the view every time a parameter changes in the Model
-        this.parametersMap.values().forEach(p -> p.addObserver((type, level) ->
-            this.view.updateParameters(
-                parametersMap.get(ParameterType.FINANCES).getLevel(),
-                parametersMap.get(ParameterType.STUDENTS).getLevel(),
-                parametersMap.get(ParameterType.PROFESSORS).getLevel(),
-                parametersMap.get(ParameterType.REPUTATION).getLevel()
-            )
-        ));
+        this.parametersMap.values().forEach(p -> p.addObserver(this.view::updateSingleParameter));
     }
 
     @Override
@@ -160,12 +151,12 @@ public final class GameControllerImpl implements GameController {
     /**
      * Helper method to analyze parameters and find the cause of the defeat.
      *
-     * @return a string indicating which parameter reached zero.
+     * @return a string indicating which parameter reached zero or max capacity.
      */
     private String determineDefeatReason() {
         return parametersMap.values().stream()
-            .filter(p -> p.getLevel() <= 0 || p.getLevel() >= 100)
-            .map(p -> p.getName().toString())
+            .filter(p -> !p.isAlive())
+            .map(Parameter::getDeathReason)
             .findFirst()
             .orElse("Unknown Causes");
     }

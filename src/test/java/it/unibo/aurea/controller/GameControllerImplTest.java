@@ -10,6 +10,7 @@ import it.unibo.aurea.model.Deck;
 import it.unibo.aurea.model.GameConfigImpl;
 import it.unibo.aurea.model.GameEngineImpl;
 import it.unibo.aurea.model.api.Card;
+import it.unibo.aurea.model.api.ParameterType;
 import it.unibo.aurea.view.api.GameView;
 
 /**
@@ -111,7 +112,7 @@ class GameControllerImplTest {
         }
 
         @Override
-        public void updateParameters(final int finances, final int students, final int professors, final int reputation) {
+        public void updateSingleParameter(final ParameterType type, final int newValue) {
             this.isParametersUpdated = true;
         }
 

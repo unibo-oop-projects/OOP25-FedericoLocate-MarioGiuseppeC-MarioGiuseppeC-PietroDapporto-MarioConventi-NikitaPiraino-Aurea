@@ -50,6 +50,9 @@ public final class ParameterImpl implements Parameter {
 
     @Override
     public void modify(final int delta) {
+        if (!this.alive) {
+            return;
+        }
         this.level += delta;
         if (this.level >= MAX_LEVEL) {
             this.level = MAX_LEVEL;
@@ -60,6 +63,18 @@ public final class ParameterImpl implements Parameter {
         }
 
         this.notifyObservers();
+    }
+
+    @Override
+    public String getDeathReason() {
+        if (this.isAlive()) {
+            return "Still alive!";
+        }
+        if (this.level >= MAX_LEVEL) {
+            return this.name + " reached maximum capacity (100). The university lost control!";
+        } else {
+            return this.name + " dropped to zero. The university collapsed!";
+        }
     }
 
     @Override
