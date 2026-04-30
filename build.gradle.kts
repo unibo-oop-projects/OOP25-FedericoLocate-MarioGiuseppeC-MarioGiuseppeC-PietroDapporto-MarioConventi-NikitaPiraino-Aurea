@@ -28,7 +28,18 @@ java {
 
 val javaFXModules = listOf("base", "controls", "fxml", "swing", "graphics")
 
-val supportedPlatforms = listOf("linux", "mac-aarch64", "mac", "win")
+val osName = System.getProperty("os.name").lowercase()
+val osArch = System.getProperty("os.arch").lowercase()
+
+val platform = when {
+    osName.contains("mac") && osArch == "aarch64" -> "mac-aarch64"
+    osName.contains("mac") -> "mac"
+    osName.contains("linux") -> "linux"
+    osName.contains("windows") -> "win"
+    else -> throw GradleException("Unsupported OS: $osName, arch: $osArch")
+}
+
+val supportedPlatforms = listOf(platform)
 
 dependencies {
     // Suppressions for SpotBugs
