@@ -55,6 +55,10 @@ public final class GameControllerImpl implements GameController {
     public void startGame() {
         LOGGER.info("Starting a new game session...");
         model.start();
+
+        this.parametersMap.values().forEach(p ->
+            view.updateSingleParameter(p.getName(), p.getLevel())
+        );
         updateUI();
     }
 
@@ -122,6 +126,7 @@ public final class GameControllerImpl implements GameController {
         final GameState state = model.getGameState();
 
         if (state == GameState.RUNNING) {
+            view.updateTime(model.getGameClock().getCurrentSemester(), model.getGameClock().getCurrentTurn());
             view.displayCard(model.getCurrentCard());
         } else {
             this.handleGameEnd(state);

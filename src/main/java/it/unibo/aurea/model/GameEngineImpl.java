@@ -16,7 +16,6 @@ import it.unibo.aurea.model.api.ParameterType;
  */
 public final class GameEngineImpl implements GameEngine {
 
-    private Card currentCard;
     private final Deck deck;
     private final GameConfig config;
     private final GameClock gameClock;
@@ -49,17 +48,17 @@ public final class GameEngineImpl implements GameEngine {
 
     @Override
     public void start() {
-        // THIS CODE IS APPROXIMATE
-        // Extracts the first card (for now, the first of the list)
-        if (!deck.getAllCards().isEmpty()) {
-            this.currentCard = deck.getAllCards().get(0);
-
-        }
+        // It is in the getCurrentCard method
     }
 
     @Override
     public Card getCurrentCard() {
-        return currentCard;
+        return deck.getAllCards().stream()
+            .filter(card -> !card.isUsed())
+            .findFirst()
+            .orElseGet(() -> {
+                return deck.getAllCards().get(0);
+            });
     }
 
     @Override
@@ -75,7 +74,7 @@ public final class GameEngineImpl implements GameEngine {
     @Override
     public GameState getGameState() {
         if (!areAllParametersAlive()) { 
-            //don't invert this if because is amde to check the parameters also after the last choice.
+            //don't invert this if because is made to check the parameters also after the last choice.
             return GameState.LOST;
         }
         if (gameClock.isTimeFinished()) {

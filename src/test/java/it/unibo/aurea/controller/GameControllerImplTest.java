@@ -85,7 +85,7 @@ class GameControllerImplTest {
         private boolean isCardDisplayed;
         private boolean isParametersUpdated;
 
-        // --- NEW METHOD REQUIRED BY THE INTERFACE ---
+        // --- METHOD REQUIRED BY THE INTERFACE ---
         @Override
         public void setController(final GameController controller) {
         }
@@ -115,6 +115,10 @@ class GameControllerImplTest {
         public void updateSingleParameter(final ParameterType type, final int newValue) {
             this.isParametersUpdated = true;
         }
+
+        // --- NEW METHOD REQUIRED BY THE INTERFACE ---
+        @Override
+        public void updateTime(final int semester, final int turn) { }
 
         @Override
         public void showVictory() { }

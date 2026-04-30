@@ -47,4 +47,12 @@ public interface GameView {
      * @param controller the GameController.
      */
     void setController(it.unibo.aurea.controller.api.GameController controller);
+
+    /**
+     * Updates the time counter on the UI.
+     * 
+     * @param semester the current semester/session
+     * @param turn the current turn
+     */
+    void updateTime(int semester, int turn);
 }
