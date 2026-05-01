@@ -2,8 +2,9 @@ package it.unibo.aurea.view;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,8 +14,6 @@ import it.unibo.aurea.model.api.ParameterType;
 import it.unibo.aurea.view.api.GameView;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -35,7 +34,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
@@ -59,7 +57,6 @@ public final class GameViewJavaFXImpl implements GameView {
     private static final int CARD_MAX_W = 300;
     private static final int CARD_MAX_H = 400;
     private static final int DECK_OFFSET = 8;
-    private static final int ICON_SIZE = 65;
 
     // Colori e stili ricorrenti
     private static final String COLOR_BG_LEATHER = "#1a0f08";
@@ -76,8 +73,6 @@ public final class GameViewJavaFXImpl implements GameView {
     private static final String FONT_UI = "'Cinzel', 'Palatino Linotype', 'Book Antiqua', serif";
 
     // Costanti grafiche
-    private static final int DOT_RADIUS = 5;
-    private static final int DOT_OFFSET_Y = -15;
     private static final int HINT_OFFSET_Y = -50;
     private static final int CORNER_RADIUS = 6;
     private static final int HEADER_SPACING = 30;
@@ -91,10 +86,6 @@ public final class GameViewJavaFXImpl implements GameView {
     private static final int FLIGHT_DURATION = 250;
     private static final int SNAP_DURATION = 150;
     private static final int EXIT_X_POS = 1000;
-    private static final double MAX_PERCENTAGE = 100.0;
-    private static final double HALF_MULTIPLIER = 0.5;
-    private static final int DEFAULT_FILL_VAL = 50;
-    private static final double OPACITY_DIMMED = 0.25;
     private static final int SEMESTERS_PER_YEAR = 2;
     private static final int OFFSET_YEAR = 1;
     private static final double BG_PERCENT = 100.0;
@@ -106,15 +97,7 @@ public final class GameViewJavaFXImpl implements GameView {
     private it.unibo.aurea.controller.api.GameController controller;
     private Card currentCard;
 
-    private final DoubleProperty financesFill = new SimpleDoubleProperty(DEFAULT_FILL_VAL);
-    private final DoubleProperty studentsFill = new SimpleDoubleProperty(DEFAULT_FILL_VAL);
-    private final DoubleProperty professorsFill = new SimpleDoubleProperty(DEFAULT_FILL_VAL);
-    private final DoubleProperty reputationFill = new SimpleDoubleProperty(DEFAULT_FILL_VAL);
-
-    private Circle finDot;
-    private Circle stuDot;
-    private Circle proDot;
-    private Circle repDot;
+    private final Map<ParameterType, ParameterIconView> parameterIcons = new EnumMap<>(ParameterType.class);
 
     private StackPane physicalDeck;
     private VBox cardVisual;
@@ -141,14 +124,14 @@ public final class GameViewJavaFXImpl implements GameView {
 
             initLabelsAndDots();
 
-            final StackPane financesBox = createParameterBox("param_finances.png", finDot, financesFill);
-            final StackPane studentsBox = createParameterBox("param_students.png", stuDot, studentsFill);
-            final StackPane professorsBox = createParameterBox("param_professors.png", proDot, professorsFill);
-            final StackPane reputationBox = createParameterBox("param_reputation.png", repDot, reputationFill);
-
             final HBox topBar = new HBox(TOP_BAR_SPACING);
             topBar.setAlignment(Pos.CENTER);
-            topBar.getChildren().addAll(financesBox, studentsBox, professorsBox, reputationBox);
+            topBar.getChildren().addAll(
+                parameterIcons.get(ParameterType.FINANCES),
+                parameterIcons.get(ParameterType.STUDENTS),
+                parameterIcons.get(ParameterType.PROFESSORS),
+                parameterIcons.get(ParameterType.REPUTATION)
+            );
 
             final Button infoBtn = new Button("✦");
             infoBtn.setStyle("-fx-background-color: transparent; " + CSS_TEXT_FILL + COLOR_GOLD_BORDER + "; "
@@ -221,16 +204,10 @@ public final class GameViewJavaFXImpl implements GameView {
 
         this.decisionHintLabel = new Label("");
 
-        this.finDot = createOracleDot();
-        this.stuDot = createOracleDot();
-        this.proDot = createOracleDot();
-        this.repDot = createOracleDot();
-    }
-
-    private Circle createOracleDot() {
-        final Circle dot = new Circle(DOT_RADIUS, Color.web(COLOR_GOLD_BORDER));
-        dot.setOpacity(0);
-        return dot;
+        this.parameterIcons.put(ParameterType.FINANCES, new ParameterIconView("param_finances.png"));
+        this.parameterIcons.put(ParameterType.STUDENTS, new ParameterIconView("param_students.png"));
+        this.parameterIcons.put(ParameterType.PROFESSORS, new ParameterIconView("param_professors.png"));
+        this.parameterIcons.put(ParameterType.REPUTATION, new ParameterIconView("param_reputation.png"));
     }
 
     private void setupCard() {
@@ -287,48 +264,6 @@ public final class GameViewJavaFXImpl implements GameView {
         return star;
     }
 
-    private StackPane createParameterBox(final String fileName, final Circle dot, final DoubleProperty fillProp) {
-        final StackPane iconStack = new StackPane();
-        try (InputStream res1 = getClass().getResourceAsStream("/" + fileName);
-             InputStream res2 = getClass().getResourceAsStream("/" + fileName)) {
-
-            if (Objects.nonNull(res1) && Objects.nonNull(res2)) {
-                final ImageView bgImg = new ImageView(new Image(res1));
-                bgImg.setFitWidth(ICON_SIZE);
-                bgImg.setFitHeight(ICON_SIZE);
-                bgImg.setPreserveRatio(true);
-                bgImg.setOpacity(OPACITY_DIMMED);
-
-                final ImageView fgImg = new ImageView(new Image(res2));
-                fgImg.setFitWidth(ICON_SIZE);
-                fgImg.setFitHeight(ICON_SIZE);
-                fgImg.setPreserveRatio(true);
-
-                iconStack.setStyle("-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 5, 0.5, 0, 2);");
-
-                final Rectangle clip = new Rectangle(ICON_SIZE, ICON_SIZE);
-                fgImg.setClip(clip);
-
-                fillProp.addListener((obs, oldV, newV) -> {
-                    final double percentage = newV.doubleValue() / MAX_PERCENTAGE;
-                    final double filledHeight = ICON_SIZE * percentage;
-                    clip.setY(ICON_SIZE - filledHeight);
-                    clip.setHeight(filledHeight);
-                });
-
-                clip.setHeight(ICON_SIZE * HALF_MULTIPLIER);
-                clip.setY(ICON_SIZE * HALF_MULTIPLIER);
-
-                StackPane.setAlignment(dot, Pos.TOP_CENTER);
-                dot.setTranslateY(DOT_OFFSET_Y);
-                iconStack.getChildren().addAll(bgImg, fgImg, dot);
-            }
-        } catch (final IOException e) {
-            LOGGER.log(Level.SEVERE, "Missing icon: " + fileName, e);
-        }
-        return iconStack;
-    }
-
     private void handleDrag(final javafx.scene.input.MouseEvent event) {
         final double offsetX = event.getSceneX() - startX;
         this.cardVisual.setTranslateX(offsetX);
@@ -377,27 +312,16 @@ public final class GameViewJavaFXImpl implements GameView {
     }
 
     private void highlightParameters(final boolean isApproval) {
-        if (this.controller != null) {
-            final Set<ParameterType> affected = this.controller.previewDecision(isApproval);
-            resetHighlights();
-            affected.forEach(type -> {
-                switch (type) {
-                    case FINANCES -> finDot.setOpacity(1);
-                    case STUDENTS -> stuDot.setOpacity(1);
-                    case PROFESSORS -> proDot.setOpacity(1);
-                    case REPUTATION -> repDot.setOpacity(1);
-                }
-            });
-        }
+    if (this.controller == null) {
+        return;
     }
+    resetHighlights();
+    this.controller.previewDecision(isApproval)
+        .forEach(type -> parameterIcons.get(type).highlight());
+}
 
     private void resetHighlights() {
-        if (finDot != null) {
-            finDot.setOpacity(0);
-            stuDot.setOpacity(0);
-            proDot.setOpacity(0);
-            repDot.setOpacity(0);
-        }
+        parameterIcons.values().forEach(ParameterIconView::unhighlight);
     }
 
     @Override
@@ -435,14 +359,7 @@ public final class GameViewJavaFXImpl implements GameView {
 
     @Override
     public void updateSingleParameter(final ParameterType type, final int newValue) {
-        Platform.runLater(() -> {
-            switch (type) {
-                case FINANCES -> this.financesFill.set(newValue);
-                case STUDENTS -> this.studentsFill.set(newValue);
-                case PROFESSORS -> this.professorsFill.set(newValue);
-                case REPUTATION -> this.reputationFill.set(newValue);
-            }
-        });
+        Platform.runLater(() -> parameterIcons.get(type).setLevel(newValue));
     }
 
     @Override

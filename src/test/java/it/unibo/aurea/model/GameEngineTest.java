@@ -1,9 +1,8 @@
 package it.unibo.aurea.model;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import it.unibo.aurea.model.api.GameEngine;
 import it.unibo.aurea.model.api.GameState;
