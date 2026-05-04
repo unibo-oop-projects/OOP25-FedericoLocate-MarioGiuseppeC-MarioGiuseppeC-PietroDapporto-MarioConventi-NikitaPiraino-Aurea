@@ -51,7 +51,7 @@ public final class CardPanel extends StackPane {
     private static final double DECK_LAYER_OPACITY_STEP = 0.15;
 
     private static final double DRAG_THRESHOLD = 150.0;
-    private static final double DRAG_HINT_THRESHOLD = 30.0;
+    private static final double DRAG_HINT_THRESHOLD = 15.0;
     private static final double HINT_SCALE = 1.02;
     private static final double ROTATION_FACTOR = 0.08;
     private static final int FLIGHT_DURATION = 250;
@@ -81,7 +81,6 @@ public final class CardPanel extends StackPane {
 
     private BiConsumer<Card, Boolean> onDecision = (card, approved) -> { };
     private Function<Boolean, Set<ParameterType>> previewProvider = approved -> Set.of();
-    private Runnable onPreviewStart = () -> { };
     private Runnable onPreviewEnd = () -> { };
 
     /**
@@ -186,7 +185,7 @@ public final class CardPanel extends StackPane {
                 cardVisual.setScaleY(HINT_SCALE);
             }
             showHint(offsetX);
-            onPreviewStart.run();
+            previewProvider.apply(offsetX > 0);
         } else {
             if (hintActive) {
                 hintActive = false;
@@ -356,16 +355,6 @@ public final class CardPanel extends StackPane {
      */
     public void setPreviewProvider(final Function<Boolean, Set<ParameterType>> provider) {
         this.previewProvider = Objects.requireNonNull(provider);
-    }
-
-    /**
-     * Registers a callback invoked when the user starts hinting a decision
-     * (drag past the hint threshold).
-     *
-     * @param callback the action to run
-     */
-    public void setOnPreviewStart(final Runnable callback) {
-        this.onPreviewStart = Objects.requireNonNull(callback);
     }
 
     /**

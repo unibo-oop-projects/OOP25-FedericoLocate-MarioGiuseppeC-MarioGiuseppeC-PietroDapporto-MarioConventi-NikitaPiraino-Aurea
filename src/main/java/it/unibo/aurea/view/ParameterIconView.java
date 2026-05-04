@@ -16,6 +16,7 @@ import javafx.animation.Timeline;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Pos;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
@@ -41,13 +42,17 @@ public final class ParameterIconView extends StackPane {
 
     private static final Logger LOGGER = Logger.getLogger(ParameterIconView.class.getName());
 
-    private static final int ICON_SIZE = 65;
-    private static final int DOT_RADIUS = 5;
-    private static final int DOT_OFFSET_Y = -15;
-    private static final double DIMMED_OPACITY = 0.25;
+    private static final int ICON_SIZE = 85;
+    private static final int DOT_RADIUS = 4;
+    private static final int DOT_OFFSET_Y = -14;
+    private static final String DOT_GLOW = "-fx-effect: dropshadow(gaussian, "
+        + "rgba(196, 160, 106, 0.6), 5, 0.3, 0, 0);";
+    private static final double DIMMED_OPACITY = 0.55;
+    private static final double DESATURATE_AMOUNT = -1.0;
+    private static final double DIMMED_BRIGHTNESS = -0.4;
     private static final double FILL_ANIM_MILLIS = 600;
     private static final double PULSE_DURATION_MILLIS = 700;
-private static final double PULSE_MIN_OPACITY = 0.4;
+    private static final double PULSE_MIN_OPACITY = 0.65;
     private static final String GOLD_BORDER = "#8b6914";
 
     private final DoubleProperty fill = new SimpleDoubleProperty(ParameterImpl.START_LEVEL);
@@ -71,6 +76,7 @@ private static final double PULSE_MIN_OPACITY = 0.4;
 
     private Circle createDot() {
         final Circle circle = new Circle(DOT_RADIUS, Color.web(GOLD_BORDER));
+        circle.setStyle(DOT_GLOW);
         circle.setOpacity(0);
         return circle;
     }
@@ -85,6 +91,10 @@ private static final double PULSE_MIN_OPACITY = 0.4;
 
             final ImageView dimmed = buildImageView(image);
             dimmed.setOpacity(DIMMED_OPACITY);
+            final ColorAdjust desaturate = new ColorAdjust();
+            desaturate.setSaturation(DESATURATE_AMOUNT);
+            desaturate.setBrightness(DIMMED_BRIGHTNESS);
+            dimmed.setEffect(desaturate);
 
             final ImageView active = buildImageView(image);
             active.setClip(clip);
@@ -103,7 +113,8 @@ private static final double PULSE_MIN_OPACITY = 0.4;
         final ImageView view = new ImageView(image);
         view.setFitWidth(ICON_SIZE);
         view.setFitHeight(ICON_SIZE);
-        view.setPreserveRatio(true);
+        view.setPreserveRatio(false);
+        view.setSmooth(true);
         return view;
     }
 
