@@ -29,6 +29,7 @@ import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
@@ -81,6 +82,7 @@ public final class GameViewJavaFXImpl implements GameView {
     private Label cardMainText;
     private Label characterNameLabel;
     private Label timeLabel;
+    private EndgameOverlay endgameOverlay;
 
     /**
      * Constructor for the JavaFX view.
@@ -137,7 +139,8 @@ public final class GameViewJavaFXImpl implements GameView {
         root.setCenter(gameContainer);
         root.setBottom(footer);
 
-        final Scene scene = new Scene(root, SCENE_WIDTH, SCENE_HEIGHT);
+        final StackPane sceneRoot = new StackPane(root, endgameOverlay);
+        final Scene scene = new Scene(sceneRoot, SCENE_WIDTH, SCENE_HEIGHT);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -196,6 +199,8 @@ public final class GameViewJavaFXImpl implements GameView {
                 this.controller.makeDecision(approved);
             }
         });
+
+        this.endgameOverlay = new EndgameOverlay();
     }
 
     private Set<ParameterType> computePreview(final boolean isApproval) {
@@ -262,27 +267,33 @@ public final class GameViewJavaFXImpl implements GameView {
     @Override
     public void showVictory() {
         Platform.runLater(() -> {
-            this.cardMainText.setText("« The annals shall remember your Golden Age. A true visionary. »");
-            this.characterNameLabel.setText("THE END");
             this.cardPanel.clear();
+            this.endgameOverlay.reveal(
+                "Aurea Mediocritas",
+                "The annals shall remember your Golden Age. A true visionary."
+            );
         });
     }
 
     @Override
     public void showDefeat() {
         Platform.runLater(() -> {
-            this.cardMainText.setText("« The realm crumbles to dust. Your reign is over. »");
-            this.characterNameLabel.setText("THE END");
             this.cardPanel.clear();
+            this.endgameOverlay.reveal(
+                "The Realm Crumbles",
+                "Your reign is over. The university falls into oblivion."
+            );
         });
     }
 
     @Override
     public void showGameOver(final String reason) {
         Platform.runLater(() -> {
-            this.cardMainText.setText("« " + reason + " The court has ousted you. »");
-            this.characterNameLabel.setText("TRAGIC DEMISE");
             this.cardPanel.clear();
+            this.endgameOverlay.reveal(
+                "Tragic Demise",
+                reason + " The court has ousted you."
+            );
         });
     }
 }

@@ -147,7 +147,7 @@ public final class GameControllerImpl implements GameController {
             case LOST -> {
                 final String reason = determineDefeatReason();
                 LOGGER.info(() -> "Game Over: Player LOST. Reason: " + reason);
-                view.showDefeat();
+                view.showGameOver(reason);
             }
             default -> throw new IllegalStateException("Unexpected State: " + state);
         }
