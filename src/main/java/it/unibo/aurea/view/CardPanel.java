@@ -52,12 +52,14 @@ public final class CardPanel extends StackPane {
 
     private static final double DRAG_THRESHOLD = 150.0;
     private static final double DRAG_HINT_THRESHOLD = 30.0;
+    private static final double HINT_SCALE = 1.02;
     private static final double ROTATION_FACTOR = 0.08;
     private static final int FLIGHT_DURATION = 250;
     private static final int SNAP_DURATION = 150;
     private static final int EXIT_X_POS = 1000;
     private static final int ENTER_DURATION = 280;
     private static final double ENTER_START_Y = 60;
+    private static final double NORMAL_SCALE = 1.0;
 
     private static final String COLOR_PARCHMENT = "#f5e8c8";
     private static final String COLOR_PARCHMENT_DARK = "#d6c39a";
@@ -75,6 +77,7 @@ public final class CardPanel extends StackPane {
 
     private Card currentCard;
     private double dragStartX;
+    private boolean hintActive;
 
     private BiConsumer<Card, Boolean> onDecision = (card, approved) -> { };
     private Function<Boolean, Set<ParameterType>> previewProvider = approved -> Set.of();
@@ -177,9 +180,19 @@ public final class CardPanel extends StackPane {
         cardVisual.setRotate(offsetX * ROTATION_FACTOR);
 
         if (Math.abs(offsetX) > DRAG_HINT_THRESHOLD) {
+            if (!hintActive) {
+                hintActive = true;
+                cardVisual.setScaleX(HINT_SCALE);
+                cardVisual.setScaleY(HINT_SCALE);
+            }
             showHint(offsetX);
             onPreviewStart.run();
         } else {
+            if (hintActive) {
+                hintActive = false;
+                cardVisual.setScaleX(NORMAL_SCALE);
+                cardVisual.setScaleY(NORMAL_SCALE);
+            }
             decisionHint.setOpacity(0);
             tintOverlay.setOpacity(0);
             onPreviewEnd.run();
@@ -188,7 +201,7 @@ public final class CardPanel extends StackPane {
 
     private void showHint(final double offsetX) {
         final boolean isApproval = offsetX > 0;
-        final double intensity = Math.min(Math.abs(offsetX) / DRAG_THRESHOLD, 1.0);
+        final double intensity = Math.min(Math.abs(offsetX) / DRAG_THRESHOLD, NORMAL_SCALE);
 
         decisionHint.setOpacity(intensity);
         final String prefix = isApproval ? "✓ " : "✗ ";
@@ -211,6 +224,11 @@ public final class CardPanel extends StackPane {
     private void handleRelease(final MouseEvent event) {
         decisionHint.setOpacity(0);
         tintOverlay.setOpacity(0);
+        if (hintActive) {
+            hintActive = false;
+            cardVisual.setScaleX(NORMAL_SCALE);
+            cardVisual.setScaleY(NORMAL_SCALE);
+        }
         onPreviewEnd.run();
 
         if (currentCard == null) {

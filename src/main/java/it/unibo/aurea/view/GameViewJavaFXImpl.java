@@ -29,6 +29,7 @@ import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -139,7 +140,7 @@ public final class GameViewJavaFXImpl implements GameView {
         root.setCenter(gameContainer);
         root.setBottom(footer);
 
-        final StackPane sceneRoot = new StackPane(root, endgameOverlay);
+        final StackPane sceneRoot = new StackPane(root, buildVignette(), endgameOverlay);
         final Scene scene = new Scene(sceneRoot, SCENE_WIDTH, SCENE_HEIGHT);
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -160,6 +161,17 @@ public final class GameViewJavaFXImpl implements GameView {
             LOGGER.log(Level.WARNING, "Could not load leather background, falling back to solid color", e);
             root.setBackground(plainLeatherBackground());
         }
+    }
+
+    private static Region buildVignette() {
+        final Region vignette = new Region();
+        vignette.setMouseTransparent(true);
+        vignette.setStyle(
+            "-fx-background-color: radial-gradient("
+            + "center 50% 50%, radius 80%, "
+            + "transparent 50%, rgba(0,0,0,0.55) 100%);"
+        );
+        return vignette;
     }
 
     private static Background plainLeatherBackground() {

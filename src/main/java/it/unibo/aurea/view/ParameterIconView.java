@@ -7,6 +7,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import it.unibo.aurea.model.ParameterImpl;
+import javafx.animation.Animation;
+import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -44,12 +46,15 @@ public final class ParameterIconView extends StackPane {
     private static final int DOT_OFFSET_Y = -15;
     private static final double DIMMED_OPACITY = 0.25;
     private static final double FILL_ANIM_MILLIS = 600;
+    private static final double PULSE_DURATION_MILLIS = 700;
+private static final double PULSE_MIN_OPACITY = 0.4;
     private static final String GOLD_BORDER = "#8b6914";
 
     private final DoubleProperty fill = new SimpleDoubleProperty(ParameterImpl.START_LEVEL);
     private final Circle dot;
     private final Rectangle clip;
     private Timeline fillAnimation;
+    private FadeTransition pulse;
 
     /**
      * Builds an icon view for a parameter.
@@ -134,16 +139,26 @@ public final class ParameterIconView extends StackPane {
     }
 
     /**
-     * Highlights this icon (lights up the dot) to preview a pending decision.
+     * Highlights this icon with a rhythmic pulse to preview a pending decision.
      */
     public void highlight() {
-        dot.setOpacity(1);
+        if (pulse == null) {
+            pulse = new FadeTransition(Duration.millis(PULSE_DURATION_MILLIS), dot);
+            pulse.setFromValue(PULSE_MIN_OPACITY);
+            pulse.setToValue(1.0);
+            pulse.setCycleCount(Animation.INDEFINITE);
+            pulse.setAutoReverse(true);
+        }
+        pulse.playFromStart();
     }
 
     /**
-     * Removes the highlight (turns off the dot).
+     * Removes the highlight (turns off the dot and stops the pulse).
      */
     public void unhighlight() {
+        if (pulse != null) {
+            pulse.stop();
+        }
         dot.setOpacity(0);
     }
 }
