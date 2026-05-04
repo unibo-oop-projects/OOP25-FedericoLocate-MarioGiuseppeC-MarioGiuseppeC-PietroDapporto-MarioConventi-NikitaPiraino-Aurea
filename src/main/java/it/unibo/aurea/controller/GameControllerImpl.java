@@ -90,10 +90,8 @@ public final class GameControllerImpl implements GameController {
                 }
             }
 
-            // Mark the card as used and advance the game clock
             currentCard.changeUsage();
             model.getGameClock().nextTurn();
-            // Update the UI to show the next card or the game over screen
             updateUI();
         }
     }

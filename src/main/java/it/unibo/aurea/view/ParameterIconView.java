@@ -57,7 +57,7 @@ public final class ParameterIconView extends StackPane {
 
     private final DoubleProperty fill = new SimpleDoubleProperty(ParameterImpl.START_LEVEL);
     private final Circle dot;
-    private final Rectangle clip;
+    private ImageView active;
     private Timeline fillAnimation;
     private FadeTransition pulse;
 
@@ -68,7 +68,6 @@ public final class ParameterIconView extends StackPane {
      */
     public ParameterIconView(final String resourceName) {
         this.dot = createDot();
-        this.clip = new Rectangle(ICON_SIZE, ICON_SIZE);
         loadIcon(resourceName);
         bindFillToClip();
         applyInitialClip();
@@ -96,14 +95,13 @@ public final class ParameterIconView extends StackPane {
             desaturate.setBrightness(DIMMED_BRIGHTNESS);
             dimmed.setEffect(desaturate);
 
-            final ImageView active = buildImageView(image);
-            active.setClip(clip);
+            this.active = buildImageView(image);
 
             this.setStyle("-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 5, 0.5, 0, 2);");
             setAlignment(dot, Pos.TOP_CENTER);
             dot.setTranslateY(DOT_OFFSET_Y);
 
-            this.getChildren().addAll(dimmed, active, dot);
+            this.getChildren().addAll(dimmed, this.active, dot);
         } catch (final IOException e) {
             LOGGER.log(Level.SEVERE, "Could not load parameter icon: " + resourceName, e);
         }
@@ -127,10 +125,13 @@ public final class ParameterIconView extends StackPane {
     }
 
     private void updateClipFromPercentage(final double percentage) {
+        if (active == null) {
+            return;
+        }
         final double normalized = percentage / ParameterImpl.MAX_LEVEL;
         final double filledHeight = ICON_SIZE * normalized;
-        clip.setY(ICON_SIZE - filledHeight);
-        clip.setHeight(filledHeight);
+        final Rectangle newClip = new Rectangle(0, ICON_SIZE - filledHeight, ICON_SIZE, filledHeight);
+        active.setClip(newClip);
     }
 
     /**
