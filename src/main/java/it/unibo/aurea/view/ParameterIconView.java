@@ -7,8 +7,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import it.unibo.aurea.model.ParameterImpl;
-import javafx.animation.Animation;
-import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -27,57 +25,48 @@ import javafx.util.Duration;
 
 /**
  * A self-contained visual component representing one of the four game parameters.
- * 
- * <p>
- * It displays the parameter icon with a "fill" animation (like a vial filling up)
- * and a small dot above it that lights up when the parameter is about to be affected
- * by the player's pending decision (preview).
- * 
- * <p>
- * This class encapsulates everything related to a single parameter icon, removing
- * the need for parallel data structures (4 {@code DoubleProperty}, 4 {@code Circle},
- * 4 boxes) inside the main view.
+ *
+ * <p>Displays the parameter icon with a vertical "fill" indicator and a small
+ * white dot above it that lights up when the parameter is about to be affected
+ * by the player's pending decision (preview during drag).
+ *
+ * <p>Visual styling (drop shadow, hover glow) is delegated to the external
+ * stylesheet via the {@code parameter-icon} style class.
  */
 public final class ParameterIconView extends StackPane {
 
     private static final Logger LOGGER = Logger.getLogger(ParameterIconView.class.getName());
 
-    private static final int ICON_SIZE = 85;
-    private static final int DOT_RADIUS = 4;
-    private static final int DOT_OFFSET_Y = -14;
-    private static final String DOT_GLOW = "-fx-effect: dropshadow(gaussian, "
-        + "rgba(196, 160, 106, 0.6), 5, 0.3, 0, 0);";
+    private static final int ICON_SIZE = 90;
+    private static final int DOT_RADIUS = 3;
+    private static final int DOT_OFFSET_Y = -8;
     private static final double DIMMED_OPACITY = 0.55;
     private static final double DESATURATE_AMOUNT = -1.0;
     private static final double DIMMED_BRIGHTNESS = -0.4;
-    private static final double FILL_ANIM_MILLIS = 600;
-    private static final double PULSE_DURATION_MILLIS = 700;
-    private static final double PULSE_MIN_OPACITY = 0.65;
-    private static final String GOLD_BORDER = "#8b6914";
+    private static final double FILL_ANIM_MILLIS = 350;
 
     private final DoubleProperty fill = new SimpleDoubleProperty(ParameterImpl.START_LEVEL);
-    private final Circle dot;
+    private final Circle previewDot;
     private ImageView active;
     private Timeline fillAnimation;
-    private FadeTransition pulse;
 
     /**
-     * Builds an icon view for a parameter.
+     * Builds an icon view for the given resource (e.g. "param_finances.png").
      *
-     * @param resourceName the file name of the icon (must live in resources root)
+     * @param resourceName file name of the icon, located at the root of resources
      */
     public ParameterIconView(final String resourceName) {
-        this.dot = createDot();
+        getStyleClass().add("parameter-icon");
+        this.previewDot = createPreviewDot();
         loadIcon(resourceName);
         bindFillToClip();
         applyInitialClip();
     }
 
-    private Circle createDot() {
-        final Circle circle = new Circle(DOT_RADIUS, Color.web(GOLD_BORDER));
-        circle.setStyle(DOT_GLOW);
-        circle.setOpacity(0);
-        return circle;
+    private Circle createPreviewDot() {
+        final Circle dot = new Circle(DOT_RADIUS, Color.WHITE);
+        dot.setOpacity(0);
+        return dot;
     }
 
     private void loadIcon(final String resourceName) {
@@ -97,11 +86,10 @@ public final class ParameterIconView extends StackPane {
 
             this.active = buildImageView(image);
 
-            this.setStyle("-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 5, 0.5, 0, 2);");
-            setAlignment(dot, Pos.TOP_CENTER);
-            dot.setTranslateY(DOT_OFFSET_Y);
+            setAlignment(previewDot, Pos.TOP_CENTER);
+            previewDot.setTranslateY(DOT_OFFSET_Y);
 
-            this.getChildren().addAll(dimmed, this.active, dot);
+            getChildren().addAll(dimmed, this.active, previewDot);
         } catch (final IOException e) {
             LOGGER.log(Level.SEVERE, "Could not load parameter icon: " + resourceName, e);
         }
@@ -143,6 +131,10 @@ public final class ParameterIconView extends StackPane {
         if (fillAnimation != null) {
             fillAnimation.stop();
         }
+        if (newLevel <= ParameterImpl.MIN_LEVEL || newLevel >= ParameterImpl.MAX_LEVEL) {
+            fill.set(newLevel);
+            return;
+        }
         fillAnimation = new Timeline(new KeyFrame(
             Duration.millis(FILL_ANIM_MILLIS),
             new KeyValue(fill, newLevel, Interpolator.EASE_BOTH)
@@ -151,26 +143,12 @@ public final class ParameterIconView extends StackPane {
     }
 
     /**
-     * Highlights this icon with a rhythmic pulse to preview a pending decision.
+     * Marks this icon as "about to be affected" by the pending decision.
+     * Shows a small white dot above the icon.
+     *
+     * @param affected true to show the dot, false to hide it
      */
-    public void highlight() {
-        if (pulse == null) {
-            pulse = new FadeTransition(Duration.millis(PULSE_DURATION_MILLIS), dot);
-            pulse.setFromValue(PULSE_MIN_OPACITY);
-            pulse.setToValue(1.0);
-            pulse.setCycleCount(Animation.INDEFINITE);
-            pulse.setAutoReverse(true);
-        }
-        pulse.playFromStart();
-    }
-
-    /**
-     * Removes the highlight (turns off the dot and stops the pulse).
-     */
-    public void unhighlight() {
-        if (pulse != null) {
-            pulse.stop();
-        }
-        dot.setOpacity(0);
+    public void setAffected(final boolean affected) {
+        previewDot.setOpacity(affected ? 1.0 : 0.0);
     }
 }

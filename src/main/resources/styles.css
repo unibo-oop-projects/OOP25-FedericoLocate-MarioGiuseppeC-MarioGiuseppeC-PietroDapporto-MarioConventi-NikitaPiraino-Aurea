@@ -1,0 +1,88 @@
+/* ===========================================================
+   Aurea Mediocritas — Foglio di stile della view
+   =========================================================== */
+
+.parameter-icon {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.85), 6, 0.4, 0, 2);
+    -fx-cursor: hand;
+}
+
+.parameter-icon:hover {
+    -fx-effect: dropshadow(gaussian, rgba(255, 215, 130, 0.95), 18, 0.6, 0, 0);
+}
+
+/* ---------- Tasto info ---------- */
+
+.info-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #c4a06a;
+    -fx-font-size: 28px;
+    -fx-cursor: hand;
+    -fx-padding: 4 10 4 10;
+    -fx-background-radius: 8;
+}
+
+.info-button:hover {
+    -fx-background-color: rgba(196, 160, 106, 0.22);
+    -fx-effect: dropshadow(gaussian, rgba(255, 215, 130, 0.65), 12, 0.45, 0, 0);
+}
+
+/* ---------- Dialog regole ---------- */
+
+.rules-dialog {
+    -fx-background-color: #1a0f08;
+    -fx-border-color: #8b6914;
+    -fx-border-width: 2;
+    -fx-padding: 18;
+}
+
+.rules-title {
+    -fx-font-family: "'Cinzel', 'Palatino Linotype', 'Book Antiqua', serif";
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #c4a06a;
+    -fx-padding: 0 0 12 0;
+}
+
+.rules-body {
+    -fx-font-family: "'IM Fell English', 'Georgia', serif";
+    -fx-font-size: 15px;
+    -fx-text-fill: #e8d5b0;
+    -fx-line-spacing: 4;
+}
+
+.rules-scroll {
+    -fx-background: transparent;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.rules-scroll .viewport {
+    -fx-background-color: transparent;
+}
+
+/* ---------- Label decisione laterali (badge stile Reigns) ---------- */
+
+.decision-label {
+    -fx-font-family: "'IM Fell English', 'Georgia', serif";
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #fff5e0;
+    -fx-padding: 14 18 14 18;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.85), 14, 0.5, 0, 4);
+    -fx-wrap-text: true;
+    -fx-text-alignment: center;
+}
+
+.decision-label-refusal {
+    -fx-background-color: linear-gradient(to bottom, #8b1a1a, #5a0e0e);
+    -fx-border-color: #d4a043;
+}
+
+.decision-label-approval {
+    -fx-background-color: linear-gradient(to bottom, #1f7a3e, #0e4521);
+    -fx-border-color: #d4a043;
+}
