@@ -1,13 +1,16 @@
 package it.unibo.aurea.controller;
 
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.aurea.controller.api.GameController;
+import it.unibo.aurea.controller.api.PlayerInfo;
 import it.unibo.aurea.model.Decision;
 import it.unibo.aurea.model.api.Card;
 import it.unibo.aurea.model.api.Effect;
@@ -29,6 +32,7 @@ public final class GameControllerImpl implements GameController {
     private final GameView view;
     private final GameEngine model;
     private final Map<ParameterType, Parameter> parametersMap;
+    private final PlayerInfo playerInfo;
 
     /**
      * Constructor for the controller.
@@ -36,14 +40,16 @@ public final class GameControllerImpl implements GameController {
      *
      * @param view the {@code GameView} to update
      * @param model the {@code GameEngine} used
+     * @param playerInfo the player identity collected at login
      */
     @SuppressFBWarnings(
         value = "EI_EXPOSE_REP2",
         justification = "The view must be stored as a reference to allow communication."
     )
-    public GameControllerImpl(final GameView view, final GameEngine model) {
+    public GameControllerImpl(final GameView view, final GameEngine model, final PlayerInfo playerInfo) {
         this.view = view;
         this.model = model;
+        this.playerInfo = Objects.requireNonNull(playerInfo);
 
         this.parametersMap = model.getParameters().stream()
             .collect(Collectors.toMap(Parameter::getName, p -> p));
@@ -106,7 +112,6 @@ public final class GameControllerImpl implements GameController {
         }
 
         final Decision decision = isApproval ? currentCard.getApproval() : currentCard.getRefusal();
-
         if (decision == null || decision.getEffects() == null) {
             return Collections.emptySet();
         }
@@ -115,6 +120,38 @@ public final class GameControllerImpl implements GameController {
         return decision.getEffects().stream()
             .map(Effect::getParameter)
             .collect(Collectors.toSet());
+    }
+
+    @Override
+    public Map<ParameterType, Integer> previewDecisionDelta(final boolean isApproval) {
+        final Card currentCard = model.getCurrentCard();
+        if (currentCard == null || model.getGameState() != GameState.RUNNING) {
+            return Collections.emptyMap();
+        }
+
+        final Decision decision = isApproval ? currentCard.getApproval() : currentCard.getRefusal();
+        if (decision == null || decision.getEffects() == null) {
+            return Collections.emptyMap();
+        }
+
+        final Map<ParameterType, Integer> result = new EnumMap<>(ParameterType.class);
+        for (final Effect effect : decision.getEffects()) {
+            final int absDelta = Math.abs(effect.getDelta());
+            result.merge(effect.getParameter(), absDelta, Integer::sum);
+        }
+        return result;
+    }
+
+    @Override
+    public Map<ParameterType, Integer> getCurrentParametersLevel() {
+        final Map<ParameterType, Integer> result = new EnumMap<>(ParameterType.class);
+        parametersMap.forEach((type, param) -> result.put(type, param.getLevel()));
+        return result;
+    }
+
+    @Override
+    public PlayerInfo getPlayerInfo() {
+        return this.playerInfo;
     }
 
     /**

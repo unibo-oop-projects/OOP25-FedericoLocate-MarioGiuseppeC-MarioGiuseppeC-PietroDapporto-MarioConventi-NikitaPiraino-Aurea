@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import it.unibo.aurea.controller.api.GameController;
+import it.unibo.aurea.controller.api.PlayerInfo;
 import it.unibo.aurea.model.Deck;
 import it.unibo.aurea.model.GameConfigImpl;
 import it.unibo.aurea.model.GameEngineImpl;
@@ -36,7 +37,7 @@ class GameControllerImplTest {
             fakeView = new FakeView();
 
             // Create the Controller
-            controller = new GameControllerImpl(fakeView, engine);
+            controller = new GameControllerImpl(fakeView, engine, new PlayerInfo("Test Rector", "Test Faculty"));
             // Connect the controller to the fake view (as per interface requirement)
             fakeView.setController(controller);
 
