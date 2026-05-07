@@ -1,21 +1,363 @@
 cards:
-  - id: prof_founding_research
+  - id: prof_publish_pressure
     character: PROFESSOR
-    description: "Rector, the faculty is requesting funding for a new research initiative. Will the university support it?"
+    description: "The faculty senate wants stricter publication targets for all professors."
     refusal:
-      text: "No, the budget is too tight"
+      text: "No, quality matters more"
+      effects:
+        - parameter: PROFESSORS
+          delta: 9
+        - parameter: FINANCES
+          delta: -2
+    approval:
+      text: "Yes, raise expectations"
+      effects:
+        - parameter: PROFESSORS
+          delta: -10
+        - parameter: REPUTATION
+          delta: 6
+
+  - id: prof_equipment_upgrade
+    character: PROFESSOR
+    description: "Several departments are requesting modern laboratory equipment."
+    refusal:
+      text: "The old tools still work"
       effects:
         - parameter: PROFESSORS
           delta: -7
         - parameter: STUDENTS
-          delta: -3
+          delta: -8
     approval:
-      text: "Yes, research must be supported"
+      text: "Approve the investment"
       effects:
         - parameter: PROFESSORS
           delta: 7
         - parameter: FINANCES
-          delta: -3
+          delta: -8
+
+  - id: prof_cancel_hours
+    character: PROFESSOR
+    description: "We would like to join the short week by reducing the weekly working hours."
+    refusal:
+      text: "Students need support"
+      effects:
+        - parameter: PROFESSORS
+          delta: -6
+        - parameter: STUDENTS
+          delta: 2
+    approval:
+      text: "Reduce the requirement"
+      effects:
+        - parameter: PROFESSORS
+          delta: 8
+        - parameter: REPUTATION
+          delta: 5
+
+  - id: prof_research_bonus
+    character: PROFESSOR
+    description: "Should professors who secure research grants receive financial bonuses?"
+    refusal:
+      text: "No special rewards"
+      effects:
+        - parameter: PROFESSORS
+          delta: -8
+        - parameter: REPUTATION
+          delta: -4
+    approval:
+      text: "Reward initiative"
+      effects:
+        - parameter: PROFESSORS
+          delta: 10
+        - parameter: FINANCES
+          delta: -7
+
+  - id: prof_merge_departments #5
+    character: PROFESSOR
+    description: "The administration is considering merging smaller academic departments."
+    refusal:
+      text: "Keep them independent"
+      effects:
+        - parameter: PROFESSORS
+          delta: 11
+        - parameter: STUDENTS
+          delta: 5
+    approval:
+      text: "Proceed with the merger"
+      effects:
+        - parameter: PROFESSORS
+          delta: -13
+        - parameter: FINANCES
+          delta: 10
+
+  - id: prof_free_travel
+    character: PROFESSOR
+    description: "Some professors are asking for fully funded international conference travel."
+    refusal:
+      text: "Travel budgets stay limited"
+      effects:
+        - parameter: PROFESSORS
+          delta: -9
+        - parameter: FINANCES
+          delta: 9
+    approval:
+      text: "Academic exchange is vital"
+      effects:
+        - parameter: PROFESSORS
+          delta: 12
+        - parameter: FINANCES
+          delta: -9
+
+  - id: prof_tenure_reform
+    character: PROFESSOR
+    description: "A committee proposes stricter tenure evaluations."
+    refusal:
+      text: "Current standards are enough"
+      effects:
+        - parameter: PROFESSORS
+          delta: 8
+        - parameter: FINANCES
+          delta: -4
+    approval:
+      text: "Raise the bar"
+      effects:
+        - parameter: PROFESSORS
+          delta: -12
+        - parameter: REPUTATION
+          delta: 8
+
+  - id: prof_increase_salaries
+    character: PROFESSOR
+    description: "Given the current crisis, the university could increase salaries to help employees."
+    refusal:
+      text: "We can't afford it"
+      effects:
+        - parameter: PROFESSORS
+          delta: -9
+        - parameter: FINANCES
+          delta: 12
+    approval:
+      text: "Ok, let's help them"
+      effects:
+        - parameter: PROFESSORS
+          delta: 17
+        - parameter: FINANCES
+          delta: -15
+
+  - id: prof_interdisciplinary_center
+    character: PROFESSOR
+    description: "A group of academics proposes a new interdisciplinary research center."
+    refusal:
+      text: "Too ambitious right now"
+      effects:
+        - parameter: PROFESSORS
+          delta: -7
+        - parameter: FINANCES
+          delta: 3
+    approval:
+      text: "Launch the initiative"
+      effects:
+        - parameter: PROFESSORS
+          delta: 11
+        - parameter: PRESTIGE
+          delta: 5
+
+  - id: prof_introduce_kotlin #10
+    character: PROFESSOR
+    description: "Should we introduce a new curriculum on the Kotlin language?"
+    refusal:
+      text: "It's not important"
+      effects:
+        - parameter: PROFESSORS
+          delta: -6
+        - parameter: STUDENTS
+          delta: -5
+    approval:
+      text: "Yeah, I like it"
+      effects:
+        - parameter: PROFESSORS
+          delta: 7
+        - parameter: FINANCES
+          delta: -6
+
+  - id: prof_expand_parking
+    character: PROFESSOR
+    description: "We want a more spacious covered parking lot for cars"
+    refusal:
+      text: "There is no space"
+      effects:
+        - parameter: PROFESSORS
+          delta: -6
+        - parameter: FINANCES
+          delta: 4
+    approval:
+      text: "Ok"
+      effects:
+        - parameter: PROFESSORS
+          delta: 9
+        - parameter: FINANCES
+          delta: -7
+
+  - id: prof_llms_using
+    character: PROFESSOR
+    description: "Let's abolish the use of LLMs because they worsen learning."
+    refusal:
+      text: "No, I use them too"
+      effects:
+        - parameter: PROFESSORS
+          delta: -6
+        - parameter: REPUTATION
+          delta: 3
+    approval:
+      text: "Yes I agree"
+      effects:
+        - parameter: PROFESSORS
+          delta: 4
+        - parameter: STUDENTS
+          delta: -7
+
+  - id: prof_drug_test
+    character: PROFESSOR
+    description: "Should we introduce a weekly drug test for all teachers?"
+    refusal:
+      text: "No, It's money wasted"
+      effects:
+        - parameter: PROFESSORS
+          delta: 5
+        - parameter: FINANCES
+          delta: 8
+    approval:
+      text: "Yes better check"
+      effects:
+        - parameter: PROFESSORS
+          delta: -8
+        - parameter: FINANCES
+          delta: -6
+
+  - id: prof_student_feedback
+    character: PROFESSOR
+    description: "Should student evaluations heavily influence professor promotions?"
+    refusal:
+      text: "Academic merit first"
+      effects:
+        - parameter: PROFESSORS
+          delta: 7
+        - parameter: REPUTATION
+          delta: 6
+    approval:
+      text: "Student voices matter"
+      effects:
+        - parameter: PROFESSORS
+          delta: -9
+        - parameter: STUDENTS
+          delta: 8
+
+  - id: prof_apartments_cesena #15
+    character: PROFESSOR
+    description: "Commuting professors would like free apartments to move into in Cesena."
+    refusal:
+      text: "WTF? Absolutely not"
+      effects:
+        - parameter: PROFESSORS
+          delta: -15
+        - parameter: REPUTATION
+          delta: -7
+    approval:
+      text: "Student voices matter"
+      effects:
+        - parameter: PROFESSORS
+          delta: 20
+        - parameter: FINANCES
+          delta: -12
+
+  - id: prof_representatives_senate
+    character: PROFESSOR
+    description: "Student representatives are blocking all our proposals in the academic senate."
+    refusal:
+      text: "Sorry, but I have to remain neutral"
+      effects:
+        - parameter: PROFESSORS
+          delta: -6
+        - parameter: REPUTATION
+          delta: 7
+    approval:
+      text: "In the future I will take your position"
+      effects:
+        - parameter: PROFESSORS
+          delta: 6
+        - parameter: STUDENT
+          delta: -10
+
+  - id: prof_river_proximity
+    character: PROFESSOR
+    description: "Given the recent floods, we are concerned about the proximity of the faculty to the Savio River"
+    refusal:
+      text: "I can't do anything"
+      effects:
+        - parameter: PROFESSORS
+          delta: -4
+        - parameter: REPUTATION
+          delta: -7
+    approval:
+      text: "Ok, let's move everything"
+      effects:
+        - parameter: PROFESSORS
+          delta: 6
+        - parameter: FINANCES
+          delta: -20
+
+  - id: prof_apartments_cesena #18
+    character: PROFESSOR
+    description: "We would like to have a Christmas dinner with the professors of the department in the garden"
+    refusal:
+      text: "The garden is too tight"
+      effects:
+        - parameter: PROFESSORS
+          delta: -9
+        - parameter: REPUTATION
+          delta: -4
+    approval:
+      text: "Good idea"
+      effects:
+        - parameter: PROFESSORS
+          delta: 7
+        - parameter: FINANCES
+          delta: -9
+
+  - id: stud_record_lectures
+    character: STUDENT
+    description: "We want that all lectures recorded and uploaded online."
+    refusal:
+      text: "Teaching stays in class"
+      effects:
+        - parameter: FINANCES
+          delta: 4
+        - parameter: STUDENTS
+          delta: -18
+    approval:
+      text: "Make recordings mandatory"
+      effects:
+        - parameter: REPUTATION
+          delta: 6
+        - parameter: STUDENTS
+          delta: 12
+
+  - id: stud_psychology_parking
+    character: PROFESSOR
+    description: "Let's block the new psychology department otherwise there won't be enough parking for everyone."
+    refusal:
+      text: "It's too late"
+      effects:
+        - parameter: STUDENTS
+          delta: -10
+        - parameter: FINANCES
+          delta: -4
+    approval:
+      text: "You're right, let's stop everything"
+      effects:
+        - parameter: STUDENTS
+          delta: 8
+        - parameter: REPUTATION
+          delta: -12
 
   - id: student_library_exam
     character: STUDENT
