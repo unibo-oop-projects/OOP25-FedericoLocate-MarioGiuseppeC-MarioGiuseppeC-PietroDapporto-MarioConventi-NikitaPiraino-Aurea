@@ -39,8 +39,8 @@ public final class CardPanel extends StackPane {
 
     private static final Logger LOGGER = Logger.getLogger(CardPanel.class.getName());
 
-    private static final int CARD_W = 300;
-    private static final int CARD_H = 400;
+    private static final int CARD_W = 260;
+    private static final int CARD_H = 340;
     private static final int CHAR_W = CARD_W;
     private static final int CHAR_H = CARD_H;
     private static final int CORNER_RADIUS = 12;
@@ -165,7 +165,7 @@ public final class CardPanel extends StackPane {
     }
 
     private static String mainCardStyle() {
-        return "-fx-background-color: transparent;"
+        return "-fx-background-color: rgba(60, 50, 35, 0.30);"
             + CSS_BG_RADIUS + CORNER_RADIUS + ";"
             + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.75), 18, 0, 0, 8);";
     }
