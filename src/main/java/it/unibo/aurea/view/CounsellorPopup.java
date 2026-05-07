@@ -35,7 +35,7 @@ public final class CounsellorPopup {
     private static final int POPUP_HEIGHT = 280;
     private static final int CONTENT_SPACING = 14;
     private static final int CONTENT_PADDING = 24;
-    private static final int PORTRAIT_SIZE = 110;
+    private static final int PORTRAIT_SIZE = 180;
 
     private CounsellorPopup() {
         // Utility class
@@ -85,7 +85,7 @@ public final class CounsellorPopup {
     }
 
     private static ImageView loadCounsellorPortrait() {
-        try (InputStream is = CounsellorPopup.class.getResourceAsStream("/professor.png")) {
+        try (InputStream is = CounsellorPopup.class.getResourceAsStream("/consigliere.png")) {
             if (Objects.nonNull(is)) {
                 final ImageView img = new ImageView(new Image(is));
                 img.setFitWidth(PORTRAIT_SIZE);
