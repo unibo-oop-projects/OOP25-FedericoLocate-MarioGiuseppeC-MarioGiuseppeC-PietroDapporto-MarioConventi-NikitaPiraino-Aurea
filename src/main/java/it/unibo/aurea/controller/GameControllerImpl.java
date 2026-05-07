@@ -123,7 +123,7 @@ public final class GameControllerImpl implements GameController {
     }
 
     @Override
-    public Map<ParameterType, Integer> previewDecisionDelta(final boolean isApproval) {
+    public Map<ParameterType, Integer> previewDecisionDeltas(final boolean isApproval) {
         final Card currentCard = model.getCurrentCard();
         if (currentCard == null || model.getGameState() != GameState.RUNNING) {
             return Collections.emptyMap();
@@ -143,7 +143,7 @@ public final class GameControllerImpl implements GameController {
     }
 
     @Override
-    public Map<ParameterType, Integer> getCurrentParametersLevel() {
+    public Map<ParameterType, Integer> getCurrentParametersLevels() {
         final Map<ParameterType, Integer> result = new EnumMap<>(ParameterType.class);
         parametersMap.forEach((type, param) -> result.put(type, param.getLevel()));
         return result;

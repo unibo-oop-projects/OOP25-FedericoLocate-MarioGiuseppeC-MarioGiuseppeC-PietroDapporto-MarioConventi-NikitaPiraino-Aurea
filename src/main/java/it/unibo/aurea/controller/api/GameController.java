@@ -39,14 +39,14 @@ public interface GameController {
      * @param isApproval whether to preview approval or refusal effects
      * @return a map associating each affected parameter with the absolute delta
      */
-    Map<ParameterType, Integer> previewDecisionDelta(boolean isApproval);
+    Map<ParameterType, Integer> previewDecisionDeltas(boolean isApproval);
 
     /**
      * Returns the current numeric levels of the four parameters.
      * 
      * @return current levels keyed by parameter type
      */
-    Map<ParameterType, Integer> getCurrentParametersLevel();
+    Map<ParameterType, Integer> getCurrentParametersLevels();
 
     /**
      * Returns the player identity collected at login.
