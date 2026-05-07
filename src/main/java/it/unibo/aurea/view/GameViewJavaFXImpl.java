@@ -3,12 +3,15 @@ package it.unibo.aurea.view;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.EnumMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import it.unibo.aurea.controller.api.GameController;
+import it.unibo.aurea.controller.api.PlayerInfo;
 import it.unibo.aurea.model.api.Card;
 import it.unibo.aurea.model.api.ParameterType;
 import it.unibo.aurea.view.api.GameView;
@@ -31,90 +34,96 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 /**
- * JavaFX implementation of the GameView, with a Medieval / Reigns visual style.
- * 
- * <p>This class is responsible only for the top-level layout (header with parameter
- * icons, central card area, footer with the time label) and for routing model
- * updates to the relevant sub-components ({@link ParameterIconView}, {@link CardPanel}).
+ * JavaFX implementation of the GameView with a Medieval / Reigns visual style.
+ *
+ * <p>Top-level layout (header with parameter icons, central card area, footer with
+ * the time label and player info) and routing of model updates to the relevant
+ * sub-components ({@link ParameterIconView}, {@link CardPanel}, {@link EndgameOverlay}).
+ *
+ * <p>Player identity is read from the controller via {@link GameController#getPlayerInfo()}
+ * once the controller is wired in by {@link #setController}.
  */
 public final class GameViewJavaFXImpl implements GameView {
 
     private static final int SCENE_WIDTH = 1100;
     private static final int SCENE_HEIGHT = 900;
+    private static final int MIN_WIDTH = 900;
+    private static final int MIN_HEIGHT = 700;
 
-    // Recurring colors and styles
+    private static final int LOW_THRESHOLD = 10;
+    private static final int HIGH_THRESHOLD = 90;
+
     private static final String COLOR_BG_LEATHER = "#1a0f08";
-    private static final String COLOR_GOLD_BORDER = "#8b6914";
-    private static final String COLOR_TEXT_STORY = "#e8d5b0";
     private static final String COLOR_NAME_GOLD = "#c4a06a";
-    private static final String COLOR_TIME = "#a88e6e";
-    private static final String CSS_TEXT_FILL = "-fx-text-fill: ";
+    private static final String COLOR_CLOSE_RED = "#c4584a";
 
-    // Font fallbacks
-    private static final String FONT_STORY = "'IM Fell English', 'Georgia', serif";
-    private static final String FONT_UI = "'Cinzel', 'Palatino Linotype', 'Book Antiqua', serif";
+    private static final int TOP_BAR_SPACING = 22;
+    private static final int CONTAINER_SPACING = 10;
+    private static final int PADDING_NORMAL = 16;
+    private static final int PARAM_PADDING = 8;
+    private static final int GAME_COLUMN_WIDTH = 480;
+    private static final int PARAMS_OUTER_PADDING = 14;
+    private static final int CLOSE_ROW_PADDING = 8;
+    private static final int FOOTER_SPACING = 3;
+    private static final int TEXT_MIN_HEIGHT = 70;
 
-    // Layout spacing
-    private static final int HEADER_SPACING = 30;
-    private static final int TOP_BAR_SPACING = 25;
-    private static final int CONTAINER_SPACING = 15;
-    private static final int PADDING_NORMAL = 20;
-    private static final int PARAM_PADDING = 10;
-    private static final int INFO_BTN_WIDTH = 48;
-    private static final int GAME_COLUMN_WIDTH = 520;
-    private static final int BOTTOM_SPACING = 8;
-    private static final int PARAMS_OUTER_PADDING = 16;
+    private static final int RULES_POPUP_WIDTH = 440;
+    private static final int RULES_POPUP_HEIGHT = 380;
 
-    // Misc
+    private static final double INFO_ICON_SCALE = 1.6;
+    private static final double CLOSE_ICON_SCALE = 1.3;
+    private static final double CLOSE_ICON_STROKE = 2.5;
+
     private static final int SEMESTERS_PER_YEAR = 2;
     private static final int OFFSET_YEAR = 1;
-    private static final int TEXT_MIN_HEIGHT = 100;
-    private static final int RULES_DIALOG_WIDTH = 480;
-    private static final int RULES_DIALOG_HEIGHT = 420;
-    private static final double BOOK_ICON_SCALE = 1.4;
 
     private static final Logger LOGGER = Logger.getLogger(GameViewJavaFXImpl.class.getName());
 
-    private it.unibo.aurea.controller.api.GameController controller;
+    private final Map<ParameterType, Boolean> warnedLow = new EnumMap<>(ParameterType.class);
+    private final Map<ParameterType, Boolean> warnedHigh = new EnumMap<>(ParameterType.class); 
 
+    private GameController controller;
     private final Map<ParameterType, ParameterIconView> parameterIcons = new EnumMap<>(ParameterType.class);
 
     private CardPanel cardPanel;
     private Label cardMainText;
     private Label characterNameLabel;
     private Label timeLabel;
+    private Label playerLabel;
     private EndgameOverlay endgameOverlay;
 
     /**
      * Constructor for the JavaFX view.
      */
     public GameViewJavaFXImpl() {
-        try {
-            Platform.startup(() -> { });
-        } catch (final IllegalStateException e) {
-            LOGGER.log(Level.FINE, "JavaFX Platform already started", e);
+        for (final ParameterType t : ParameterType.values()) {
+            warnedLow.put(t, false);
+            warnedHigh.put(t, false);
         }
-
         Platform.runLater(this::buildAndShowStage);
     }
 
     private void buildAndShowStage() {
         final Stage primaryStage = new Stage();
         primaryStage.setTitle("Aurea - The Realm");
+        primaryStage.setMinWidth(MIN_WIDTH);
+        primaryStage.setMinHeight(MIN_HEIGHT);
 
         initUiPieces();
 
-        final HBox topSection = buildTopSection();
+        final VBox topSection = buildTopSection();
         final VBox centerSection = buildCenterSection();
-        final VBox bottomSection = buildBottomSection();
+        final HBox bottomSection = buildBottomSection();
 
         final BorderPane gameColumn = new BorderPane();
         gameColumn.setTop(topSection);
@@ -122,21 +131,16 @@ public final class GameViewJavaFXImpl implements GameView {
         gameColumn.setBottom(bottomSection);
         gameColumn.setMaxWidth(GAME_COLUMN_WIDTH);
         gameColumn.setMinWidth(GAME_COLUMN_WIDTH);
-        gameColumn.setStyle(
-            "-fx-background-color: rgba(8, 5, 2, 0.88);"
-            + "-fx-background-radius: 12;"
-            + "-fx-border-color: " + COLOR_GOLD_BORDER + ";"
-            + "-fx-border-width: 2;"
-            + "-fx-border-radius: 12;"
-            + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.85), 25, 0, 0, 0);"
-        );
+        gameColumn.getStyleClass().add("game-column");
 
         final BorderPane root = new BorderPane();
         applyBackground(root);
         root.setCenter(gameColumn);
         BorderPane.setMargin(gameColumn, new Insets(PADDING_NORMAL));
 
-        final Scene scene = new Scene(root, SCENE_WIDTH, SCENE_HEIGHT);
+        final StackPane sceneRoot = new StackPane(root, endgameOverlay);
+
+        final Scene scene = new Scene(sceneRoot, SCENE_WIDTH, SCENE_HEIGHT);
         final var stylesheet = getClass().getResource("/styles.css");
         if (stylesheet != null) {
             scene.getStylesheets().add(stylesheet.toExternalForm());
@@ -144,27 +148,15 @@ public final class GameViewJavaFXImpl implements GameView {
             LOGGER.log(Level.WARNING, "styles.css not found in resources");
         }
         primaryStage.setScene(scene);
+        primaryStage.centerOnScreen();
         primaryStage.show();
     }
 
-    private HBox buildTopSection() {
-        final SVGPath bookIcon = new SVGPath();
-        bookIcon.setContent("M4 4v16h6c1.1 0 2 .9 2 2 0-1.1.9-2 2-2h6V4h-6c-1.1 0-2 "
-            + ".9-2 2 0-1.1-.9-2-2-2H4zm2 2h4c.55 0 1 .45 1 1v11H6V6zm8 0h4v12h-4c-.55 "
-            + "0-1-.45-1-1V7c0-.55.45-1 1-1z");
-        bookIcon.setFill(Color.web(COLOR_NAME_GOLD));
-        bookIcon.setStroke(Color.web(COLOR_NAME_GOLD));
-        bookIcon.setScaleX(BOOK_ICON_SCALE);
-        bookIcon.setScaleY(BOOK_ICON_SCALE);
-
-        final Button infoBtn = new Button();
-        infoBtn.setGraphic(bookIcon);
-        infoBtn.getStyleClass().add("info-button");
-        infoBtn.setOnAction(e -> showRules());
-
-        final Region rightSpacer = new Region();
-        rightSpacer.setMinWidth(INFO_BTN_WIDTH);
-        rightSpacer.setMaxWidth(INFO_BTN_WIDTH);
+    private VBox buildTopSection() {
+        final Button closeBtn = buildCloseButton();
+        final HBox closeRow = new HBox(closeBtn);
+        closeRow.setPadding(new Insets(CLOSE_ROW_PADDING));
+        closeRow.setAlignment(Pos.CENTER_LEFT);
 
         final HBox parametersGroup = new HBox(TOP_BAR_SPACING);
         parametersGroup.setAlignment(Pos.CENTER);
@@ -176,24 +168,59 @@ public final class GameViewJavaFXImpl implements GameView {
         );
         HBox.setHgrow(parametersGroup, Priority.ALWAYS);
 
-        final HBox bar = new HBox(HEADER_SPACING);
+        final HBox bar = new HBox();
         bar.setAlignment(Pos.CENTER);
         bar.setPadding(new Insets(PARAM_PADDING));
         bar.setMaxWidth(GAME_COLUMN_WIDTH - 2 * PARAMS_OUTER_PADDING);
-        bar.setStyle(
-            "-fx-background-color: rgba(40, 28, 14, 0.85);"
-            + "-fx-background-radius: 8;"
-            + "-fx-border-color: rgba(139, 105, 20, 0.55);"
-            + "-fx-border-width: 1;"
-            + "-fx-border-radius: 8;"
-        );
-        bar.getChildren().addAll(infoBtn, parametersGroup, rightSpacer);
+        bar.getStyleClass().add("params-bar");
+        bar.getChildren().add(parametersGroup);
 
-        final HBox container = new HBox();
-        container.setAlignment(Pos.CENTER);
-        container.setPadding(new Insets(PADDING_NORMAL, PARAMS_OUTER_PADDING, PADDING_NORMAL / 2, PARAMS_OUTER_PADDING));
-        container.getChildren().add(bar);
-        return container;
+        final HBox barWrapper = new HBox();
+        barWrapper.setAlignment(Pos.CENTER);
+        barWrapper.setPadding(new Insets(0, PARAMS_OUTER_PADDING, PADDING_NORMAL / 2, PARAMS_OUTER_PADDING));
+        barWrapper.setMaxWidth(GAME_COLUMN_WIDTH);
+        barWrapper.getChildren().add(bar);
+
+        final VBox top = new VBox(FOOTER_SPACING);
+        top.setMaxWidth(GAME_COLUMN_WIDTH);
+        top.getChildren().addAll(closeRow, barWrapper);
+        return top;
+    }
+
+    private Button buildCloseButton() {
+        final SVGPath xIcon = new SVGPath();
+        xIcon.setContent("M6 6L18 18M6 18L18 6");
+        xIcon.setStroke(Color.web(COLOR_CLOSE_RED));
+        xIcon.setFill(null);
+        xIcon.setStrokeWidth(CLOSE_ICON_STROKE);
+        xIcon.setScaleX(CLOSE_ICON_SCALE);
+        xIcon.setScaleY(CLOSE_ICON_SCALE);
+
+        final Button btn = new Button();
+        btn.setGraphic(xIcon);
+        btn.getStyleClass().add("close-button");
+        btn.setOnAction(e -> {
+            if (this.controller != null) {
+                this.controller.quitGame();
+            }
+            Platform.exit();
+        });
+        return btn;
+    }
+
+    private Button buildInfoButton() {
+        final SVGPath infoIcon = new SVGPath();
+        infoIcon.setContent("M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"
+        + "m1 15h-2v-6h2v6zm0-8h-2V7h2v2z");
+        infoIcon.setFill(Color.web(COLOR_NAME_GOLD));
+        infoIcon.setScaleX(INFO_ICON_SCALE);
+        infoIcon.setScaleY(INFO_ICON_SCALE);
+
+        final Button btn = new Button();
+        btn.setGraphic(infoIcon);
+        btn.getStyleClass().add("info-button");
+        btn.setOnAction(e -> showRules());
+        return btn;
     }
 
     private VBox buildCenterSection() {
@@ -204,12 +231,21 @@ public final class GameViewJavaFXImpl implements GameView {
         return center;
     }
 
-    private VBox buildBottomSection() {
-        final VBox bottom = new VBox(BOTTOM_SPACING);
-        bottom.setAlignment(Pos.CENTER);
-        bottom.setPadding(new Insets(PADDING_NORMAL));
-        bottom.getChildren().add(timeLabel);
-        return bottom;
+    private HBox buildBottomSection() {
+        final VBox leftInfo = new VBox(FOOTER_SPACING);
+        leftInfo.setAlignment(Pos.CENTER_LEFT);
+        leftInfo.getChildren().addAll(playerLabel, timeLabel);
+
+        final Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        final Button infoBtn = buildInfoButton();
+
+        final HBox footer = new HBox();
+        footer.setAlignment(Pos.CENTER_LEFT);
+        footer.setPadding(new Insets(PADDING_NORMAL / 2, PADDING_NORMAL, PADDING_NORMAL, PADDING_NORMAL));
+        footer.getChildren().addAll(leftInfo, spacer, infoBtn);
+        return footer;
     }
 
     private void applyBackground(final BorderPane root) {
@@ -244,20 +280,18 @@ public final class GameViewJavaFXImpl implements GameView {
         this.cardMainText = new Label("The court awaits...");
         this.cardMainText.setWrapText(true);
         this.cardMainText.setTextAlignment(TextAlignment.CENTER);
-        this.cardMainText.setStyle("-fx-font-size: 22px; -fx-font-family: " + FONT_STORY + "; "
-                + CSS_TEXT_FILL + COLOR_TEXT_STORY + "; "
-                + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.9), 5, 0.8, 0, 0);");
+        this.cardMainText.getStyleClass().add("card-description");
         this.cardMainText.setMinHeight(TEXT_MIN_HEIGHT);
         this.cardMainText.setAlignment(Pos.BOTTOM_CENTER);
 
         this.characterNameLabel = new Label("");
-        this.characterNameLabel.setStyle("-fx-font-size: 20px; -fx-font-family: " + FONT_UI + "; "
-                + "-fx-font-weight: bold; " + CSS_TEXT_FILL + COLOR_NAME_GOLD + "; "
-                + "-fx-effect: dropshadow(gaussian, black, 4, 0.5, 0, 0);");
+        this.characterNameLabel.getStyleClass().add("character-name");
 
         this.timeLabel = new Label("Year I · Session I");
-        this.timeLabel.setStyle("-fx-font-size: 18px; -fx-font-family: " + FONT_UI + "; "
-                + CSS_TEXT_FILL + COLOR_TIME + ";");
+        this.timeLabel.getStyleClass().add("time-label");
+
+        this.playerLabel = new Label("");
+        this.playerLabel.getStyleClass().add("player-label");
 
         this.parameterIcons.put(ParameterType.FINANCES, new ParameterIconView("param_finances.png"));
         this.parameterIcons.put(ParameterType.STUDENTS, new ParameterIconView("param_students.png"));
@@ -280,13 +314,19 @@ public final class GameViewJavaFXImpl implements GameView {
         if (this.controller == null) {
             return Set.of();
         }
-        final Set<ParameterType> affected = this.controller.previewDecision(isApproval);
-        parameterIcons.forEach((type, icon) -> icon.setAffected(affected.contains(type)));
-        return affected;
+        final Map<ParameterType, Integer> deltas = this.controller.previewDecisionDeltas(isApproval);
+        parameterIcons.forEach((type, icon) -> {
+            if (deltas.containsKey(type)) {
+                icon.setAffected(true, deltas.get(type));
+            } else {
+                icon.setAffected(false, 0);
+            }
+        });
+        return deltas.keySet();
     }
 
     private void resetHighlights() {
-        parameterIcons.values().forEach(icon -> icon.setAffected(false));
+        parameterIcons.values().forEach(icon -> icon.setAffected(false, 0));
     }
 
     @Override
@@ -302,7 +342,41 @@ public final class GameViewJavaFXImpl implements GameView {
 
     @Override
     public void updateSingleParameter(final ParameterType type, final int newValue) {
-        Platform.runLater(() -> parameterIcons.get(type).setLevel(newValue));
+        Platform.runLater(() -> {
+            parameterIcons.get(type).setLevel(newValue);
+            checkCounsellorThreshold(type, newValue);
+        });
+    }
+
+    private void checkCounsellorThreshold(final ParameterType type, final int newValue) {
+        if (newValue <= LOW_THRESHOLD && !warnedLow.get(type)) {
+            warnedLow.put(type, true);
+            CounsellorPopup.show(buildLowMessage(type, newValue));
+        } else if (newValue > LOW_THRESHOLD && newValue < HIGH_THRESHOLD) {
+            warnedLow.put(type, false);
+            warnedHigh.put(type, false);
+        } else if (newValue >= HIGH_THRESHOLD && !warnedHigh.get(type)) {
+            warnedHigh.put(type, true);
+            CounsellorPopup.show(buildHighMessage(type, newValue));
+        }
+    }
+
+    private String buildLowMessage(final ParameterType type, final int value) {
+        final String name = currentRectorName();
+        return "Magnificent " + name + ", "
+            + type.name().toLowerCase(Locale.ROOT) + " has fallen to " + value + ". "
+            + "Tread carefully — let it not crumble to ruin.";
+    }
+
+    private String buildHighMessage(final ParameterType type, final int value) {
+        final String name = currentRectorName();
+        return "Magnificent " + name + ", "
+            + type.name().toLowerCase(Locale.ROOT) + " has risen to " + value + ". "
+            + "Beware: too much of a good thing breeds new troubles.";
+    }
+
+    private String currentRectorName() {
+        return controller != null ? controller.getPlayerInfo().rectorName() : "rector";
     }
 
     @Override
@@ -320,7 +394,45 @@ public final class GameViewJavaFXImpl implements GameView {
     }
 
     private void showRules() {
-        final String body = """
+        final Stage popup = new Stage();
+        popup.initStyle(StageStyle.UTILITY);
+        popup.initModality(Modality.APPLICATION_MODAL);
+        popup.setTitle("Tome of Decrees");
+        popup.setResizable(false);
+
+        final Label title = new Label("The Royal Decrees");
+        title.getStyleClass().add("rules-title");
+
+        final Label body = new Label(rulesText());
+        body.setWrapText(true);
+        body.getStyleClass().add("rules-body");
+
+        final ScrollPane scroll = new ScrollPane(body);
+        scroll.getStyleClass().add("rules-scroll");
+        scroll.setFitToWidth(true);
+        scroll.setPrefViewportHeight(RULES_POPUP_HEIGHT - 100);
+
+        final Button closeBtn = new Button("Close the Tome");
+        closeBtn.getStyleClass().add("counsellor-dismiss");
+        closeBtn.setOnAction(e -> popup.close());
+
+        final VBox content = new VBox(12);
+        content.setPadding(new Insets(PADDING_NORMAL));
+        content.setAlignment(Pos.CENTER);
+        content.getStyleClass().add("counsellor-content");
+        content.getChildren().addAll(title, scroll, closeBtn);
+
+        final Scene scene = new Scene(content, RULES_POPUP_WIDTH, RULES_POPUP_HEIGHT);
+        final var ss = getClass().getResource("/styles.css");
+        if (ss != null) {
+            scene.getStylesheets().add(ss.toExternalForm());
+        }
+        popup.setScene(scene);
+        popup.showAndWait();
+    }
+
+    private static String rulesText() {
+        return """
             Welcome, Magnificent Rector.
 
             Your task is to lead the University through three years of governance,
@@ -347,37 +459,21 @@ public final class GameViewJavaFXImpl implements GameView {
 
             Your reign begins now.
             """;
-
-        final Label title = new Label("The Royal Decrees");
-        title.getStyleClass().add("rules-title");
-
-        final Label content = new Label(body);
-        content.setWrapText(true);
-        content.getStyleClass().add("rules-body");
-
-        final ScrollPane scroll = new ScrollPane(content);
-        scroll.getStyleClass().add("rules-scroll");
-        scroll.setFitToWidth(true);
-        scroll.setPrefViewportHeight(RULES_DIALOG_HEIGHT);
-
-        final VBox dialogContent = new VBox(8);
-        dialogContent.getStyleClass().add("rules-dialog");
-        dialogContent.getChildren().addAll(title, scroll);
-
-        final Stage dialog = new Stage();
-        dialog.setTitle("Tome of Decrees");
-        dialog.initModality(Modality.APPLICATION_MODAL);
-        dialog.setScene(new Scene(dialogContent, RULES_DIALOG_WIDTH, RULES_DIALOG_HEIGHT));
-        final var ss = getClass().getResource("/styles.css");
-        if (ss != null) {
-            dialog.getScene().getStylesheets().add(ss.toExternalForm());
-        }
-        dialog.showAndWait();
     }
 
     @Override
-    public void setController(final it.unibo.aurea.controller.api.GameController c) {
+    public void setController(final GameController c) {
         this.controller = c;
+        if (c != null) {
+            final PlayerInfo info = c.getPlayerInfo();
+            Platform.runLater(() -> {
+            if (this.playerLabel != null) {
+                this.playerLabel.setText(info.rectorName() + " · " + info.faculty());
+            } else {
+                LOGGER.warning("playerLabel was null when setController fired");
+            }
+            });
+        }
     }
 
     @Override
@@ -386,7 +482,8 @@ public final class GameViewJavaFXImpl implements GameView {
             this.cardPanel.clear();
             this.endgameOverlay.reveal(
                 "Aurea Mediocritas",
-                "The annals shall remember your Golden Age. A true visionary."
+                "The annals shall remember your Golden Age. A true visionary.",
+                buildFinalRecap()
             );
         });
     }
@@ -397,7 +494,8 @@ public final class GameViewJavaFXImpl implements GameView {
             this.cardPanel.clear();
             this.endgameOverlay.reveal(
                 "The Realm Crumbles",
-                "Your reign is over. The university falls into oblivion."
+                "Your reign is over. The university falls into oblivion.",
+                buildFinalRecap()
             );
         });
     }
@@ -408,8 +506,23 @@ public final class GameViewJavaFXImpl implements GameView {
             this.cardPanel.clear();
             this.endgameOverlay.reveal(
                 "Tragic Demise",
-                reason + " The court has ousted you."
+                reason + " The court has ousted you.",
+                buildFinalRecap()
             );
         });
+    }
+
+    /**
+     * Builds the final recap of all four parameters by reading the current
+     * levels from the controller. Used by the endgame overlay.
+     *
+     * @return a map of each parameter type to its final value, or an empty map
+     *         if the controller is not yet wired
+     */
+    private Map<ParameterType, Integer> buildFinalRecap() {
+        if (controller == null) {
+            return Map.of();
+        }
+        return controller.getCurrentParametersLevels();
     }
 }
