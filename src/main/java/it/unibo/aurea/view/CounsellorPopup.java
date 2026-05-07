@@ -22,7 +22,7 @@ import javafx.stage.StageStyle;
 
 /**
  * Modal popup showing a counsellor giving advice when a parameter
- * crosses a critical threshold (low - under 7 or high - over 93).
+ * crosses a critical threshold (low - under 10 or high - over 90).
  *
  * <p>Designed as a utility class because counsellor messages are stateless:
  * each invocation builds a brand new modal stage, shows it, then disposes it.
