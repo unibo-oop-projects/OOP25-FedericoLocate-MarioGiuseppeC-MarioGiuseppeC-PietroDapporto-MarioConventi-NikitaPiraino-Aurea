@@ -12,10 +12,10 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BackgroundImage;
@@ -23,6 +23,8 @@ import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -42,10 +44,10 @@ public final class LoginScene {
 
     private static final int SCENE_WIDTH = 600;
     private static final int SCENE_HEIGHT = 700;
-    private static final int FORM_SPACING = 18;
-    private static final int FORM_PADDING = 40;
+    private static final int FORM_SPACING = 16;
+    private static final int FORM_PADDING = 44;
     private static final int FIELD_WIDTH = 320;
-    private static final int LOGO_SIZE = 220;
+    private static final int DIFF_SPACING = 10;
 
     private final Stage stage;
     private final Consumer<PlayerInfo> onLoginComplete;
@@ -65,8 +67,6 @@ public final class LoginScene {
         stage.setTitle("Aurea Mediocritas");
         stage.setResizable(false);
 
-        final ImageView logo = loadLogo();
-
         final TextField rectorField = new TextField();
         rectorField.setPromptText("Your name, magnificent rector");
         rectorField.setMaxWidth(FIELD_WIDTH);
@@ -77,6 +77,8 @@ public final class LoginScene {
         facultyField.setMaxWidth(FIELD_WIDTH);
         facultyField.getStyleClass().add("login-field");
 
+        final HBox diffRow = buildDifficultyRow();
+
         final Label errorLabel = new Label();
         errorLabel.getStyleClass().add("login-error");
         errorLabel.setVisible(false);
@@ -86,7 +88,6 @@ public final class LoginScene {
         startBtn.setOnAction(e -> {
             final String name = rectorField.getText().trim();
             final String fac = facultyField.getText().trim();
-
             if (name.isEmpty() || fac.isEmpty()) {
                 errorLabel.setText("Both fields are required to begin.");
                 errorLabel.setVisible(true);
@@ -107,14 +108,22 @@ public final class LoginScene {
         final VBox form = new VBox(FORM_SPACING);
         form.setAlignment(Pos.CENTER);
         form.setPadding(new Insets(FORM_PADDING));
-        form.getChildren().addAll(logo, title, subtitle, rectorField, facultyField, errorLabel, startBtn);
+        form.getChildren().addAll(title, subtitle, rectorField, facultyField, diffRow, errorLabel, startBtn);
         form.getStyleClass().add("login-form");
 
-        final StackPane root = new StackPane(form);
+        final Region veil = new Region();
+        veil.setStyle("-fx-background-color: rgba(6, 3, 1, 0.45);");
+        veil.setMouseTransparent(true);
+
+        final StackPane root = new StackPane();
         applyBackground(root);
+        veil.setMaxWidth(Double.MAX_VALUE);
+        veil.setMaxHeight(Double.MAX_VALUE);
+        root.getChildren().add(veil);
+        root.getChildren().add(form);
 
         final Scene scene = new Scene(root, SCENE_WIDTH, SCENE_HEIGHT);
-        final var stylesheet = getClass().getResource("/style.css");
+        final var stylesheet = getClass().getResource("/styles.css");
         if (stylesheet != null) {
             scene.getStylesheets().add(stylesheet.toExternalForm());
         }
@@ -122,23 +131,23 @@ public final class LoginScene {
         stage.show();
     }
 
-    private ImageView loadLogo() {
-        try (InputStream is = getClass().getResourceAsStream("/logo.png")) {
-            if (Objects.nonNull(is)) {
-                final ImageView img = new ImageView(new Image(is));
-                img.setFitWidth(LOGO_SIZE);
-                img.setFitHeight(LOGO_SIZE);
-                img.setPreserveRatio(true);
-                return img;
-            }
-        } catch (final IOException e) {
-            LOGGER.log(Level.WARNING, "Logo image could not be loaded", e);
-        }
-        return new ImageView();
+    private HBox buildDifficultyRow() {
+        final Label diffLabel = new Label("Difficulty:");
+        diffLabel.getStyleClass().add("login-subtitle");
+
+        final ChoiceBox<String> diffBox = new ChoiceBox<>();
+        diffBox.getItems().addAll("Easy", "Medium", "Hard");
+        diffBox.setValue("Easy");
+        diffBox.getStyleClass().add("diff-choice");
+
+        final HBox row = new HBox(DIFF_SPACING);
+        row.setAlignment(Pos.CENTER);
+        row.getChildren().addAll(diffLabel, diffBox);
+        return row;
     }
 
     private void applyBackground(final StackPane root) {
-        try (InputStream bgIs = getClass().getResourceAsStream("/background.png")) {
+        try (InputStream bgIs = getClass().getResourceAsStream("/bgLogin.png")) {
             if (Objects.nonNull(bgIs)) {
                 final BackgroundSize coverSize = new BackgroundSize(
                     BackgroundSize.AUTO, BackgroundSize.AUTO,
