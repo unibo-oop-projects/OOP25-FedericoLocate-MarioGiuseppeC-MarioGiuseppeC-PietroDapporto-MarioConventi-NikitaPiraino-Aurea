@@ -1,52 +1,52 @@
 /* ===========================================================
-   Aurea Mediocritas — view
+   Aurea Mediocritas — view stylesheet
    =========================================================== */
 
-/* Caricamento Font Stile Reigns */
+/* Reigns-style font, loaded from resources/fonts/ */
 @font-face {
-    font-family: 'ReignsFont';
-    src: url('fonts/reigns_font.ttf'); 
+    -fx-font-family: 'IM Fell English';
+    src: url('/fonts/IMFellEnglish-Regular.ttf');
 }
 
 .root {
-    -fx-font-family: 'ReignsFont', 'IM Fell English', 'Georgia', serif;
+    -fx-font-family: 'IM Fell English', 'Georgia', serif;
 }
 
-/* ---------- Layout Principale ---------- */
+/* ---------- Central game column ---------- */
 
 .game-column {
-    /* Box centrale schiarito come da specifiche */
-    -fx-background-color: rgba(236, 240, 241, 0.12);
+    -fx-background-color: rgba(8, 5, 2, 0.70);
     -fx-background-radius: 12;
-    -fx-border-color: rgba(139, 105, 20, 0.8);
+    -fx-border-color: #8b6914;
     -fx-border-width: 2;
     -fx-border-radius: 12;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.85), 25, 0, 0, 0);
 }
 
-.top-bar {
-    /* Sfondo distinto per i parametri */
-    -fx-background-color: rgba(30, 40, 50, 0.85); 
-    -fx-background-radius: 8;
-    -fx-border-color: rgba(139, 105, 20, 0.55);
-    -fx-border-width: 1;
-    -fx-border-radius: 8;
+/* ---------- Parameters bar ---------- */
+
+.params-bar {
+    -fx-background-color: rgba(20, 12, 6, 0.95);
+    -fx-background-radius: 15;
+    -fx-border-color: #8b6914;
+    -fx-border-width: 2;
+    -fx-border-radius: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 10, 0, 0, 4);
 }
 
-/* ---------- Parametri ---------- */
+/* ---------- Parameter icons ---------- */
 
 .parameter-icon {
-    /* Glow/Alone base ridotto */
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.85), 4, 0.4, 0, 2);
     -fx-cursor: hand;
 }
 
 .parameter-icon:hover {
-    /* Glow in hover ridotto del 30-40% rispetto all'originale */
-    -fx-effect: dropshadow(gaussian, rgba(255, 215, 130, 0.70), 12, 0.5, 0, 0);
+    -fx-effect: dropshadow(gaussian, rgba(255, 215, 130, 0.40), 7, 0.3, 0, 0);
+    -fx-cursor: hand;
 }
 
-/* ---------- Tasto info (Stellina) ---------- */
+/* ---------- Info button (star icon) ---------- */
 
 .info-button {
     -fx-background-color: transparent;
@@ -60,27 +60,53 @@
     -fx-effect: dropshadow(gaussian, rgba(255, 215, 130, 0.50), 10, 0.4, 0, 0);
 }
 
-/* ---------- Testi e Footer ---------- */
+/* ---------- Close button (X) ---------- */
 
-.story-text {
+.close-button {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+    -fx-padding: 4 10 4 10;
+    -fx-background-radius: 8;
+}
+
+.close-button:hover {
+    -fx-background-color: rgba(196, 88, 74, 0.20);
+    -fx-effect: dropshadow(gaussian, rgba(255, 100, 80, 0.55), 10, 0.4, 0, 0);
+}
+
+/* ---------- Card description, character name, time, player ---------- */
+
+.card-description {
+    -fx-font-family: 'IM Fell English', 'Georgia', serif;
     -fx-font-size: 22px;
     -fx-text-fill: #e8d5b0;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.9), 5, 0.8, 0, 0);
 }
 
 .character-name {
+    -fx-font-family: 'IM Fell English', 'Cinzel', serif;
     -fx-font-size: 20px;
     -fx-font-weight: bold;
     -fx-text-fill: #c4a06a;
     -fx-effect: dropshadow(gaussian, black, 4, 0.5, 0, 0);
 }
 
-.footer-info {
+.time-label {
+    -fx-font-family: 'IM Fell English', 'Cinzel', serif;
     -fx-font-size: 16px;
     -fx-text-fill: #a88e6e;
+    -fx-alignment: center-left;
 }
 
-/* ---------- Dialog regole ---------- */
+.player-label {
+    -fx-font-family: 'IM Fell English', 'Cinzel', serif;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #c4a06a;
+    -fx-alignment: center-left;
+}
+
+/* ---------- Rules dialog ---------- */
 
 .rules-dialog {
     -fx-background-color: #1a0f08;
@@ -88,29 +114,36 @@
     -fx-border-width: 2;
     -fx-padding: 18;
 }
+
 .rules-title {
+    -fx-font-family: 'IM Fell English', 'Cinzel', serif;
     -fx-font-size: 24px;
     -fx-font-weight: bold;
     -fx-text-fill: #c4a06a;
     -fx-padding: 0 0 12 0;
 }
+
 .rules-body {
+    -fx-font-family: 'IM Fell English', 'Georgia', serif;
     -fx-font-size: 15px;
     -fx-text-fill: #e8d5b0;
     -fx-line-spacing: 4;
 }
+
 .rules-scroll {
     -fx-background: transparent;
     -fx-background-color: transparent;
     -fx-border-color: transparent;
 }
+
 .rules-scroll .viewport {
     -fx-background-color: transparent;
 }
 
-/* ---------- Label decisione laterali ---------- */
+/* ---------- Decision side labels ---------- */
 
 .decision-label {
+    -fx-font-family: 'IM Fell English', 'Georgia', serif;
     -fx-font-size: 22px;
     -fx-font-weight: bold;
     -fx-text-fill: #fff5e0;
@@ -122,11 +155,270 @@
     -fx-wrap-text: true;
     -fx-text-alignment: center;
 }
+
 .decision-label-refusal {
     -fx-background-color: linear-gradient(to bottom, #8b1a1a, #5a0e0e);
     -fx-border-color: #d4a043;
 }
+
 .decision-label-approval {
     -fx-background-color: linear-gradient(to bottom, #1f7a3e, #0e4521);
     -fx-border-color: #d4a043;
 }
+
+/* ---------- LoginScene ---------- */
+
+.login-form {
+    -fx-background-color: rgba(10, 6, 3, 0.88);
+    -fx-background-radius: 14;
+    -fx-border-color: #8b6914;
+    -fx-border-width: 2;
+    -fx-border-radius: 14;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.9), 30, 0, 0, 0);
+}
+
+.login-title {
+    -fx-font-family: 'IM Fell English', 'Cinzel', serif;
+    -fx-font-size: 36px;
+    -fx-text-fill: #d4a043;
+    -fx-effect: dropshadow(gaussian, black, 8, 0.6, 0, 0);
+}
+
+.login-subtitle {
+    -fx-font-family: 'IM Fell English', 'Cinzel', serif;
+    -fx-font-size: 15px;
+    -fx-text-fill: #a88e6e;
+    -fx-font-style: italic;
+}
+
+.login-field {
+    -fx-background-color: rgba(35, 22, 10, 0.9);
+    -fx-background-radius: 6;
+    -fx-border-color: #6b5010;
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+    -fx-text-fill: #f0ddb0;
+    -fx-prompt-text-fill: #6a5030;
+    -fx-font-family: 'Georgia', 'Times New Roman', serif;
+    -fx-font-size: 15px;
+    -fx-padding: 10 14 10 14;
+    -fx-highlight-fill: #8b6914;
+    -fx-highlight-text-fill: #f0ddb0;
+}
+
+.login-field:focused {
+    -fx-border-color: #d4a043;
+    -fx-background-color: rgba(50, 32, 12, 0.95);
+    -fx-effect: dropshadow(gaussian, rgba(212, 160, 67, 0.35), 8, 0.3, 0, 0);
+}
+
+.login-error {
+    -fx-font-family: 'Georgia', serif;
+    -fx-font-size: 13px;
+    -fx-text-fill: #d45a3a;
+    -fx-font-style: italic;
+}
+
+.login-submit {
+    -fx-background-color: linear-gradient(to bottom, #b8943e, #7a5e14);
+    -fx-background-radius: 7;
+    -fx-border-color: #d4a043;
+    -fx-border-width: 1;
+    -fx-border-radius: 7;
+    -fx-text-fill: #faf0dc;
+    -fx-font-family: 'Georgia', 'Times New Roman', serif;
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+    -fx-padding: 11 30 11 30;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 12, 0.4, 0, 3);
+}
+
+.login-submit:hover {
+    -fx-background-color: linear-gradient(to bottom, #d4a043, #9a7a1a);
+    -fx-effect: dropshadow(gaussian, rgba(212, 160, 67, 0.7), 16, 0.5, 0, 4);
+}
+
+.login-submit:pressed {
+    -fx-background-color: linear-gradient(to bottom, #7a5e14, #5a4410);
+    -fx-translate-y: 1;
+}
+
+/* ---------- Difficulty dropdown ---------- */
+
+.diff-choice {
+    -fx-background-color: rgba(35, 22, 10, 0.90);
+    -fx-background-radius: 6;
+    -fx-border-color: #6b5010;
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+    -fx-padding: 4 8 4 8;
+}
+
+.diff-choice .label {
+    -fx-text-fill: #c4a06a;
+    -fx-font-family: 'Georgia', 'Times New Roman', serif;
+    -fx-font-size: 14px;
+}
+
+.diff-choice .open-button {
+    -fx-background-color: transparent;
+}
+
+.diff-choice .arrow {
+    -fx-background-color: #c4a06a;
+    -fx-shape: "M 0 0 L 4 4 L 8 0 Z";
+    -fx-scale-shape: false;
+}
+
+.diff-choice:hover {
+    -fx-border-color: #d4a043;
+    -fx-effect: dropshadow(gaussian, rgba(212, 160, 67, 0.3), 6, 0.2, 0, 0);
+}
+
+.diff-choice .context-menu {
+    -fx-background-color: rgba(20, 12, 5, 0.97);
+    -fx-border-color: #8b6914;
+    -fx-border-width: 1;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 12, 0, 0, 4);
+}
+
+.diff-choice .menu-item {
+    -fx-background-color: transparent;
+    -fx-padding: 8 16 8 16;
+}
+
+.diff-choice .menu-item .label {
+    -fx-text-fill: #c4a06a;
+    -fx-font-family: 'Georgia', 'Times New Roman', serif;
+    -fx-font-size: 14px;
+}
+
+.diff-choice .menu-item:focused {
+    -fx-background-color: rgba(139, 105, 20, 0.40);
+    -fx-background-radius: 4;
+}
+
+.diff-choice .menu-item:focused .label {
+    -fx-text-fill: #f0ddb0;
+}
+
+/* ---------- CounsellorPopup ---------- */
+
+.counsellor-content {
+    -fx-background-color: rgba(15, 8, 4, 0.95);
+    -fx-border-color: #8b6914;
+    -fx-border-width: 2;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.counsellor-message {
+    -fx-font-family: 'IM Fell English', 'Georgia', serif;
+    -fx-font-size: 15px;
+    -fx-text-fill: #e8d5b0;
+    -fx-wrap-text: true;
+    -fx-line-spacing: 2;
+}
+
+.counsellor-dismiss {
+    -fx-background-color: linear-gradient(to bottom, #8b6914, #5a4410);
+    -fx-text-fill: #f5e8c8;
+    -fx-font-family: 'IM Fell English', 'Cinzel', serif;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 8 22 8 22;
+    -fx-background-radius: 5;
+    -fx-cursor: hand;
+}
+
+.counsellor-dismiss:hover {
+    -fx-background-color: linear-gradient(to bottom, #a07e1a, #6c5012);
+    -fx-effect: dropshadow(gaussian, rgba(255, 215, 130, 0.5), 8, 0.4, 0, 0);
+}
+
+/* ---------- EndgameOverlay ---------- */
+
+.endgame-overlay {
+    -fx-background-color: rgba(0, 0, 0, 0.85);
+    -fx-padding: 80 40 80 40;
+}
+
+.endgame-title {
+    -fx-font-family: 'IM Fell English', 'Cinzel', 'Georgia', serif;
+    -fx-font-size: 56px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #d4a043;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.95), 18, 0.6, 0, 4);
+}
+
+.endgame-subtitle {
+    -fx-font-family: 'IM Fell English', 'Georgia', serif;
+    -fx-font-size: 20px;
+    -fx-text-fill: #e8d5b0;
+    -fx-font-style: italic;
+    -fx-text-alignment: center;
+    -fx-effect: dropshadow(gaussian, black, 5, 0.5, 0, 0);
+}
+
+.endgame-recap {
+    -fx-padding: 16 30 16 30;
+    -fx-background-color: rgba(20, 12, 5, 0.7);
+    -fx-background-radius: 8;
+    -fx-border-color: #8b6914;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+}
+
+.endgame-recap-name {
+    -fx-font-family: 'IM Fell English', 'Cinzel', serif;
+    -fx-font-size: 16px;
+    -fx-text-fill: #c4a06a;
+}
+
+.endgame-recap-value {
+    -fx-font-family: 'IM Fell English', 'Cinzel', serif;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e8d5b0;
+}
+
+/* ---------- Themed scrollbar (used in rules popup and counsellor) ---------- */
+
+.rules-scroll .scroll-bar:vertical {
+    -fx-background-color: rgba(20, 12, 5, 0.6);
+    -fx-background-radius: 4;
+    -fx-pref-width: 8;
+}
+
+.rules-scroll .scroll-bar:vertical .track {
+    -fx-background-color: rgba(40, 28, 14, 0.4);
+    -fx-background-radius: 4;
+}
+
+.rules-scroll .scroll-bar:vertical .thumb {
+    -fx-background-color: rgba(139, 105, 20, 0.75);
+    -fx-background-radius: 4;
+}
+
+.rules-scroll .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: rgba(212, 160, 67, 0.90);
+}
+
+.rules-scroll .scroll-bar:vertical .increment-button,
+.rules-scroll .scroll-bar:vertical .decrement-button {
+    -fx-background-color: transparent;
+    -fx-pref-height: 0;
+    -fx-min-height: 0;
+    -fx-max-height: 0;
+}
+
+.rules-scroll .scroll-bar:horizontal {
+    -fx-pref-height: 0;
+    -fx-min-height: 0;
+    -fx-max-height: 0;
+    -fx-opacity: 0;
+}
+
