@@ -14,6 +14,7 @@ import javafx.animation.Timeline;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Pos;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -26,27 +27,31 @@ import javafx.util.Duration;
 /**
  * A self-contained visual component representing one of the four game parameters.
  *
- * <p>Displays the parameter icon with a vertical "fill" indicator and a small
+ * <p>Displays the parameter icon with a vertical fill indicator and a small
  * white dot above it that lights up when the parameter is about to be affected
  * by the player's pending decision (preview during drag).
  *
- * <p>Visual styling (drop shadow, hover glow) is delegated to the external
- * stylesheet via the {@code parameter-icon} style class.
+ * <p>The dot is sized proportionally to the magnitude of the impact: a large
+ * delta (e.g. 12) produces the maximum dot radius, a small delta (e.g. 2)
+ * produces the minimum radius.
  */
 public final class ParameterIconView extends StackPane {
 
     private static final Logger LOGGER = Logger.getLogger(ParameterIconView.class.getName());
 
-    private static final int ICON_SIZE = 90;
-    private static final int DOT_RADIUS = 3;
-    private static final int DOT_OFFSET_Y = -8;
-    private static final double DIMMED_OPACITY = 0.55;
+    private static final int ICON_SIZE = 73;
+    private static final int DOT_MIN_RADIUS = 2;
+    private static final int DOT_MAX_RADIUS = 5;
+    private static final int DOT_REFERENCE_DELTA = 12;
+    private static final int DOT_ABOVE_GAP = 11;
+
+    private static final double DIMMED_OPACITY = 0.50;
     private static final double DESATURATE_AMOUNT = -1.0;
-    private static final double DIMMED_BRIGHTNESS = -0.4;
+    private static final double DIMMED_BRIGHTNESS = -0.3;
     private static final double FILL_ANIM_MILLIS = 350;
 
     private final DoubleProperty fill = new SimpleDoubleProperty(ParameterImpl.START_LEVEL);
-    private final Circle previewDot;
+    private Circle previewDot;
     private ImageView active;
     private Timeline fillAnimation;
 
@@ -57,16 +62,12 @@ public final class ParameterIconView extends StackPane {
      */
     public ParameterIconView(final String resourceName) {
         getStyleClass().add("parameter-icon");
-        this.previewDot = createPreviewDot();
+        setPrefSize(ICON_SIZE, ICON_SIZE);
+        setMaxSize(ICON_SIZE, ICON_SIZE);
+        setMinSize(ICON_SIZE, ICON_SIZE);
         loadIcon(resourceName);
         bindFillToClip();
         applyInitialClip();
-    }
-
-    private Circle createPreviewDot() {
-        final Circle dot = new Circle(DOT_RADIUS, Color.WHITE);
-        dot.setOpacity(0);
-        return dot;
     }
 
     private void loadIcon(final String resourceName) {
@@ -83,16 +84,25 @@ public final class ParameterIconView extends StackPane {
             desaturate.setSaturation(DESATURATE_AMOUNT);
             desaturate.setBrightness(DIMMED_BRIGHTNESS);
             dimmed.setEffect(desaturate);
+            dimmed.setBlendMode(BlendMode.SCREEN);
 
             this.active = buildImageView(image);
+            this.active.setBlendMode(BlendMode.SCREEN);
 
-            setAlignment(previewDot, Pos.TOP_CENTER);
-            previewDot.setTranslateY(DOT_OFFSET_Y);
+            this.previewDot = createPreviewDot(DOT_MIN_RADIUS);
 
             getChildren().addAll(dimmed, this.active, previewDot);
         } catch (final IOException e) {
             LOGGER.log(Level.SEVERE, "Could not load parameter icon: " + resourceName, e);
         }
+    }
+
+    private Circle createPreviewDot(final int radius) {
+        final Circle dot = new Circle(radius, Color.WHITE);
+        dot.setOpacity(0);
+        setAlignment(dot, Pos.TOP_CENTER);
+        dot.setTranslateY(-(DOT_ABOVE_GAP + 2 * radius));
+        return dot;
     }
 
     private ImageView buildImageView(final Image image) {
@@ -124,6 +134,8 @@ public final class ParameterIconView extends StackPane {
 
     /**
      * Sets the parameter level with a smooth fill animation.
+     * Snaps instantly to extremes (0 or MAX_LEVEL) to avoid rendering
+     * desync that would prevent the game-over visuals from being coherent.
      *
      * @param newLevel the new level (0..100)
      */
@@ -143,12 +155,40 @@ public final class ParameterIconView extends StackPane {
     }
 
     /**
-     * Marks this icon as "about to be affected" by the pending decision.
-     * Shows a small white dot above the icon.
+     * Marks this icon as "about to be affected" by the
+     * pending decision. The preview dot is sized proportionally to the
+     * magnitude of the upcoming change.
      *
      * @param affected true to show the dot, false to hide it
+     * @param absDelta the absolute value of the delta that the pending
+     *                 decision would apply to this parameter (ignored if
+     *                 {@code affected} is false)
      */
-    public void setAffected(final boolean affected) {
-        previewDot.setOpacity(affected ? 1.0 : 0.0);
+    public void setAffected(final boolean affected, final int absDelta) {
+        if (previewDot == null) {
+            return;
+        }
+        if (!affected) {
+            previewDot.setOpacity(0);
+            return;
+        }
+        final int radius = computeDotRadius(absDelta);
+        getChildren().remove(previewDot);
+        this.previewDot = createPreviewDot(radius);
+        previewDot.setOpacity(1.0);
+        getChildren().add(previewDot);
+    }
+
+    /**
+     * Linearly interpolates the dot radius between {@code DOT_MIN_RADIUS}
+     * and {@code DOT_MAX_RADIUS}, clamped at {@code DOT_REFERENCE_DELTA}.
+     *
+     * @param absDelta the absolute delta of the pending impact
+     * @return the dot radius in pixels
+     */
+    private int computeDotRadius(final int absDelta) {
+        final double t = Math.min((double) absDelta / DOT_REFERENCE_DELTA, 1.0);
+        final double interpolated = DOT_MIN_RADIUS + (DOT_MAX_RADIUS - DOT_MIN_RADIUS) * t;
+        return (int) Math.round(interpolated);
     }
 }
