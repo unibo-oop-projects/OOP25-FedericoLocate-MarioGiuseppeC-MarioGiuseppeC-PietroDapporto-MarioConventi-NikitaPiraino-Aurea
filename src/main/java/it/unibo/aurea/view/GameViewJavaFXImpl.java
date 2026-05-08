@@ -101,11 +101,15 @@ public final class GameViewJavaFXImpl implements GameView {
     private Label timeLabel;
     private Label playerLabel;
     private EndgameOverlay endgameOverlay;
+    private final Runnable onRestart;
 
     /**
      * Constructor for the JavaFX view.
+     *
+     * @param onRestart callback invoked when the player chooses to restart
      */
-    public GameViewJavaFXImpl() {
+    public GameViewJavaFXImpl(final Runnable onRestart) {
+        this.onRestart = Objects.requireNonNull(onRestart);
         for (final ParameterType t : ParameterType.values()) {
             warnedLow.put(t, false);
             warnedHigh.put(t, false);
@@ -307,7 +311,7 @@ public final class GameViewJavaFXImpl implements GameView {
             }
         });
 
-        this.endgameOverlay = new EndgameOverlay();
+        this.endgameOverlay = new EndgameOverlay(this::handleRestart);
     }
 
     private Set<ParameterType> computePreview(final boolean isApproval) {
@@ -483,7 +487,8 @@ public final class GameViewJavaFXImpl implements GameView {
             this.endgameOverlay.reveal(
                 "Aurea Mediocritas",
                 "The annals shall remember your Golden Age. A true visionary.",
-                buildFinalRecap()
+                buildFinalRecap(),
+                true
             );
         });
     }
@@ -495,7 +500,8 @@ public final class GameViewJavaFXImpl implements GameView {
             this.endgameOverlay.reveal(
                 "The Realm Crumbles",
                 "Your reign is over. The university falls into oblivion.",
-                buildFinalRecap()
+                buildFinalRecap(),
+                false
             );
         });
     }
@@ -507,7 +513,8 @@ public final class GameViewJavaFXImpl implements GameView {
             this.endgameOverlay.reveal(
                 "Tragic Demise",
                 reason + " The court has ousted you.",
-                buildFinalRecap()
+                buildFinalRecap(),
+                false
             );
         });
     }
@@ -524,5 +531,19 @@ public final class GameViewJavaFXImpl implements GameView {
             return Map.of();
         }
         return controller.getCurrentParametersLevels();
+    }
+
+    /**
+     * Closes the current game stage and delegates the restart to the owner
+     * (Main), which will open a new LoginScene. The view does not know how
+     * to restart — it only signals the intent via the callback.
+     */
+    private void handleRestart() {
+        Stage.getWindows().stream()
+            .filter(w -> w instanceof Stage)
+            .map(w -> (Stage) w)
+            .toList()
+            .forEach(Stage::close);
+        onRestart.run();
     }
 }

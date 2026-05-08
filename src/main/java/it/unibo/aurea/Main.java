@@ -2,6 +2,7 @@ package it.unibo.aurea;
 
 import it.unibo.aurea.controller.GameControllerImpl;
 import it.unibo.aurea.controller.api.GameController;
+import it.unibo.aurea.controller.api.PlayerInfo;
 import it.unibo.aurea.model.Deck;
 import it.unibo.aurea.model.GameConfigImpl;
 import it.unibo.aurea.model.GameEngineImpl;
@@ -21,28 +22,46 @@ import javafx.stage.Stage;
 public final class Main extends Application {
 
     /**
-     * JavaFX entry point. Called by the JavaFX runtime in the FX Application Thread.
+     * JavaFX entry point. Opens the login scene; game starts on submit.
      *
-     * @param primaryStage the JavaFX-provided primary stage (unused: we open our own)
+     * @param primaryStage the JavaFX-provided primary stage (unused)
      */
     @Override
     public void start(final Stage primaryStage) {
-        new LoginScene(playerInfo -> {
-            try {
-                final GameConfig config = GameConfigImpl.createStandard();
-                final Deck deck = new Deck();
+        openLogin();
+    }
 
-                final GameEngine engine = new GameEngineImpl(config, deck);
-                final GameView view = new GameViewJavaFXImpl();
-                final GameController controller = new GameControllerImpl(view, engine, playerInfo);
+    /**
+     * Opens the login scene. Called both on first launch and on restart.
+     * Extracted so it can be referenced as a method reference (Runnable).
+     */
+    private void openLogin() {
+        new LoginScene(this::startGame);
+    }
 
-                view.setController(controller);
-                controller.startGame();
-            } catch (final IllegalStateException e) {
-                System.err.println("Errors in configuration of the environment: " + e.getMessage()); //NOPMD
-                Platform.exit();
-            }
-        });
+    /**
+     * Builds and starts the full MVC stack with the given player identity.
+     * The view receives a restart callback that re-opens the login scene.
+     *
+     * @param playerInfo the identity collected at login
+     */
+    private void startGame(final PlayerInfo playerInfo) {
+        try {
+            final GameConfig config = GameConfigImpl.createStandard();
+            final Deck deck = new Deck();
+            final GameEngine engine = new GameEngineImpl(config, deck);
+
+            final Runnable onRestart = () -> Platform.runLater(this::openLogin);
+
+            final GameView view = new GameViewJavaFXImpl(onRestart);
+            final GameController controller = new GameControllerImpl(view, engine, playerInfo);
+
+            view.setController(controller);
+            controller.startGame();
+        } catch (final IllegalStateException e) {
+            System.err.println("Errors in configuration of the environment: " + e.getMessage()); //NOPMD
+            Platform.exit();
+        }
     }
 
     /**

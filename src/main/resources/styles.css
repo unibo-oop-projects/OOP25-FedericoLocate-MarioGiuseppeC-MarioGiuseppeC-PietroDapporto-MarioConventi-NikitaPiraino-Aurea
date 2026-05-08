@@ -422,3 +422,43 @@
     -fx-opacity: 0;
 }
 
+/* ---------- Endgame action buttons ---------- */
+
+.endgame-button-quit {
+    -fx-background-color: rgba(60, 20, 20, 0.85);
+    -fx-background-radius: 7;
+    -fx-border-color: #8b3a3a;
+    -fx-border-width: 1;
+    -fx-border-radius: 7;
+    -fx-text-fill: #e8b0b0;
+    -fx-font-family: 'Georgia', serif;
+    -fx-font-size: 15px;
+    -fx-padding: 10 24 10 24;
+    -fx-cursor: hand;
+}
+
+.endgame-button-quit:hover {
+    -fx-background-color: rgba(100, 30, 30, 0.95);
+    -fx-border-color: #c45a5a;
+    -fx-effect: dropshadow(gaussian, rgba(200, 80, 80, 0.5), 10, 0.3, 0, 0);
+}
+
+.endgame-button-restart {
+    -fx-background-color: linear-gradient(to bottom, #8b6914, #5a4410);
+    -fx-background-radius: 7;
+    -fx-border-color: #d4a043;
+    -fx-border-width: 1;
+    -fx-border-radius: 7;
+    -fx-text-fill: #faf0dc;
+    -fx-font-family: 'Georgia', serif;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 24 10 24;
+    -fx-cursor: hand;
+}
+
+.endgame-button-restart:hover {
+    -fx-background-color: linear-gradient(to bottom, #d4a043, #9a7a1a);
+    -fx-effect: dropshadow(gaussian, rgba(212, 160, 67, 0.65), 12, 0.4, 0, 0);
+}
+

@@ -4,9 +4,12 @@ import java.util.Map;
 
 import it.unibo.aurea.model.api.ParameterType;
 import javafx.animation.FadeTransition;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
@@ -19,23 +22,35 @@ import javafx.util.Duration;
  */
 public final class EndgameOverlay extends VBox {
 
-    private static final int CONTAINER_SPACING = 20;
+    private static final int CONTAINER_SPACING = 18;
     private static final int RECAP_SPACING_H = 30;
     private static final int RECAP_SPACING_V = 8;
+    private static final int BUTTON_ROW_SPACING = 16;
+    private static final int BUTTON_ROW_TOP_PADDING = 24;
     private static final double FADE_MILLIS = 900;
+
+    private static final String BG_VICTORY = "rgba(0, 0, 0, 0.82)";
+    private static final String BG_DEFEAT = "rgba(20, 0, 0, 0.88)";
 
     private final Label titleLabel;
     private final Label subtitleLabel;
     private final GridPane recapGrid;
+    private final HBox buttonRow;
+    private final Runnable onRestart;
 
     /**
      * Builds the overlay (initially invisible).
+     *
+     * @param onRestart callback invoked when the player chooses to play again
      */
-    public EndgameOverlay() {
+    public EndgameOverlay(final Runnable onRestart) {
+        this.onRestart = onRestart;
+
         setAlignment(Pos.CENTER);
         setSpacing(CONTAINER_SPACING);
-        setMouseTransparent(true);
+        setMouseTransparent(false);
         setOpacity(0);
+        setVisible(false);
         getStyleClass().add("endgame-overlay");
 
         this.titleLabel = new Label();
@@ -49,10 +64,31 @@ public final class EndgameOverlay extends VBox {
         this.recapGrid.setAlignment(Pos.CENTER);
         this.recapGrid.setHgap(RECAP_SPACING_H);
         this.recapGrid.setVgap(RECAP_SPACING_V);
-
         this.recapGrid.getStyleClass().add("endgame-recap");
 
-        getChildren().addAll(titleLabel, subtitleLabel, recapGrid);
+        this.buttonRow = buildButtonRow();
+
+        getChildren().addAll(titleLabel, subtitleLabel, recapGrid, buttonRow);
+    }
+
+    private HBox buildButtonRow() {
+        final Button quitBtn = new Button("Leave the Realm");
+        quitBtn.getStyleClass().add("endgame-button-quit");
+        quitBtn.setOnAction(e -> javafx.application.Platform.exit());
+
+        final Button restartBtn = new Button("Reign Again");
+        restartBtn.getStyleClass().add("endgame-button-restart");
+        restartBtn.setOnAction(e -> {
+            setVisible(false);
+            setOpacity(0);
+            onRestart.run();
+        });
+
+        final HBox row = new HBox(BUTTON_ROW_SPACING);
+        row.setAlignment(Pos.CENTER);
+        row.setPadding(new Insets(BUTTON_ROW_TOP_PADDING, 0, 0, 0));
+        row.getChildren().addAll(quitBtn, restartBtn);
+        return row;
     }
 
     /**
@@ -61,12 +97,19 @@ public final class EndgameOverlay extends VBox {
      * @param title the headline text
      * @param subtitle the narrative explanation
      * @param finalLevels snapshot of the four parameters at game end
+     * @param victory    true for victory (golden tint), false for defeat (red tint)
      */
     public void reveal(final String title, final String subtitle, 
-        final Map<ParameterType, Integer> finalLevels) {
+        final Map<ParameterType, Integer> finalLevels,
+        final boolean victory) {
             titleLabel.setText(title);
             subtitleLabel.setText(subtitle);
             populateRecap(finalLevels);
+
+            final String bg = victory ? BG_VICTORY : BG_DEFEAT;
+            setStyle("-fx-background-color: " + bg + "; -fx-padding: 80 40 80 40;");
+            setVisible(true);
+            setMouseTransparent(false);
 
             final FadeTransition fade = new FadeTransition(Duration.millis(FADE_MILLIS), this);
             fade.setFromValue(0);
