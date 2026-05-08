@@ -1,11 +1,5 @@
 package it.unibo.aurea.model;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
-
 import it.unibo.aurea.model.api.Card;
 import it.unibo.aurea.model.api.Effect;
 import it.unibo.aurea.model.api.FollowUp;
@@ -15,21 +9,26 @@ import it.unibo.aurea.model.api.GameEngine;
 import it.unibo.aurea.model.api.GameState;
 import it.unibo.aurea.model.api.Parameter;
 import it.unibo.aurea.model.api.ParameterType;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
 
 /**
- * this is the main implementation of the model.
+ * Implementation of the GameEngine.
  */
 public final class GameEngineImpl implements GameEngine {
+
+    private static final double DEFAULT_WEIGHT = 10.0;
+    private static final double WEIGHT_DIVISOR = 25.0;
+    private static final int NEUTRAL_DISTANCE = 50;
 
     private final Deck deck;
     private final GameConfig config;
     private final GameClock gameClock;
     private final Random randomGenerator;
-    
-    // La nostra Event Queue per gestire le carte figlie
     private final List<ActiveFollowUp> eventQueue = new ArrayList<>();
-    
-    // Variabile per evitare di ricalcolare l'estrazione più volte nello stesso turno
     private Card currentCardToPlay;
 
     private final List<Parameter> parameters = List.of(
@@ -40,8 +39,8 @@ public final class GameEngineImpl implements GameEngine {
     );
 
     /**
-     * @param config is an object of the @code GameConfiguration.java .
-     * @param deck contains the deck of card that wiil be used in future.
+     * @param config the configuration
+     * @param deck the deck
      */
     public GameEngineImpl(final GameConfig config, final Deck deck) {
         this.config = config;
@@ -63,116 +62,93 @@ public final class GameEngineImpl implements GameEngine {
 
     @Override
     public void start() {
-        // Avvio standard
+        // Init if needed
     }
 
     @Override
     public Card getCurrentCard() {
-        // Se la carta è stata usata nel turno precedente, ne pesca una nuova
         if (this.currentCardToPlay == null || this.currentCardToPlay.isUsed()) {
             this.currentCardToPlay = extractNextCard();
         }
         return this.currentCardToPlay;
     }
-    
-    /**
-     * Algoritmo Centrale di Selezione Carte (Il tuo algoritmo tradotto)
-     */
+
     private Card extractNextCard() {
-        // 1. GESTIONE EVENTI CONCATENATI (Code)
         updateEventQueue();
-        
-        for (ActiveFollowUp activeEvent : eventQueue) {
+        for (final ActiveFollowUp activeEvent : eventQueue) {
             if (activeEvent.getRemainingTurns() <= 0) {
-                // Troviamo la carta figlia associata all'evento
-                Card forcedCard = deck.getAllCards().stream()
+                final Card forcedCard = deck.getAllCards().stream()
                     .filter(c -> c.getId().equals(activeEvent.getFollowUp().getChildId()))
                     .findFirst()
                     .orElse(null);
-                    
                 if (forcedCard != null && !forcedCard.isUsed()) {
                     eventQueue.remove(activeEvent);
-                    return forcedCard; // ESTRAZIONE FORZATA (ignora salvavita)
+                    return forcedCard;
                 }
             }
         }
 
-        // 2. PESI DINAMICI E FILTRO SALVAVITA
         ParameterType criticalParam = ParameterType.FINANCES;
-        int minDistance = 50;
+        int minDistance = NEUTRAL_DISTANCE;
 
-        // Trova il parametro più vicino alla morte (0 o 100)
-        for (Parameter p : parameters) {
-            int dist0 = p.getLevel();
-            int dist100 = 100 - p.getLevel();
-            int currentMinDist = Math.min(dist0, dist100);
-            
+        for (final Parameter p : parameters) {
+            final int dist0 = p.getLevel();
+            final int dist100 = 100 - p.getLevel();
+            final int currentMinDist = Math.min(dist0, dist100);
             if (currentMinDist < minDistance) {
                 minDistance = currentMinDist;
                 criticalParam = p.getName();
             }
         }
 
-        List<Card> playableCards = new ArrayList<>();
-        List<Double> weights = new ArrayList<>();
+        final List<Card> playableCards = new ArrayList<>();
+        final List<Double> weights = new ArrayList<>();
         double totalWeight = 0.0;
 
-        // Analisi carte giocabili (filtro Anti-Game Over matematico)
-        for (Card c : deck.getAllCards()) {
-            if (!c.isUsed() && isBaseCard(c.getId())) { 
-                
-                if (!isLethalInBothOptions(c)) {
-                    playableCards.add(c);
-                    
-                    // Calcolo del peso
-                    double weight = 10.0;
-                    if (cardHelpsParameter(c, criticalParam)) {
-                        weight *= (1.0 + (50.0 - minDistance) / 25.0);
-                    }
-                    weights.add(weight);
-                    totalWeight += weight;
+        for (final Card c : deck.getAllCards()) {
+            if (!c.isUsed() && isBaseCard(c.getId()) && !isLethalInBothOptions(c)) {
+                playableCards.add(c);
+                double weight = DEFAULT_WEIGHT;
+                if (cardHelpsParameter(c, criticalParam)) {
+                    weight *= 1.0 + (NEUTRAL_DISTANCE - minDistance) / WEIGHT_DIVISOR;
                 }
+                weights.add(weight);
+                totalWeight += weight;
             }
         }
 
-        // Fallback: se tutto è letale o non ci sono carte
         if (playableCards.isEmpty()) {
-            return deck.getAllCards().stream().filter(c -> !c.isUsed()).findFirst().orElse(deck.getAllCards().get(0));
+            return deck.getAllCards().stream()
+                .filter(c -> !c.isUsed())
+                .findFirst()
+                .orElse(deck.getAllCards().get(0));
         }
 
-        // Estrazione pesata
-        double randomVal = randomGenerator.nextDouble() * totalWeight;
+        final double randomVal = randomGenerator.nextDouble() * totalWeight;
         double currentSum = 0;
-        
         for (int i = 0; i < playableCards.size(); i++) {
             currentSum += weights.get(i);
             if (randomVal <= currentSum) {
                 return playableCards.get(i);
             }
         }
-        
         return playableCards.get(0);
     }
-    
-    // --- METODI DI SUPPORTO PER L'ALGORITMO ---
 
-    private boolean isBaseCard(String id) {
-        // Se le carte figlie hanno ID che iniziano con "EV" o sono numeri > 100
-        // Per semplicità, consideriamo base quelle che non sono mai 'figlie' in nessun follow up.
+    private boolean isBaseCard(final String id) {
         return deck.getAllFollowUps().stream().noneMatch(fu -> fu.getChildId().equals(id));
     }
 
-    private boolean isLethalInBothOptions(Card card) {
-        boolean yesIsLethal = simulateLethality(card.getApproval().getEffects());
-        boolean noIsLethal = simulateLethality(card.getRefusal().getEffects());
-        return yesIsLethal && noIsLethal;
+    private boolean isLethalInBothOptions(final Card card) {
+        return simulateLethality(card.getApproval().getEffects())
+            && simulateLethality(card.getRefusal().getEffects());
     }
 
-    private boolean simulateLethality(List<Effect> effects) {
-        for (Effect e : effects) {
-            for (Parameter p : parameters) {
+    private boolean simulateLethality(final List<Effect> effects) {
+        for (final Effect e : effects) {
+            for (final Parameter p : parameters) {
                 if (p.getName() == e.getParameter()) {
-                    int futureValue = p.getLevel() + e.getDelta();
+                    final int futureValue = p.getLevel() + e.getDelta();
                     if (futureValue <= 0 || futureValue >= 100) {
                         return true;
                     }
@@ -182,33 +158,38 @@ public final class GameEngineImpl implements GameEngine {
         return false;
     }
 
-    private boolean cardHelpsParameter(Card card, ParameterType type) {
-        // Controlla se la carta ha un effetto positivo su quel parametro
+    private boolean cardHelpsParameter(final Card card, final ParameterType type) {
+        final Parameter criticalP = parameters.stream()
+            .filter(p -> p.getName() == type)
+            .findFirst()
+            .orElse(null);
+        if (criticalP == null) {
+            return false;
+        }
+        final boolean isDangerHigh = criticalP.getLevel() > NEUTRAL_DISTANCE;
         return card.getAllEffects().stream()
-            .anyMatch(e -> e.getParameter() == type && e.getDelta() > 0);
+            .anyMatch(e -> e.getParameter() == type
+                && (isDangerHigh ? e.getDelta() < 0 : e.getDelta() > 0));
     }
 
     private void updateEventQueue() {
-        Iterator<ActiveFollowUp> iterator = eventQueue.iterator();
+        final Iterator<ActiveFollowUp> iterator = eventQueue.iterator();
         while (iterator.hasNext()) {
-            ActiveFollowUp event = iterator.next();
+            final ActiveFollowUp event = iterator.next();
             event.decrementTurn();
         }
     }
-    
-    /**
-     * Da richiamare nel Controller dopo ogni scelta, o qui intercettando la decisione.
-     * Per ora la lasciamo pubblica così il Controller può inserire in coda.
-     */
-    public void registerChoiceConsequences(String parentId, boolean wasApproval) {
-         // I tuoi colleghi hanno definito OutcomeType. Supponiamo ci sia ACCEPTED o REFUSED.
-         // Dobbiamo tradurlo in base a come l'hanno scritto loro. (Es: OutcomeType.APPROVAL)
+
+    @Override
+    public void registerChoiceConsequences(final String parentId, final boolean wasApproval) {
+         final it.unibo.aurea.model.api.OutcomeType actualOutcome = wasApproval
+             ? it.unibo.aurea.model.api.OutcomeType.APPROVAL
+             : it.unibo.aurea.model.api.OutcomeType.REFUSAL;
+
          deck.getAllFollowUps().stream()
             .filter(fu -> fu.getParentId().equals(parentId))
-            .forEach(fu -> {
-                // Semplificazione: Inseriamo il controllo corretto dell'enum dopo
-                // eventQueue.add(new ActiveFollowUp(fu, fu.getDelayTurn()));
-            });
+            .filter(fu -> fu.getTrigger() == actualOutcome)
+            .forEach(fu -> eventQueue.add(new ActiveFollowUp(fu, fu.getDelayTurn())));
     }
 
     @Override
@@ -223,7 +204,7 @@ public final class GameEngineImpl implements GameEngine {
 
     @Override
     public GameState getGameState() {
-        if (!areAllParametersAlive()) { 
+        if (!areAllParametersAlive()) {
             return GameState.LOST;
         }
         if (gameClock.isTimeFinished()) {
@@ -240,26 +221,25 @@ public final class GameEngineImpl implements GameEngine {
     public GameClock getGameClock() {
         return this.gameClock;
     }
-    
-    // --- CLASSE INTERNA PER LA GESTIONE DEL TIMER DEGLI EVENTI ---
+
     private static class ActiveFollowUp {
         private final FollowUp followUp;
         private int remainingTurns;
 
-        public ActiveFollowUp(FollowUp followUp, int remainingTurns) {
+        ActiveFollowUp(final FollowUp followUp, final int remainingTurns) {
             this.followUp = followUp;
             this.remainingTurns = remainingTurns;
         }
 
-        public void decrementTurn() {
+        void decrementTurn() {
             this.remainingTurns--;
         }
 
-        public int getRemainingTurns() {
+        int getRemainingTurns() {
             return remainingTurns;
         }
 
-        public FollowUp getFollowUp() {
+        FollowUp getFollowUp() {
             return followUp;
         }
     }
