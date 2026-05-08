@@ -63,10 +63,17 @@ public final class LoginScene {
     public LoginScene(final Consumer<PlayerInfo> onLoginComplete) {
         this.stage = new Stage();
         this.onLoginComplete = Objects.requireNonNull(onLoginComplete);
-        buildAndShow();
+        build();
     }
 
-    private void buildAndShow() {
+    /**
+     * Makes the login scene visible.
+     */
+    public void show() {
+        stage.show();
+    }
+
+    private void build() {
         stage.setTitle("Aurea Mediocritas");
         stage.setResizable(false);
 
@@ -137,7 +144,6 @@ public final class LoginScene {
             scene.getStylesheets().add(stylesheet.toExternalForm());
         }
         stage.setScene(scene);
-        stage.show();
     }
 
     private HBox buildDifficultyRow() {

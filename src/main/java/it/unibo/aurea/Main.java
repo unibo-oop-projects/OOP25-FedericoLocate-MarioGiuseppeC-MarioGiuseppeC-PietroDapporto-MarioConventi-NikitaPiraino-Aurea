@@ -36,7 +36,8 @@ public final class Main extends Application {
      * Extracted so it can be referenced as a method reference (Runnable).
      */
     private void openLogin() {
-        new LoginScene(this::startGame);
+        final LoginScene login = new LoginScene(this::startGame);
+        login.show();
     }
 
     /**
