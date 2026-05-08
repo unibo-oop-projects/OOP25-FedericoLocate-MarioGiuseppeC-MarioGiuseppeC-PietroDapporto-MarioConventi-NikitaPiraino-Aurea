@@ -39,7 +39,7 @@ public final class ParameterIconView extends StackPane {
 
     private static final Logger LOGGER = Logger.getLogger(ParameterIconView.class.getName());
 
-    private static final int ICON_SIZE = 73;
+    private static final int ICON_SIZE = 60;
     private static final int DOT_MIN_RADIUS = 2;
     private static final int DOT_MAX_RADIUS = 5;
     private static final int DOT_REFERENCE_DELTA = 12;

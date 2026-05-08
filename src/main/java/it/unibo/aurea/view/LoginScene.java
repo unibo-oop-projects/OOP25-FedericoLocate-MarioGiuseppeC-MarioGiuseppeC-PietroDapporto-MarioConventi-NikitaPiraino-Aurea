@@ -15,6 +15,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -48,6 +49,8 @@ public final class LoginScene {
     private static final int FORM_PADDING = 44;
     private static final int FIELD_WIDTH = 320;
     private static final int DIFF_SPACING = 10;
+    private static final int MAX_RECTOR_NAME_LENGTH = 18;
+    private static final int MAX_FACULTY_LENGTH = 25;
 
     private final Stage stage;
     private final Consumer<PlayerInfo> onLoginComplete;
@@ -71,11 +74,17 @@ public final class LoginScene {
         rectorField.setPromptText("Your name, magnificent rector");
         rectorField.setMaxWidth(FIELD_WIDTH);
         rectorField.getStyleClass().add("login-field");
+        rectorField.setTextFormatter(new TextFormatter<>(change ->
+            change.getControlNewText().length() <= MAX_RECTOR_NAME_LENGTH ? change : null
+        ));
 
         final TextField facultyField = new TextField();
         facultyField.setPromptText("Your faculty, magnificent rector");
         facultyField.setMaxWidth(FIELD_WIDTH);
         facultyField.getStyleClass().add("login-field");
+        facultyField.setTextFormatter(new TextFormatter<>(change ->
+            change.getControlNewText().length() <= MAX_FACULTY_LENGTH ? change : null
+        ));
 
         final HBox diffRow = buildDifficultyRow();
 

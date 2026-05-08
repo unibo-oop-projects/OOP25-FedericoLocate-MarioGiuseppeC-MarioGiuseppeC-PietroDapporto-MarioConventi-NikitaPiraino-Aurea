@@ -67,10 +67,10 @@ public final class GameViewJavaFXImpl implements GameView {
     private static final String COLOR_NAME_GOLD = "#c4a06a";
     private static final String COLOR_CLOSE_RED = "#c4584a";
 
-    private static final int TOP_BAR_SPACING = 22;
+    private static final int TOP_BAR_SPACING = 28;
     private static final int CONTAINER_SPACING = 10;
     private static final int PADDING_NORMAL = 16;
-    private static final int PARAM_PADDING = 8;
+    private static final int PARAM_PADDING = 14;
     private static final int GAME_COLUMN_WIDTH = 480;
     private static final int PARAMS_OUTER_PADDING = 14;
     private static final int CLOSE_ROW_PADDING = 8;
