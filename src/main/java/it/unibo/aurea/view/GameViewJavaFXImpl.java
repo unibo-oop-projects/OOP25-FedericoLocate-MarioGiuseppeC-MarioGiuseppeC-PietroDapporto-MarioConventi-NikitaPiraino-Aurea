@@ -368,14 +368,14 @@ public final class GameViewJavaFXImpl implements GameView {
     private String buildLowMessage(final ParameterType type, final int value) {
         final String name = currentRectorName();
         return "Magnificent " + name + ", "
-            + type.name().toLowerCase(Locale.ROOT) + " has fallen to " + value + ". "
+            + type.getDisplayName().toLowerCase(Locale.ROOT) + " has fallen to " + value + ". "
             + "Tread carefully — let it not crumble to ruin.";
     }
 
     private String buildHighMessage(final ParameterType type, final int value) {
         final String name = currentRectorName();
         return "Magnificent " + name + ", "
-            + type.name().toLowerCase(Locale.ROOT) + " has risen to " + value + ". "
+            + type.getDisplayName().toLowerCase(Locale.ROOT) + " has risen to " + value + ". "
             + "Beware: too much of a good thing breeds new troubles.";
     }
 

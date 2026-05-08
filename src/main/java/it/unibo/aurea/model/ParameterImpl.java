@@ -2,6 +2,7 @@ package it.unibo.aurea.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import it.unibo.aurea.model.api.Parameter;
 import it.unibo.aurea.model.api.ParameterObserver;
@@ -12,11 +13,11 @@ import it.unibo.aurea.model.api.ParameterType;
  */
 public final class ParameterImpl implements Parameter {
 
-    /** Start level constant. */
+    /** Start level constant for all parameters. */
     public static final int START_LEVEL = 50;
-    /** Min level constant. */
+    /** Min allowed level. */
     public static final int MIN_LEVEL = 0;
-    /** Max level constant. */
+    /** Max allowed level. */
     public static final int MAX_LEVEL = 100;
 
     private final ParameterType name;
@@ -30,7 +31,7 @@ public final class ParameterImpl implements Parameter {
      * @param name the name of a {@code ParameterType}
      */
     public ParameterImpl(final ParameterType name) {
-        this.name = name;
+        this.name = Objects.requireNonNull(name, "ParameterType must not be null");
         this.level = START_LEVEL;
         this.alive = true;
         this.observers = new ArrayList<>();
@@ -38,6 +39,7 @@ public final class ParameterImpl implements Parameter {
 
     @Override
     public void addObserver(final ParameterObserver observer) {
+        Objects.requireNonNull(observer, "Observer must not be null");
         if (!this.observers.contains(observer)) {
             this.observers.add(observer);
         }
@@ -53,16 +55,21 @@ public final class ParameterImpl implements Parameter {
         if (!this.alive) {
             return;
         }
-        this.level += delta;
-        if (this.level >= MAX_LEVEL) {
-            this.level = MAX_LEVEL;
-            this.alive = false;
-        } else if (this.level <= MIN_LEVEL) {
-            this.level = MIN_LEVEL;
+        this.level = clamp(this.level + delta);
+        if (this.level == MIN_LEVEL || this.level == MAX_LEVEL) {
             this.alive = false;
         }
+        notifyObservers();
+    }
 
-        this.notifyObservers();
+    /**
+     * Clamps {@code value} to the range [{@link #MIN_LEVEL}, {@link #MAX_LEVEL}].
+     *
+     * @param value the raw value to clamp
+     * @return the clamped value
+     */
+    private static int clamp(final int value) {
+        return Math.max(MIN_LEVEL, Math.min(MAX_LEVEL, value));
     }
 
     @Override
@@ -71,10 +78,11 @@ public final class ParameterImpl implements Parameter {
             return "Still alive!";
         }
         if (this.level >= MAX_LEVEL) {
-            return this.name + " reached maximum capacity (100). The university lost control!";
-        } else {
-            return this.name + " dropped to zero. The university collapsed!";
+            return this.name.getDisplayName()
+                + " reached maximum capacity (100). The university lost control!";
         }
+        return this.name.getDisplayName()
+            + " dropped to zero. The university collapsed!";
     }
 
     @Override
@@ -91,9 +99,6 @@ public final class ParameterImpl implements Parameter {
      * Notifies all registered observers about a change in the parameter's level.
      */
     private void notifyObservers() {
-        for (final ParameterObserver observer : this.observers) {
-            observer.onParameterChanged(this.name, this.level);
-        }
+        List.copyOf(observers).forEach(o -> o.onParameterChanged(this.name, this.level));
     }
-
 }
