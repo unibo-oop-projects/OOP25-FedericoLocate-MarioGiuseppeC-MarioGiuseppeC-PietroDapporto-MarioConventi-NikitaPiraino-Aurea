@@ -13,7 +13,10 @@ import it.unibo.aurea.model.api.Card;
 import it.unibo.aurea.model.api.CharacterType;
 import it.unibo.aurea.model.api.ParameterType;
 import javafx.animation.FadeTransition;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
 import javafx.animation.ParallelTransition;
+import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -60,6 +63,10 @@ public final class CardPanel extends StackPane {
     private static final double HINT_SCALE = 1.02;
     private static final double NORMAL_SCALE = 1.0;
     private static final int FLIGHT_DURATION = 250;
+    private static final int DECK_LIFT_DURATION = 180;
+    private static final double DECK_LIFT_AMOUNT = -10.0;
+    private static final double DECK_LIFT_LAYER2 = -7.0;
+    private static final double DECK_LIFT_LAYER3 = -4.0;
     private static final int SNAP_DURATION = 150;
     private static final int EXIT_X_POS = 1000;
     private static final int ENTER_DURATION = 280;
@@ -77,6 +84,9 @@ public final class CardPanel extends StackPane {
     private final Label refusalLabel;
     private final Label approvalLabel;
 
+    private final VBox deckLayer1;
+    private final VBox deckLayer2;
+    private final VBox deckLayer3;
     private Card currentCard;
     private double dragStartX;
     private boolean hintActive;
@@ -103,9 +113,9 @@ public final class CardPanel extends StackPane {
         this.cardVisual = buildCardVisual();
         wireDragGestures();
 
-        final VBox deckLayer3 = buildDeckLayer(3);
-        final VBox deckLayer2 = buildDeckLayer(2);
-        final VBox deckLayer1 = buildDeckLayer(1);
+        this.deckLayer3 = buildDeckLayer(3);
+        this.deckLayer2 = buildDeckLayer(2);
+        this.deckLayer1 = buildDeckLayer(1);
 
         setAlignment(Pos.CENTER);
         getChildren().addAll(deckLayer3, deckLayer2, deckLayer1, cardVisual,
@@ -258,15 +268,38 @@ public final class CardPanel extends StackPane {
         final Card decided = currentCard;
         currentCard = null;
 
+        animateDeckLift();
+
         final TranslateTransition exit = new TranslateTransition(
             Duration.millis(FLIGHT_DURATION), cardVisual);
         exit.setToX(approved ? EXIT_X_POS : -EXIT_X_POS);
         exit.setOnFinished(e -> {
             cardVisual.setTranslateX(0);
             cardVisual.setRotate(0);
+            resetDeckLift();
             onDecision.accept(decided, approved);
         });
         exit.play();
+    }
+
+    private void animateDeckLift() {
+        final Timeline lift = new Timeline(
+            new KeyFrame(Duration.millis(DECK_LIFT_DURATION),
+                new KeyValue(deckLayer1.translateYProperty(),
+                    deckLayer1.getTranslateY() + DECK_LIFT_AMOUNT),
+                new KeyValue(deckLayer2.translateYProperty(),
+                    deckLayer2.getTranslateY() + DECK_LIFT_LAYER2),
+                new KeyValue(deckLayer3.translateYProperty(),
+                    deckLayer3.getTranslateY() + DECK_LIFT_LAYER3)
+            )
+        );
+        lift.play();
+    }
+
+    private void resetDeckLift() {
+        deckLayer1.setTranslateY((double) -DECK_LAYER_OFFSET);
+        deckLayer2.setTranslateY((double) -DECK_LAYER_OFFSET * 2);
+        deckLayer3.setTranslateY((double) -DECK_LAYER_OFFSET * 3);
     }
 
     private void snapBack() {
