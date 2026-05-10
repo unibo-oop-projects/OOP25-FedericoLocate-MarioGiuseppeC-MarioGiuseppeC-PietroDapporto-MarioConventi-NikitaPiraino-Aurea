@@ -101,6 +101,7 @@ public final class GameViewJavaFXImpl implements GameView {
     private Label timeLabel;
     private Label playerLabel;
     private EndgameOverlay endgameOverlay;
+    private Report semesterReport;
     private final Runnable onRestart;
 
     /**
@@ -312,6 +313,7 @@ public final class GameViewJavaFXImpl implements GameView {
         });
 
         this.endgameOverlay = new EndgameOverlay(this::handleRestart);
+        this.semesterReport = new ReportImpl();
     }
 
     private Set<ParameterType> computePreview(final boolean isApproval) {
@@ -388,7 +390,11 @@ public final class GameViewJavaFXImpl implements GameView {
         Platform.runLater(() -> {
             final int year = (semester / SEMESTERS_PER_YEAR) + OFFSET_YEAR;
             final int visualSession = (semester % SEMESTERS_PER_YEAR) + OFFSET_YEAR;
-            this.timeLabel.setText("Year " + toRoman(year) + " · Session " + toRoman(visualSession));
+            final String semesterLabel = "Year " + toRoman(year) + " · Session " + toRoman(visualSession);
+            this.timeLabel.setText(semesterLabel);
+            if (turn == 0 && semester > 0) {
+                semesterReport.show(semesterLabel, buildFinalRecap());
+            }
         });
     }
 
