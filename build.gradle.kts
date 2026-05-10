@@ -6,6 +6,9 @@ plugins {
     // You can run your app via task "run": ./gradlew run
     application
 
+    // Plugin official of JavaFX
+    id("org.openjfx.javafxplugin") version "0.1.0"
+
     /*
      * Adds tasks to export a runnable jar.
      * In order to create it, launch the "shadowJar" task.
@@ -26,20 +29,11 @@ java {
     }
 }
 
-val javaFXModules = listOf("base", "controls", "fxml", "swing", "graphics")
-
-val osName = System.getProperty("os.name").lowercase()
-val osArch = System.getProperty("os.arch").lowercase()
-
-val platform = when {
-    osName.contains("mac") && osArch == "aarch64" -> "mac-aarch64"
-    osName.contains("mac") -> "mac"
-    osName.contains("linux") -> "linux"
-    osName.contains("windows") -> "win"
-    else -> throw GradleException("Unsupported OS: $osName, arch: $osArch")
+// Configuration auto of JavaFX
+javafx {
+    version = "23.0.2"
+    modules = listOf("javafx.base", "javafx.controls", "javafx.graphics")
 }
-
-val supportedPlatforms = listOf(platform)
 
 dependencies {
     // Suppressions for SpotBugs
@@ -47,15 +41,6 @@ dependencies {
 
     // Example library: Guava. Add what you need (and use the latest version where appropriate).
     // implementation("com.google.guava:guava:28.1-jre")
-
-    // JavaFX: comment out if you do not need them
-    val javaFxVersion = "23.0.2"
-    implementation("org.openjfx:javafx:$javaFxVersion")
-    for (platform in supportedPlatforms) {
-        for (module in javaFXModules) {
-            implementation("org.openjfx:javafx-$module:$javaFxVersion:$platform")
-        }
-    }
 
     // The BOM (Bill of Materials) synchronizes all the versions of Junit coherently.
     testImplementation(platform("org.junit:junit-bom:6.0.3"))

@@ -1,17 +1,18 @@
 package it.unibo.aurea.controller.api;
 
+import java.util.Map;
 import java.util.Set;
 
 import it.unibo.aurea.model.api.ParameterType;
 
 /**
- * Represents the Controller in the MVC architecture.
- * It acts as a bridge between the View and the Model.
+ * Represents the Controller of the game in the MVC architecture.
+ * It acts as a bridge between the View and the Model (game engine).
  */
 public interface GameController {
 
     /**
-     * Starts the game, initializing the deck and showing the first card.
+     * Starts a new game session.
      */
     void startGame();
 
@@ -30,6 +31,29 @@ public interface GameController {
      * @return a Set of ParameterType that will be modified by the decision.
      */
     Set<ParameterType> previewDecision(boolean isApproval);
+
+    /**
+     * Returns the (parameter, delta) pairs that would
+     * be applied by the pending decision.
+     * 
+     * @param isApproval whether to preview approval or refusal effects
+     * @return a map associating each affected parameter with the absolute delta
+     */
+    Map<ParameterType, Integer> previewDecisionDeltas(boolean isApproval);
+
+    /**
+     * Returns the current numeric levels of the four parameters.
+     * 
+     * @return current levels keyed by parameter type
+     */
+    Map<ParameterType, Integer> getCurrentParametersLevels();
+
+    /**
+     * Returns the player identity collected at login.
+     * 
+     * @return the player info
+     */
+    PlayerInfo getPlayerInfo();
 
     /**
      * Quits the application.
