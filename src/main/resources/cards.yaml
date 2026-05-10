@@ -1,5 +1,5 @@
 cards:
-  - id: prof_publish_pressure
+  - id: prof_publish_pressure #professor 1
     character: PROFESSOR
     description: "The faculty senate wants stricter publication targets for all professors."
     refusal:
@@ -107,23 +107,23 @@ cards:
         - parameter: FINANCES
           delta: -9
 
-  - id: prof_tenure_reform
+  - id: prof_badge_access
     character: PROFESSOR
-    description: "A committee proposes stricter tenure evaluations."
+    description: "The campus must allow access only to those in possession of the badge."
     refusal:
-      text: "Current standards are enough"
+      text: "No, we are a public university"
       effects:
         - parameter: PROFESSORS
-          delta: 8
-        - parameter: FINANCES
-          delta: -4
-    approval:
-      text: "Raise the bar"
-      effects:
-        - parameter: PROFESSORS
-          delta: -12
+          delta: -8
         - parameter: REPUTATION
           delta: 8
+    approval:
+      text: "I will raise the security"
+      effects:
+        - parameter: PROFESSORS
+          delta: 8
+        - parameter: STUDENTS
+          delta: -12
 
   - id: prof_increase_salaries
     character: PROFESSOR
@@ -323,7 +323,7 @@ cards:
         - parameter: FINANCES
           delta: -9
 
-  - id: stud_record_lectures
+  - id: stud_record_lectures #student 1
     character: STUDENT
     description: "We want that all lectures recorded and uploaded online."
     refusal:
@@ -359,23 +359,311 @@ cards:
         - parameter: REPUTATION
           delta: -12
 
-  - id: student_library_exam
+  - id: stu_weight_room
     character: STUDENT
-    description: "We want extended library hours during exam period?"
+    description: "The students want a renovation of the machines in the campus weight room."
     refusal:
-      text: "No, it would increase operational costs"
+      text: "Not a priority"
       effects:
         - parameter: STUDENTS
-          delta: -7
+          delta: -6
         - parameter: FINANCES
-          delta: 3
+          delta: -3
     approval:
-      text: "Yes, students need proper support"
+      text: "Yeah, I'm also a gym bro"
+      effects:
+        - parameter: STUDENTS
+          delta: 15
+        - parameter: FINANCES
+          delta: 4
+
+  - id: stu_petition_presence
+    character: STUDENT
+    description: "An online petition is demanding remove mandatory presence."
+    refusal:
+      text: "Rules remain strict"
+      effects:
+        - parameter: STUDENTS
+          delta: -10
+        - parameter: PROFESSORS
+          delta: 7
+    approval:
+      text: "Allow flexibility"
+      effects:
+        - parameter: STUDENTS
+          delta: 8
+        - parameter: REPUTATION
+          delta: 5
+
+  - id: stu_exam_pressure #5
+    character: STUDENT
+    description: "Several students are complaining about excessive exam workload."
+    refusal:
+      text: "They must adapt"
+      effects:
+        - parameter: STUDENTS
+          delta: -11
+        - parameter: REPUTATION
+          delta: 7
+    approval:
+      text: "Reduce exam pressure"
+      effects:
+        - parameter: STUDENTS
+          delta: 9
+        - parameter: PROFESSORS
+          delta: -5
+
+  - id: stu_night_transport
+    character: STUDENT
+    description: "The on-site students want late-night buses service for coming back from parties."
+    refusal:
+      text: "We are not a social service"
+      effects:
+        - parameter: STUDENTS
+          delta: -6
+        - parameter: FINANCES
+          delta: 5
+    approval:
+      text: "Student enjoyment is important"
       effects:
         - parameter: STUDENTS
           delta: 7
         - parameter: FINANCES
+          delta: -9
+
+  - id: stu_oop_useless
+    character: STUDENT
+    description: "The 2nd year students say that OOP course is useless."
+    refusal:
+      text: "They don't understand anything"
+      effects:
+        - parameter: STUDENTS
+          delta: -7
+        - parameter: REPUTATION
+          delta: 8
+    approval:
+      text: "I absolutely agree"
+      effects:
+        - parameter: STUDENTS
+          delta: 9
+        - parameter: PROFESSORS
+          delta: -20
+
+  - id: stu_cafeteria_prices
+    character: STUDENT
+    description: "Campus cafeteria VOLUME prices have increased sharply this semester."
+    refusal:
+      text: "Prices stay unchanged"
+      effects:
+        - parameter: STUDENTS
+          delta: -9
+        - parameter: FINANCES
+          delta: 10
+    approval:
+      text: "Introduce discounts"
+      effects:
+        - parameter: STUDENTS
+          delta: 9
+        - parameter: PROFESSORS
+          delta: 6
+
+  - id: stu_support_palestine
+    character: STUDENT
+    description: "Students are asking Unibo stand in favor of the state of Palestine."
+    refusal:
+      text: "University is apolitical"
+      effects:
+        - parameter: STUDENTS
+          delta: -10
+        - parameter: PROFESSORS
+          delta: 4
+    approval:
+      text: "Free Gaza!"
+      effects:
+        - parameter: STUDENTS
+          delta: 12
+        - parameter: REPUTATION
+          delta: 8
+
+  - id: stu_garden_state #10
+    character: STUDENT
+    description: "The raised steps in the internal garden of the campus are unusable, they should be fixed."
+    refusal:
+      text: "We haven't the resources"
+      effects:
+        - parameter: STUDENTS
+          delta: -7
+        - parameter: FINANCES
+          delta: 7
+    approval:
+      text: "You're right, we'll fix them"
+      effects:
+        - parameter: STUDENTS
+          delta: 7
+        - parameter: FINANCES
+          delta: -10
+
+  - id: stu_reduce_fees
+    character: STUDENT
+    description: "Many students can't afford to pay their tuition fees. Do you think you can lower them?"
+    refusal:
+      text: "No, I can't"
+      effects:
+        - parameter: STUDENTS
+          delta: -8
+        - parameter: REPUTATION
+          delta: -7
+    approval:
+      text: "Yes for sure"
+      effects:
+        - parameter: STUDENTS
+          delta: 10
+        - parameter: FINANCES
+          delta: -13
+
+  - id: stu_gender_bathroom
+    character: STUDENT
+    description: "The campus needs third gender bathrooms."
+    refusal:
+      text: "Men and women are enough"
+      effects:
+        - parameter: STUDENTS
+          delta: -18
+        - parameter: FINANCES
+          delta: 7
+    approval:
+      text: "Absolutely"
+      effects:
+        - parameter: STUDENTS
+          delta: 10
+        - parameter: REPUTATION
+          delta: 11
+
+  - id: stu_surprise_exams
+    character: STUDENT
+    description: "Some departments want to introduce surprise oral exams."
+    refusal:
+      text: "Students need preparation time"
+      effects:
+        - parameter: STUDENTS
+          delta: 9
+        - parameter: PROFESSORS
+          delta: -4
+    approval:
+      text: "Allow surprise exams"
+      effects:
+        - parameter: STUDENTS
+          delta: -10
+        - parameter: REPUTATION
+          delta: -5
+
+  - id: stu_professor_age
+    character: STUDENT
+    description: "Professors over 60 should no longer teach."
+    refusal:
+      text: "Older means expert"
+      effects:
+        - parameter: STUDENTS
+          delta: -8
+        - parameter: PROFESSORS
+          delta: 10
+    approval:
+      text: "Let's lower the average age"
+      effects:
+        - parameter: STUDENTS
+          delta: 8
+        - parameter: PROFESSORS
+          delta: -12
+
+  - id: stu_remove_physics #15
+    character: STUDENT
+    description: "Computer science students want to eliminate physics from their curriculum."
+    refusal:
+      text: "They need it, they will be engineers"
+      effects:
+        - parameter: STUDENTS
+          delta: -7
+        - parameter: REPUTATION
+          delta: 9
+    approval:
+      text: "Physics is useless with computer"
+      effects:
+        - parameter: STUDENTS
+          delta: 9
+        - parameter: PROFESSORS
+          delta: -6
+
+  - id: stu_dormitory_rules
+    character: STUDENT
+    description: "New dormitory regulations would impose stricter curfews."
+    refusal:
+      text: "Students deserve freedom"
+      effects:
+        - parameter: STUDENTS
+          delta: 7
+        - parameter: REPUTATION
+          delta: -2
+    approval:
+      text: "Enforce stricter rules"
+      effects:
+        - parameter: STUDENTS
+          delta: -8
+        - parameter: REPUTATION
+          delta: 3
+
+  - id: stu_course_cuts
+    character: STUDENT
+    description: "Several elective courses may be removed to reduce costs."
+    refusal:
+      text: "Keep the electives"
+      effects:
+        - parameter: STUDENTS
+          delta: 10
+        - parameter: FINANCES
+          delta: -11
+    approval:
+      text: "Cut the courses"
+      effects:
+        - parameter: STUDENTS
+          delta: -11
+        - parameter: FINANCES
+          delta: 7
+
+  - id: stu_multipurpose_small #18
+    character: STUDENT
+    description: "The multipurpose room is too small: when you study you can't breathe."
+    refusal:
+      text: "The students must study at home"
+      effects:
+        - parameter: STUDENTS
+          delta: -10
+        - parameter: FINANCES
+          delta: 5
+    approval:
+      text: "Ok, let's make it bigger"
+      effects:
+        - parameter: STUDENTS
+          delta: 10
+        - parameter: FINANCES
+          delta: -9
+
+  - id: stu_security_checks #folllow up
+    character: STUDENT
+    description: "Security checks at campus entrances are slowing down student access."
+    refusal:
+      text: "Reduce the controls"
+      effects:
+        - parameter: STUDENTS
+          delta: 6
+        - parameter: REPUTATION
           delta: -3
+    approval:
+      text: "Maintain strict checks"
+      effects:
+        - parameter: STUDENTS
+          delta: -7
+        - parameter: REPUTATION
+          delta: 5
 
   - id: mum_campus_safety
     character: MUM
