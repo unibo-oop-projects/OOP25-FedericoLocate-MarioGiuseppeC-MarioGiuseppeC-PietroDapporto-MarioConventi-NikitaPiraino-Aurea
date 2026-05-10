@@ -433,7 +433,7 @@ cards:
 
   - id: stu_oop_useless
     character: STUDENT
-    description: "The 2nd year students say that OOP course is useless."
+    description: "The second-year students say that OOP course is useless."
     refusal:
       text: "They don't understand anything"
       effects:
@@ -646,6 +646,330 @@ cards:
           delta: 10
         - parameter: FINANCES
           delta: -9
+
+  - id: mum_pasta_sunday #mum 1
+    character: MUM
+    description: "Several mothers are complaining that the cafeteria removed pasta on the evening menù."
+    refusal:
+      text: "The menu stays modern"
+      effects:
+        - parameter: REPUTATION
+          delta: -9
+        - parameter: FINANCES
+          delta: 4
+    approval:
+      text: "Bring pasta back"
+      effects:
+        - parameter: REPUTATION
+          delta: 10
+        - parameter: FINANCES
+          delta: -3
+
+  - id: mum_scarf_weather
+    character: MUM
+    description: "Students are getting sick because they don't wear scarves."
+    refusal:
+      text: "That's not our responsibility"
+      effects:
+        - parameter: REPUTATION
+          delta: -6
+        - parameter: STUDENTS
+          delta: -5
+    approval:
+      text: "Distribute winter scarves"
+      effects:
+        - parameter: REPUTATION
+          delta: 7
+        - parameter: FINANCES
+          delta: -12
+
+  - id: mum_coffee_quality
+    character: MUM
+    description: "Parents are outraged by the terrible espresso served on campus."
+    refusal:
+      text: "Coffee is coffee"
+      effects:
+        - parameter: REPUTATION
+          delta: -11
+        - parameter: STUDENTS
+          delta: -5
+    approval:
+      text: "Upgrade the coffee machines"
+      effects:
+        - parameter: REPUTATION
+          delta: 10
+        - parameter: FINANCES
+          delta: -7
+
+  - id: mum_family_openday
+    character: MUM
+    description: "A group of mothers wants monthly family visits to inspect dormitories."
+    refusal:
+      text: "Campus stays private"
+      effects:
+        - parameter: REPUTATION
+          delta: -7
+        - parameter: STUDENTS
+          delta: 7
+    approval:
+      text: "Organize family visits"
+      effects:
+        - parameter: REPUTATION
+          delta: 8
+        - parameter: STUDENTS
+          delta: -6
+
+  - id: mum_elite_professors #5
+    character: MUM
+    description: "A group of ambitious parents wants internationally recognized professors hired."
+    refusal:
+      text: "Current faculty is enough"
+      effects:
+        - parameter: REPUTATION
+          delta: -9
+        - parameter: PROFESSORS
+          delta: 8
+    approval:
+      text: "Recruit prestigious academics"
+      effects:
+        - parameter: REPUTATION
+          delta: 10
+        - parameter: FINANCES
+          delta: -10
+
+  - id: mum_grandma_recipe
+    character: MUM
+    description: "Would you guarantee 24 credits for my son in exchange for a generous compensation?."
+    refusal:
+      text: "I am not corruptible"
+      effects:
+        - parameter: REPUTATION
+          delta: 10
+        - parameter: STUDENTS
+          delta: -4
+    approval:
+      text: "Yes, but no one will have to know."
+      effects:
+        - parameter: REPUTATION
+          delta: -20
+        - parameter: PROFESSORS
+          delta: -15
+
+  - id: mum_video_calls
+    character: MUM
+    description: "Parents request mandatory weekly video calls for first-year students."
+    refusal:
+      text: "Students need independence"
+      effects:
+        - parameter: REPUTATION
+          delta: -4
+        - parameter: STUDENTS
+          delta: 5
+    approval:
+      text: "Encourage family calls"
+      effects:
+        - parameter: REPUTATION
+          delta: 8
+        - parameter: STUDENTS
+          delta: -9
+
+  - id: mum_master_placement
+    character: MUM
+    description: "Rival universities have better graduate placement statistics. What will you do?."
+    refusal:
+      text: "Nothing, results will improve naturally"
+      effects:
+        - parameter: REPUTATION
+          delta: -12
+        - parameter: PROFESSORS
+          delta: 4
+    approval:
+      text: "I'll Invest in career services"
+      effects:
+        - parameter: REPUTATION
+          delta: 12
+        - parameter: FINANCES
+          delta: -10
+
+  - id: mum_lovestory_events
+    character: MUM
+    description: "The university should organize events to encourage love stories among students."
+    refusal:
+      text: "It's not our job"
+      effects:
+        - parameter: REPUTATION
+          delta: -6
+        - parameter: STUDENTS
+          delta: -7
+    approval:
+      text: "Good idea!"
+      effects:
+        - parameter: REPUTATION
+          delta: 8
+        - parameter: STUDENTS
+          delta: 10
+
+  - id: mum_exam_blessing #10
+    character: MUM
+    description: "A group of parents wants a priest to bless students before exams."
+    refusal:
+      text: "Are you serious?"
+      effects:
+        - parameter: REPUTATION
+          delta: -5
+        - parameter: FINANCES
+          delta: 5
+    approval:
+      text: "Organize the blessing"
+      effects:
+        - parameter: REPUTATION
+          delta: 7
+        - parameter: STUDENTS
+          delta: 5
+
+  - id: mum_security_attacks
+    character: MUM
+    description: "Does the university have security systems to prevent attacks?."
+    refusal:
+      text: "No, they won't happen"
+      effects:
+        - parameter: REPUTATION
+          delta: -8
+        - parameter: STUDENTS
+          delta: -7
+    approval:
+      text: "Not yet but we are getting ready"
+      effects:
+        - parameter: REPUTATION
+          delta: 12
+        - parameter: FINANCES
+          delta: -10
+
+  - id: mum_legal_coverage
+    character: MUM
+    description: "Will my child have legal coverage if he or she is sued?."
+    refusal:
+      text: "We are not responsibile for what he does"
+      effects:
+        - parameter: REPUTATION
+          delta: -9
+        - parameter: STUDENTS
+          delta: -7
+    approval:
+      text: "We have several lawyer"
+      effects:
+        - parameter: REPUTATION
+          delta: 11
+        - parameter: FINANCES
+          delta: -8
+
+  - id: mum_christams_presents
+    character: MUM
+    description: "with all the money we pay, you should give Christmas presents to our children."
+    refusal:
+      text: "We don't have all this money"
+      effects:
+        - parameter: REPUTATION
+          delta: -7
+        - parameter: STUDENTS
+          delta: -6
+    approval:
+      text: "Christmas presents for everyone"
+      effects:
+        - parameter: REPUTATION
+          delta: 9
+        - parameter: FINANCES
+          delta: -20
+
+  - id: mum_java_professor
+    character: MUM
+    description: "I heard that the professor who teaches Java is not very renowned."
+    refusal:
+      text: "Our professors are great"
+      effects:
+        - parameter: REPUTATION
+          delta: -9
+        - parameter: 
+          delta: -5
+    approval:
+      text: "I will replace him"
+      effects:
+        - parameter: REPUTATION
+          delta: 10
+        - parameter: PROFESSORS
+          delta: -15
+
+  - id: mum_phone_addiction #15
+    character: MUM
+    description: "Parents claim students spend too much time on their phones during lectures."
+    refusal:
+      text: "Technology is normal"
+      effects:
+        - parameter: REPUTATION
+          delta: 8
+        - parameter: PROFESSORS
+          delta: -6
+    approval:
+      text: "Limit phone usage"
+      effects:
+        - parameter: REPUTATION
+          delta: -6
+        - parameter: STUDENTS
+          delta: -15
+
+  - id: mum_international_exchages
+    character: MUM
+    description: "Do you support international student exchanges?"
+    refusal:
+      text: "Our country is enough"
+      effects:
+        - parameter: REPUTATION
+          delta: -10
+        - parameter: STUDENTS
+          delta: -10
+    approval:
+      text: "Of course"
+      effects:
+        - parameter: REPUTATION
+          delta: 10
+        - parameter: FINANCES
+          delta: -7
+
+  - id: mum_emergency_defibrillator
+    character: MUM
+    description: "Parents are asking for defibrillators in all the building."
+    refusal:
+      text: "It seems a bit exaggerated to me"
+      effects:
+        - parameter: REPUTATION
+          delta: -9
+        - parameter: PROFESSORS
+          delta: -8
+    approval:
+      text: "Health first"
+      effects:
+        - parameter: REPUTATION
+          delta: 15
+        - parameter: FINANCES
+          delta: -5
+
+  - id: mum_work_seminar #18
+    character: MUM
+    description: "Are there seminars on how the modern world of work operates?"
+    refusal:
+      text: "Students must inform themselves"
+      effects:
+        - parameter: REPUTATION
+          delta: -8
+        - parameter: STUDENTS
+          delta: -8
+    approval:
+      text: "We do one once a month"
+      effects:
+        - parameter: REPUTATION
+          delta: 10
+        - parameter: STUDENTS
+          delta: 7
 
   - id: stu_security_checks #folllow up
     character: STUDENT
