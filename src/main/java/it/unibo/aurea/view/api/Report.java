@@ -4,6 +4,9 @@ import java.util.Map;
 
 import it.unibo.aurea.model.api.ParameterType;
 
+/**
+ * Will create a GUI report for the player. 
+ */
 public interface Report {
     /**
      * Displays the report Over screen.
@@ -11,5 +14,5 @@ public interface Report {
      * @param semesterLabel shows the actual semester.
      * @param levels shows the values of every semester.
      */
-    void show(final String semesterLabel, final Map<ParameterType, Integer> levels);
+    void show(String semesterLabel, Map<ParameterType, Integer> levels);
 }

@@ -17,7 +17,10 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
-public class ReportImpl implements Report{
+/**
+ * implementation usable for intermatiate and final stages of the game.
+ */
+public final class ReportImpl implements Report {
     private static final int WIDTH = 400;
     private static final int HEIGHT = 360;
     private static final int SPACING = 18;
@@ -31,7 +34,6 @@ public class ReportImpl implements Report{
     private final Label subtitleLabel;
     private final GridPane recapGrid;
 
-    /**
     /**
      * Builds the report popup (not yet visible).
      */
@@ -112,6 +114,4 @@ public class ReportImpl implements Report{
             row++;
         }
     }
-
-
 }
