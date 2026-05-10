@@ -77,5 +77,28 @@ public class ReportImpl implements Report{
         throw new UnsupportedOperationException("Unimplemented method 'show'");
     }
 
+    private void populateRecap(final Map<ParameterType, Integer> levels) {
+        recapGrid.getChildren().clear(); //this is made to remove the old values without creating a new gridPane or Report.
+        if (levels == null || levels.isEmpty()) {
+            return;
+        }
+        int row = 0;
+        for (final ParameterType type : ParameterType.values()) {
+            final Integer value = levels.get(type);
+            if (value == null) {
+                continue;
+            }
+            final Label name = new Label(type.name());
+            name.getStyleClass().add("endgame-recap-name");
+
+            final Label number = new Label(String.valueOf(value));
+            number.getStyleClass().add("endgame-recap-value");
+
+            recapGrid.add(name, 0, row);
+            recapGrid.add(number, 1, row);
+            row++;
+        }
+    }
+
 
 }
