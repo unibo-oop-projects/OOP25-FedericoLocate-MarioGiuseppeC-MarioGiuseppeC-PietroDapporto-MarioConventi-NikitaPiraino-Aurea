@@ -4,6 +4,7 @@ import java.util.Map;
 
 import it.unibo.aurea.model.api.ParameterType;
 import it.unibo.aurea.view.api.Report;
+import javafx.animation.FadeTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -14,6 +15,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Duration;
 
 public class ReportImpl implements Report{
     private static final int WIDTH = 400;
@@ -72,9 +74,20 @@ public class ReportImpl implements Report{
     }
 
     @Override
-    public void show(String semesterLabel, Map<ParameterType, Integer> levels) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'show'");
+    public void show(final String semesterLabel, final Map<ParameterType, Integer> levels) {
+        stage.setTitle("Semester Report");
+        titleLabel.setText("End of " + semesterLabel);
+        subtitleLabel.setText("Here is the state of the Realm at the close of this session.");
+        populateRecap(levels);
+
+        final var root = stage.getScene().getRoot();
+        root.setOpacity(0);
+        stage.show();
+        final FadeTransition fade = new FadeTransition(Duration.millis(FADE_MILLIS), root);
+        fade.setFromValue(0);
+        fade.setToValue(1.0);
+        fade.play();
+        stage.showAndWait();
     }
 
     private void populateRecap(final Map<ParameterType, Integer> levels) {
