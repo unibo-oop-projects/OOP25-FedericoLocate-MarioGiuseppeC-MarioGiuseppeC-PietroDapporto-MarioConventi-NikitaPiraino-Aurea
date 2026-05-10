@@ -4,8 +4,72 @@ import java.util.Map;
 
 import it.unibo.aurea.model.api.ParameterType;
 import it.unibo.aurea.view.api.Report;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 public class ReportImpl implements Report{
+    private static final int WIDTH = 400;
+    private static final int HEIGHT = 360;
+    private static final int SPACING = 18;
+    private static final int RECAP_HGAP = 60;
+    private static final int RECAP_VGAP = 8;
+    private static final int PADDING = 24;
+    private static final double FADE_MILLIS = 900;
+
+    private final Stage stage;
+    private final Label titleLabel;
+    private final Label subtitleLabel;
+    private final GridPane recapGrid;
+
+    /**
+    /**
+     * Builds the report popup (not yet visible).
+     */
+    public ReportImpl() {
+        this.stage = new Stage();
+        stage.initStyle(StageStyle.UTILITY);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setResizable(false);
+
+        this.titleLabel = new Label();
+        this.titleLabel.getStyleClass().add("endgame-title");
+        this.titleLabel.setWrapText(true);
+
+        this.subtitleLabel = new Label();
+        this.subtitleLabel.getStyleClass().add("endgame-subtitle");
+        this.subtitleLabel.setWrapText(true);
+
+        this.recapGrid = new GridPane();
+        this.recapGrid.setAlignment(Pos.CENTER);
+        this.recapGrid.setHgap(RECAP_HGAP);
+        this.recapGrid.setVgap(RECAP_VGAP);
+        this.recapGrid.getStyleClass().add("endgame-recap");
+
+        final Button continueBtn = new Button("Continue");
+        continueBtn.getStyleClass().add("counsellor-dismiss");
+        continueBtn.setOnAction(e -> stage.close());
+
+        final VBox content = new VBox(SPACING);
+        content.setAlignment(Pos.CENTER);
+        content.setPadding(new Insets(PADDING));
+        content.getStyleClass().add("counsellor-content");
+        content.getChildren().addAll(titleLabel, subtitleLabel, recapGrid, continueBtn);
+
+        final Scene scene = new Scene(content, WIDTH, HEIGHT);
+        final var stylesheet = Report.class.getResource("/styles.css");
+        if (stylesheet != null) {
+            scene.getStylesheets().add(stylesheet.toExternalForm());
+        }
+        stage.setScene(scene);
+    }
 
     @Override
     public void show(String semesterLabel, Map<ParameterType, Integer> levels) {
