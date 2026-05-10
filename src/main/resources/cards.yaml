@@ -158,7 +158,7 @@ cards:
       effects:
         - parameter: PROFESSORS
           delta: 11
-        - parameter: PRESTIGE
+        - parameter: REPUTATION
           delta: 5
 
   - id: prof_introduce_kotlin #10
@@ -284,7 +284,7 @@ cards:
       effects:
         - parameter: PROFESSORS
           delta: 6
-        - parameter: STUDENT
+        - parameter: STUDENTS
           delta: -10
 
   - id: prof_river_proximity
@@ -305,7 +305,7 @@ cards:
         - parameter: FINANCES
           delta: -20
 
-  - id: prof_apartments_cesena #18
+  - id: prof_christmas_dinner #18
     character: PROFESSOR
     description: "We would like to have a Christmas dinner with the professors of the department in the garden"
     refusal:
