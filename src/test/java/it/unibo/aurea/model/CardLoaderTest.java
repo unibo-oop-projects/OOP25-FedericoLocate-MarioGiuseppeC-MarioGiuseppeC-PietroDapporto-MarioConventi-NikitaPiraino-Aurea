@@ -15,24 +15,23 @@ import it.unibo.aurea.model.api.ParameterType;
 
 /** 
  * Small test to ensure loading cards from .yaml file works.
- * SONO DA RISISTEMARE E SEMPLIFICARE
  */
 class CardLoaderTest {
-    private static final int MEDIUM_CHANGE = 7;
+    private static final int MEDIUM_CHANGE = 8;
     private static final int IMPOSSIBLE_OCCURENCE = 2;
     private final Deck cards = new Deck();
 
     @Test
     void deckLoader() throws IOException {
         final Card first = cards.getAllCards().get(0);
-        assertEquals("prof_founding_research", first.getId());
+        assertEquals("prof_publish_pressure", first.getId());
         assertEquals(CharacterType.PROFESSOR, first.getCharacter());
         assertEquals(ParameterType.PROFESSORS, first.getRefusal().getEffects().getFirst().getParameter());
-        assertEquals("No, the budget is too tight", first.getRefusal().getAnswer());
+        assertEquals("No, quality matters more", first.getRefusal().getAnswer());
         final Card third = cards.getAllCards().get(2);
-        assertEquals("mum_campus_safety", third.getId());
-        assertEquals(CharacterType.MUM, third.getCharacter());
-        assertEquals(ParameterType.REPUTATION, third.getApproval().getEffects().getFirst().getParameter());
+        assertEquals("prof_cancel_hours", third.getId());
+        assertEquals(CharacterType.PROFESSOR, third.getCharacter());
+        assertEquals(ParameterType.PROFESSORS, third.getApproval().getEffects().getFirst().getParameter());
         assertEquals(MEDIUM_CHANGE, third.getApproval().getEffects().getFirst().getDelta());
     }
 
@@ -49,7 +48,6 @@ class CardLoaderTest {
         }
     }
 
-    // per ora qui ma sarà da spostare quando si penserà alla view
     @Test
     void imageLoader() throws IOException {
         for (final Card c : cards.getAllCards()) {
@@ -59,11 +57,10 @@ class CardLoaderTest {
         }
     }
 
-    // anche questo forse da spostare
     @Test
     void loadFollowUps() throws IOException {
         final FollowUpImpl firstFU = cards.getAllFollowUps().getFirst();
-        assertEquals("prof_founding_research", firstFU.getParentId());
+        assertEquals("prof_apartments_cesena", firstFU.getParentId());
         assertEquals(OutcomeType.APPROVAL, firstFU.getTrigger()); 
     }
 }
