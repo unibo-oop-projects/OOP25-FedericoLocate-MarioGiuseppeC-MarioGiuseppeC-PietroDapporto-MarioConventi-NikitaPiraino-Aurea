@@ -101,7 +101,7 @@ public final class GameViewJavaFXImpl implements GameView {
     private Label timeLabel;
     private Label playerLabel;
     private EndgameOverlay endgameOverlay;
-    private Report semesterReport;
+    private ReportImpl semesterReport;
     private final Runnable onRestart;
 
     /**

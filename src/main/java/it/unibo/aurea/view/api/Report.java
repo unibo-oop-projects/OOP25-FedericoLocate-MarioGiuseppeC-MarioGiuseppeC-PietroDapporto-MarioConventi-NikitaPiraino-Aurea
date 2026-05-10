@@ -15,4 +15,9 @@ public interface Report {
      * @param levels shows the values of every semester.
      */
     void show(String semesterLabel, Map<ParameterType, Integer> levels);
+
+    /**
+     * Closes the report and continues the game. This method is made to don't receive the functional interface from PMD MAIN
+     */
+    void close();
 }

@@ -59,7 +59,7 @@ public final class ReportImpl implements Report {
 
         final Button continueBtn = new Button("Continue");
         continueBtn.getStyleClass().add("counsellor-dismiss");
-        continueBtn.setOnAction(e -> stage.close());
+        continueBtn.setOnAction(e -> close());
 
         final VBox content = new VBox(SPACING);
         content.setAlignment(Pos.CENTER);
@@ -113,5 +113,10 @@ public final class ReportImpl implements Report {
             recapGrid.add(number, 1, row);
             row++;
         }
+    }
+
+    @Override
+    public void close() {
+        stage.close();
     }
 }
