@@ -342,7 +342,7 @@ cards:
           delta: 12
 
   - id: stud_psychology_parking
-    character: PROFESSOR
+    character: STUDENT
     description: "Let's block the new psychology department otherwise there won't be enough parking for everyone."
     refusal:
       text: "It's too late"
