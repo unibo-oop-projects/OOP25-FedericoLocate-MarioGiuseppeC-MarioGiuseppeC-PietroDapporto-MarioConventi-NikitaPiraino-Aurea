@@ -9,7 +9,7 @@ import it.unibo.aurea.model.api.GameConfig;
 public final class GameConfigImpl implements GameConfig {
     private static final int STANDARD_CARDS_PER_SEMESTER = 6;
     private static final int STANDARD_SEMESTERS_PER_GAME = 6;
-    private static final int SINGLE_SEMESTER = 1;
+    private static final int MINIMAL_NUMBER_SEMESTER = 2;
     private static final int MINIMAL_NUMBER_CARDS = 2;
     private final int semesters;
     private final int cardsPerSemester;
@@ -40,6 +40,6 @@ public final class GameConfigImpl implements GameConfig {
      * @return a test configuration, so only 1 semester and 2 choices. It's made to test the end of the game situation.
      */
     public static GameConfig createShort() {
-        return new GameConfigImpl(MINIMAL_NUMBER_CARDS, SINGLE_SEMESTER);
+        return new GameConfigImpl(MINIMAL_NUMBER_CARDS, MINIMAL_NUMBER_SEMESTER);
     }
 }
