@@ -1245,7 +1245,7 @@ cards:
         - parameter: PROFESSORS
           delta: 5
 
-  - id: bus_unicredit_career_center #15
+  - id: bus_technogym_offer #15
     character: BUSINESSMAN
     description: "Technogym is offering cash in exchange for our top 20 graduates."
     refusal:
@@ -1840,7 +1840,7 @@ cards:
         - parameter: REPUTATION
           delta: 8
 
-  - id: bus_phone_control #bus child 10
+  - id: bus_phone_control #mum child 10
     character: BUSINESSMAN
     description: "We could use a software to monitor students' phone usage during lectures, like parental control for children."
     refusal:
@@ -1856,4 +1856,184 @@ cards:
         - parameter: REPUTATION
           delta: -20
         - parameter: STUDENTS
+          delta: -20
+
+  - id: prof_aws_concern #bus child 1
+    character: PROFESSOR
+    description: "The new AWS Cloud curriculum looks more like a corporate certification."
+    refusal:
+      text: "Keep the AWS format"
+      effects:
+        - parameter: PROFESSORS
+          delta: -10
+        - parameter: FINANCES
+          delta: 10
+    approval:
+      text: "Rebalance the course"
+      effects:
+        - parameter: PROFESSORS
+          delta: 8
+        - parameter: STUDENTS
+          delta: -7
+
+  - id: stu_cloud_balance
+    character: STUDENT
+    description: "Add also Microsoft Azure and Google Cloud too, because we do not want to become AWS-dependent."
+    refusal:
+      text: "AWS is enough"
+      effects:
+        - parameter: STUDENTS
+          delta: -12
+        - parameter: FINANCES
+          delta: 7
+    approval:
+      text: "Add other platforms"
+      effects:
+        - parameter: STUDENTS
+          delta: 9
+        - parameter: REPUTATION
+          delta: -10
+
+  - id: stu_anti_militarization
+    character: STUDENT
+    description: "The agreement with Leonardo si public, some students organize a protest against the militarization of the campus."
+    refusal:
+      text: "Ignore the protest"
+      effects:
+        - parameter: STUDENTS
+          delta: -17
+        - parameter: REPUTATION
+          delta: -15
+    approval:
+      text: "Suspend the agreement"
+      effects:
+        - parameter: STUDENTS
+          delta: 9
+        - parameter: FINANCES
+          delta: -9
+
+  - id: mum_weapons_panic
+    character: MUM
+    description: "What are you doing? My son is studying or going to the front."
+    refusal:
+      text: "Sorry, I made a mistake"
+      effects:
+        - parameter: REPUTATION
+          delta: 6
+        - parameter: STUDENTS
+          delta: 5
+    approval:
+      text: "Hard times call for strong men"
+      effects:
+        - parameter: REPUTATION
+          delta: -15
+        - parameter: STUDENTS
+          delta: -20
+
+  - id: stu_elite_exchange #5
+    character: STUDENT
+    description: "The new alliance looks accessible only to those who can afford very high tuition fees."
+    refusal:
+      text: "Prestige has a price"
+      effects:
+        - parameter: STUDENTS
+          delta: -15
+        - parameter: REPUTATION
+          delta: -16
+    approval:
+      text: "Create scholarships"
+      effects:
+        - parameter: STUDENTS
+          delta: 8
+        - parameter: FINANCES
+          delta: -14
+
+  - id: mum_erasmus_complaint
+    character: MUM
+    description: "Some ambitious mothers complain that the neighbor's son studies abroad while their children are still stuck in Cesena."
+    refusal:
+      text: "Cesena is enough"
+      effects:
+        - parameter: REPUTATION
+          delta: -12
+        - parameter: STUDENTS
+          delta: -4
+    approval:
+      text: "I will find alternatives"
+      effects:
+        - parameter: REPUTATION
+          delta: 6
+        - parameter: FINANCES
+          delta: -10
+
+  - id: bus_renovation_overruns
+    character: BUSINESSMAN
+    description: "After buying the old buildings, unexpected renovation costs emerge."
+    refusal:
+      text: "Stop the works"
+      effects:
+        - parameter: FINANCES
+          delta: 5
+        - parameter: STUDENTS
+          delta: -12
+    approval:
+      text: "Pay the extra costs"
+      effects:
+        - parameter: STUDENTS
+          delta: 9
+        - parameter: FINANCES
+          delta: -18
+
+  - id: stu_empty_dorms
+    character: STUDENT
+    description: "Go to hell! The promised dormitories remain closed and unusable after the renovation works were stopped."
+    refusal:
+      text: "They must wait"
+      effects:
+        - parameter: STUDENTS
+          delta: -19
+        - parameter: REPUTATION
+          delta: -12
+    approval:
+      text: "Restart the works"
+      effects:
+        - parameter: STUDENTS
+          delta: 8
+        - parameter: FINANCES
+          delta: -15
+
+  - id: stu_sold_tocompanies
+    character: STUDENT
+    description: "We discover the Technogym agreement. You used us as merchandise."
+    refusal:
+      text: "It is just placement"
+      effects:
+        - parameter: STUDENTS
+          delta: -17
+        - parameter: REPUTATION
+          delta: -8
+    approval:
+      text: "Cancel the deal"
+      effects:
+        - parameter: STUDENTS
+          delta: 13
+        - parameter: FINANCES
+          delta: -12
+
+  - id: bus_graduate_auction #bus child 10
+    character: BUSINESSMAN
+    description: "After the Technogym deal, another company asks to buy the best students before graduation."
+    refusal:
+      text: "Enough selling students"
+      effects:
+        - parameter: REPUTATION
+          delta: 7
+        - parameter: FINANCES
+          delta: -13
+    approval:
+      text: "Open the auction"
+      effects:
+        - parameter: FINANCES
+          delta: 19
+        - parameter: REPUTATION
           delta: -20

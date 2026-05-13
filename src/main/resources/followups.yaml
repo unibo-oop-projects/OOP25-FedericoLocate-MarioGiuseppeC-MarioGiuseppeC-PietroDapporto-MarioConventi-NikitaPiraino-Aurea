@@ -149,3 +149,53 @@ followups:
     childId: bus_phone_control
     trigger: APPROVAL
     delayTurn: 1
+
+  - parentId: bus_aws_cloud #bus 1
+    childId: prof_aws_concern
+    trigger: APPROVAL
+    delayTurn: 2
+
+  - parentId: prof_aws_concern
+    childId: stu_cloud_balance
+    trigger: REFUSAL
+    delayTurn: 0
+
+  - parentId: bus_leonardo_weapons
+    childId: stu_anti_militarization
+    trigger: APPROVAL
+    delayTurn: 2
+
+  - parentId: stu_anti_militarization
+    childId: mum_weapons_panic
+    trigger: REFUSAL
+    delayTurn: 0
+
+  - parentId: bus_erasmus_alliance #5
+    childId: stu_elite_exchange
+    trigger: APPROVAL
+    delayTurn: 0
+
+  - parentId: bus_erasmus_alliance
+    childId: mum_erasmus_complaint
+    trigger: REFUSAL
+    delayTurn: 2
+
+  - parentId: bus_buildings_dormitory
+    childId: bus_renovation_overruns
+    trigger: APPROVAL
+    delayTurn: 2
+
+  - parentId: bus_renovation_overruns
+    childId: stu_empty_dorms
+    trigger: REFUSAL
+    delayTurn: 0
+
+  - parentId: bus_technogym_offer
+    childId: stu_sold_tocompanies
+    trigger: APPROVAL
+    delayTurn: 2
+
+  - parentId: stu_sold_tocompanies #bus 10
+    childId: bus_graduate_auction
+    trigger: REFUSAL
+    delayTurn: 1
