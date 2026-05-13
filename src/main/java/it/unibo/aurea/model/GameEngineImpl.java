@@ -1,6 +1,7 @@
 package it.unibo.aurea.model;
 
 import it.unibo.aurea.model.api.Card;
+import it.unibo.aurea.model.api.Difficulty;
 import it.unibo.aurea.model.api.Effect;
 import it.unibo.aurea.model.api.FollowUp;
 import it.unibo.aurea.model.api.GameClock;
@@ -21,8 +22,15 @@ import java.util.Random;
 public final class GameEngineImpl implements GameEngine {
 
     private static final double DEFAULT_WEIGHT = 10.0;
-    private static final double WEIGHT_DIVISOR = 25.0;
     private static final int NEUTRAL_DISTANCE = 50;
+    // Constants for difficulty balancing (avoids Checkstyle magic numbers)
+    private static final double EASY_WEIGHT_DIVISOR = 25.0;
+    private static final double NORMAL_WEIGHT_DIVISOR = 50.0;
+    private static final double HARD_WEIGHT_DIVISOR = 500.0;
+    private static final int NORMAL_OFFSET = 10;
+    private static final int HARD_LOW_BOUND = 20;
+    private static final int HARD_HIGH_BOUND = 70;
+    private static final int HARD_RANGE = 11; // Generates values from 0 to 10, to create ranges (20-30) and (70-80)
 
     private final Deck deck;
     private final GameConfig config;
@@ -31,12 +39,9 @@ public final class GameEngineImpl implements GameEngine {
     private final List<ActiveFollowUp> eventQueue = new ArrayList<>();
     private Card currentCardToPlay;
 
-    private final List<Parameter> parameters = List.of(
-        new ParameterImpl(ParameterType.FINANCES),
-        new ParameterImpl(ParameterType.STUDENTS),
-        new ParameterImpl(ParameterType.PROFESSORS),
-        new ParameterImpl(ParameterType.REPUTATION)
-    );
+    // Variables depending on the difficulty
+    private final double weightDivisor;
+    private final List<Parameter> parameters;
 
     /**
      * @param config the configuration
@@ -47,7 +52,55 @@ public final class GameEngineImpl implements GameEngine {
         this.gameClock = new GameClockImpl(config);
         this.deck = Objects.requireNonNull(deck, "Deck cannot be null");
         this.randomGenerator = new Random();
+
+        // 1. Read the difficulty
+        final Difficulty difficulty = config.getDifficulty();
+
+        // 2. Set up the balancing levers based on the difficulty
+        if (difficulty == Difficulty.HARD) {
+            this.weightDivisor = HARD_WEIGHT_DIVISOR;
+            this.parameters = initHardParameters();
+        } else if (difficulty == Difficulty.NORMAL) {
+            this.weightDivisor = NORMAL_WEIGHT_DIVISOR;
+            this.parameters = initParameters(NEUTRAL_DISTANCE, NORMAL_OFFSET);
+        } else {
+            // EASY as default
+            this.weightDivisor = EASY_WEIGHT_DIVISOR;
+            this.parameters = initParameters(NEUTRAL_DISTANCE, 0);
+        }
+
         this.currentCardToPlay = extractNextCard();
+    }
+
+    private List<Parameter> initParameters(final int base, final int offset) {
+        return List.of(
+            new ParameterImpl(ParameterType.FINANCES, randomIn(base, offset)),
+            new ParameterImpl(ParameterType.STUDENTS, randomIn(base, offset)),
+            new ParameterImpl(ParameterType.PROFESSORS, randomIn(base, offset)),
+            new ParameterImpl(ParameterType.REPUTATION, randomIn(base, offset))
+        );
+    }
+
+    private List<Parameter> initHardParameters() {
+        return List.of(
+            new ParameterImpl(ParameterType.FINANCES, randomCritical()),
+            new ParameterImpl(ParameterType.STUDENTS, randomCritical()),
+            new ParameterImpl(ParameterType.PROFESSORS, randomCritical()),
+            new ParameterImpl(ParameterType.REPUTATION, randomCritical())
+        );
+    }
+
+    private int randomIn(final int base, final int offset) {
+        if (offset == 0) {
+            return base;
+        }
+        return base + randomGenerator.nextInt(offset * 2 + 1) - offset;
+    }
+
+    private int randomCritical() {
+        return randomGenerator.nextBoolean()
+            ? (randomGenerator.nextInt(HARD_RANGE) + HARD_LOW_BOUND)
+            : (randomGenerator.nextInt(HARD_RANGE) + HARD_HIGH_BOUND);
     }
 
     @Override
@@ -110,7 +163,8 @@ public final class GameEngineImpl implements GameEngine {
                 playableCards.add(c);
                 double weight = DEFAULT_WEIGHT;
                 if (cardHelpsParameter(c, criticalParam)) {
-                    weight *= 1.0 + (NEUTRAL_DISTANCE - minDistance) / WEIGHT_DIVISOR;
+                    // THE DYNAMIC DIFFICULTY DIVISOR IS USED HERE
+                    weight *= 1.0 + (NEUTRAL_DISTANCE - minDistance) / this.weightDivisor;
                 }
                 weights.add(weight);
                 totalWeight += weight;
@@ -194,7 +248,7 @@ public final class GameEngineImpl implements GameEngine {
 
     @Override
     public List<Parameter> getParameters() {
-        return this.parameters;
+        return List.copyOf(this.parameters);
     }
 
     @Override

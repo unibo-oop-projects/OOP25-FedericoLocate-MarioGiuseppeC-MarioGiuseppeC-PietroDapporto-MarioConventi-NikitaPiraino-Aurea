@@ -1,11 +1,10 @@
 package it.unibo.aurea.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import it.unibo.aurea.model.api.Parameter;
 import it.unibo.aurea.model.api.ParameterObserver;
 import it.unibo.aurea.model.api.ParameterType;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * {@inheritDoc}.
@@ -25,14 +24,26 @@ public final class ParameterImpl implements Parameter {
     private boolean alive;
 
     /**
-     * Constructor of a specific parameter.
+     * Constructor of a specific parameter with the default starting level (50).
      *
      * @param name the name of a {@code ParameterType}
      */
     public ParameterImpl(final ParameterType name) {
+        this(name, START_LEVEL);
+    }
+
+    /**
+     * Constructor of a specific parameter with a custom initial level.
+     * This is crucial for different difficulty settings.
+     *
+     * @param name the name of a {@code ParameterType}
+     * @param initialLevel the starting level of the parameter
+     */
+    public ParameterImpl(final ParameterType name, final int initialLevel) {
         this.name = name;
-        this.level = START_LEVEL;
-        this.alive = true;
+        this.level = initialLevel;
+        // The parameter is alive only if strictly between MIN and MAX
+        this.alive = initialLevel > MIN_LEVEL && initialLevel < MAX_LEVEL;
         this.observers = new ArrayList<>();
     }
 
@@ -95,5 +106,4 @@ public final class ParameterImpl implements Parameter {
             observer.onParameterChanged(this.name, this.level);
         }
     }
-
 }

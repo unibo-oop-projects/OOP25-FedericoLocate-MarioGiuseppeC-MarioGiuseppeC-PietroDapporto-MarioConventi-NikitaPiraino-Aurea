@@ -34,4 +34,11 @@ public final class GameConfigImpl implements GameConfig {
         return new GameConfigImpl(STANDARD_CARDS_PER_SEMESTER, STANDARD_SEMESTERS_PER_GAME);
     }
 
+    @Override
+    public it.unibo.aurea.model.api.Difficulty getDifficulty() {
+        // Easy by Default
+        return it.unibo.aurea.model.api.Difficulty.EASY; 
+    }
+
 }
+
