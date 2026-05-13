@@ -1,6 +1,6 @@
 #prima riga da sistemare
 followups:
-  - parentId: prof_apartments_cesena
+  - parentId: prof_apartments_cesena #prof 1
     childId: bus_realestate_offer
     trigger: APPROVAL
     delayTurn: 1
@@ -20,7 +20,7 @@ followups:
     trigger: REFUSAL
     delayTurn: 1
 
-  - parentId: prof_increase_salaries
+  - parentId: prof_increase_salaries #prof 5
     childId: prof_week_strike
     trigger: REFUSAL
     delayTurn: 1
@@ -45,7 +45,57 @@ followups:
     trigger: APPROVAL
     delayTurn: 1
 
-  - parentId: stu_christmas_party
+  - parentId: stu_christmas_party #prof 10
     childId: mum_professor_dinner
     trigger: REFUSAL
     delayTurn: 1
+
+  - parentId: stud_record_lectures #stu 1
+    childId: prof_recording_backlash
+    trigger: APPROVAL
+    delayTurn: 1
+
+  - parentId: stud_record_lectures
+    childId: mum_commuter_recordings
+    trigger: REFUSAL
+    delayTurn: 2
+
+  - parentId: stu_support_palestine
+    childId: stu_palestine_sitin
+    trigger: REFUSAL
+    delayTurn: 1
+
+  - parentId: stu_support_palestine
+    childId: bus_partner_concerns
+    trigger: APPROVAL
+    delayTurn: 2
+
+  - parentId: stu_oop_useless #5
+    childId: prof_oop_resignation
+    trigger: APPROVAL
+    delayTurn: 0
+
+  - parentId: prof_oop_resignation
+    childId: stu_oop_defense
+    trigger: REFUSAL
+    delayTurn: 0
+
+  - parentId: stu_cafeteria_prices
+    childId: bus_cafeteria_sponsor
+    trigger: APPROVAL
+    delayTurn: 1
+
+  - parentId: stu_cafeteria_prices
+    childId: mum_lunchbox_revolt
+    trigger: REFUSAL
+    delayTurn: 2
+
+  - parentId: stu_gender_bathroom
+    childId: bus_bathroom_renovation
+    trigger: APPROVAL
+    delayTurn: 1
+
+  - parentId: stu_gender_bathroom #10
+    childId: stu_social_campaign
+    trigger: REFUSAL
+    delayTurn: 0
