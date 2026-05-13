@@ -27,10 +27,6 @@ public final class GameEngineImpl implements GameEngine {
     private static final double EASY_WEIGHT_DIVISOR = 25.0;
     private static final double NORMAL_WEIGHT_DIVISOR = 50.0;
     private static final double HARD_WEIGHT_DIVISOR = 500.0;
-    private static final int NORMAL_OFFSET = 10;
-    private static final int HARD_LOW_BOUND = 20;
-    private static final int HARD_HIGH_BOUND = 70;
-    private static final int HARD_RANGE = 11; // Generates values from 0 to 10, to create ranges (20-30) and (70-80)
 
     private final Deck deck;
     private final GameConfig config;
@@ -59,48 +55,21 @@ public final class GameEngineImpl implements GameEngine {
         // 2. Set up the balancing levers based on the difficulty
         if (difficulty == Difficulty.HARD) {
             this.weightDivisor = HARD_WEIGHT_DIVISOR;
-            this.parameters = initHardParameters();
         } else if (difficulty == Difficulty.NORMAL) {
             this.weightDivisor = NORMAL_WEIGHT_DIVISOR;
-            this.parameters = initParameters(NEUTRAL_DISTANCE, NORMAL_OFFSET);
         } else {
-            // EASY as default
             this.weightDivisor = EASY_WEIGHT_DIVISOR;
-            this.parameters = initParameters(NEUTRAL_DISTANCE, 0);
         }
+
+        // 3. Parameters ALWAYS start at default (50), regardless of difficulty
+        this.parameters = List.of(
+            new ParameterImpl(ParameterType.FINANCES),
+            new ParameterImpl(ParameterType.STUDENTS),
+            new ParameterImpl(ParameterType.PROFESSORS),
+            new ParameterImpl(ParameterType.REPUTATION)
+        );
 
         this.currentCardToPlay = extractNextCard();
-    }
-
-    private List<Parameter> initParameters(final int base, final int offset) {
-        return List.of(
-            new ParameterImpl(ParameterType.FINANCES, randomIn(base, offset)),
-            new ParameterImpl(ParameterType.STUDENTS, randomIn(base, offset)),
-            new ParameterImpl(ParameterType.PROFESSORS, randomIn(base, offset)),
-            new ParameterImpl(ParameterType.REPUTATION, randomIn(base, offset))
-        );
-    }
-
-    private List<Parameter> initHardParameters() {
-        return List.of(
-            new ParameterImpl(ParameterType.FINANCES, randomCritical()),
-            new ParameterImpl(ParameterType.STUDENTS, randomCritical()),
-            new ParameterImpl(ParameterType.PROFESSORS, randomCritical()),
-            new ParameterImpl(ParameterType.REPUTATION, randomCritical())
-        );
-    }
-
-    private int randomIn(final int base, final int offset) {
-        if (offset == 0) {
-            return base;
-        }
-        return base + randomGenerator.nextInt(offset * 2 + 1) - offset;
-    }
-
-    private int randomCritical() {
-        return randomGenerator.nextBoolean()
-            ? (randomGenerator.nextInt(HARD_RANGE) + HARD_LOW_BOUND)
-            : (randomGenerator.nextInt(HARD_RANGE) + HARD_HIGH_BOUND);
     }
 
     @Override

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * {@inheritDoc}.
+ * Implementation of a game parameter.
  */
 public final class ParameterImpl implements Parameter {
 
@@ -29,21 +29,9 @@ public final class ParameterImpl implements Parameter {
      * @param name the name of a {@code ParameterType}
      */
     public ParameterImpl(final ParameterType name) {
-        this(name, START_LEVEL);
-    }
-
-    /**
-     * Constructor of a specific parameter with a custom initial level.
-     * This is crucial for different difficulty settings.
-     *
-     * @param name the name of a {@code ParameterType}
-     * @param initialLevel the starting level of the parameter
-     */
-    public ParameterImpl(final ParameterType name, final int initialLevel) {
         this.name = name;
-        this.level = initialLevel;
-        // The parameter is alive only if strictly between MIN and MAX
-        this.alive = initialLevel > MIN_LEVEL && initialLevel < MAX_LEVEL;
+        this.level = START_LEVEL;
+        this.alive = true;
         this.observers = new ArrayList<>();
     }
 
