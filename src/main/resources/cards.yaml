@@ -1480,7 +1480,7 @@ cards:
         - parameter: FINANCES
           delta: -10
 
-  - id: mum_professor_dinner
+  - id: mum_professor_dinner #prof 10
     character: MUM
     description: "Professors received a paid Christmas dinner while my child still brings a sandwich from home."
     refusal:
@@ -1498,4 +1498,182 @@ cards:
         - parameter: FINANCES
           delta: -12
 
+  - id: prof_recording_backlash #stu child 1
+    character: PROFESSOR
+    description: "Since lectures are recorded, classrooms are half empty."
+    refusal:
+      text: "Recordings are useful"
+      effects:
+        - parameter: PROFESSORS
+          delta: -8
+        - parameter: STUDENTS
+          delta: 9
+    approval:
+      text: "Limit the recordings"
+      effects:
+        - parameter: PROFESSORS
+          delta: 7
+        - parameter: STUDENTS
+          delta: -9
 
+  - id: mum_commuter_recordings
+    character: MUM
+    description: "My son is a commuter and sometimes trains are late. Without recorded lectures, how is he supposed to follow the course?"
+    refusal:
+      text: "He must organize better"
+      effects:
+        - parameter: REPUTATION
+          delta: -12
+        - parameter: STUDENTS
+          delta: -8
+    approval:
+      text: "Support commuters"
+      effects:
+        - parameter: REPUTATION
+          delta: 6
+        - parameter: FINANCES
+          delta: -5
+
+  - id: stu_palestine_sitin
+    character: STUDENT
+    description: "Students have started a permanent sit-in in the campus hall."
+    refusal:
+      text: "Remove the protest"
+      effects:
+        - parameter: STUDENTS
+          delta: -15
+        - parameter: REPUTATION
+          delta: -10
+    approval:
+      text: "Let them protest"
+      effects:
+        - parameter: STUDENTS
+          delta: 9
+        - parameter: PROFESSORS
+          delta: -12
+
+  - id: bus_partner_concerns
+    character: BUSINESSMAN
+    description: "Some private partners are asking for clarification of the university's public position."
+    refusal:
+      text: "Ignore them"
+      effects:
+        - parameter: FINANCES
+          delta: -15
+        - parameter: REPUTATION
+          delta: -8
+    approval:
+      text: "Reassure partners"
+      effects:
+        - parameter: REPUTATION
+          delta: 9
+        - parameter: STUDENTS
+          delta: -10
+
+  - id: prof_oop_resignation #stu child 5
+    character: PROFESSOR
+    description: "The OOP professor is furious: he threatens to leave the course saying that without inheritance there is no civilization."
+    refusal:
+      text: "Let him leave"
+      effects:
+        - parameter: PROFESSORS
+          delta: -20
+        - parameter: STUDENTS
+          delta: 7
+    approval:
+      text: "Defend the course"
+      effects:
+        - parameter: PROFESSORS
+          delta: 10
+        - parameter: REPUTATION
+          delta: 10
+
+  - id: stu_oop_defense
+    character: STUDENT
+    description: "Master's students are angry: they say OOP shaped their minds and should not be treated like a useless course."
+    refusal:
+      text: "OOP is outdated"
+      effects:
+        - parameter: STUDENTS
+          delta: -18
+        - parameter: PROFESSORS
+          delta: -12
+    approval:
+      text: "Respect the classics"
+      effects:
+        - parameter: STUDENTS
+          delta: 7
+        - parameter: PROFESSORS
+          delta: 4
+
+  - id: bus_cafeteria_sponsor
+    character: BUSINESSMAN
+    description: "The manager says costs are unsustainable and proposes a sponsorship deal with a food company."
+    refusal:
+      text: "No logos in the cafeteria"
+      effects:
+        - parameter: FINANCES
+          delta: -15
+        - parameter: REPUTATION
+          delta: -8
+    approval:
+      text: "Accept the sponsor"
+      effects:
+        - parameter: FINANCES
+          delta: 12
+        - parameter: REPUTATION
+          delta: 9
+
+  - id: mum_lunchbox_revolt
+    character: MUM
+    description: "Mothers are sending lunchboxes from home and accusing the university of not being able to feed their children properly."
+    refusal:
+      text: "Let them cook"
+      effects:
+        - parameter: REPUTATION
+          delta: -15
+        - parameter: STUDENTS
+          delta: -12
+    approval:
+      text: "Improve the cafeteria"
+      effects:
+        - parameter: REPUTATION
+          delta: 10
+        - parameter: FINANCES
+          delta: -10
+
+  - id: bus_bathroom_renovation
+    character: BUSINESSMAN
+    description: "A construction company offers to renovate the campus bathrooms, but the estimate is much higher than expected."
+    refusal:
+      text: "Too expensive"
+      effects:
+        - parameter: REPUTATION
+          delta: -10
+        - parameter: STUDENTS
+          delta: -16
+    approval:
+      text: "Start the renovation"
+      effects:
+        - parameter: STUDENTS
+          delta: 10
+        - parameter: FINANCES
+          delta: -15
+
+  - id: stu_social_campaign #stu child 10
+    character: STUDENT
+    description: "Students have launched a social media campaign accusing the university of being outdated and insensitive."
+    refusal:
+      text: "Ignore the campaign"
+      effects:
+        - parameter: STUDENTS
+          delta: -18
+        - parameter: REPUTATION
+          delta: -9
+    approval:
+      text: "Open a dialogue"
+      effects:
+        - parameter: STUDENTS
+          delta: 6
+        - parameter: REPUTATION
+          delta: 5
