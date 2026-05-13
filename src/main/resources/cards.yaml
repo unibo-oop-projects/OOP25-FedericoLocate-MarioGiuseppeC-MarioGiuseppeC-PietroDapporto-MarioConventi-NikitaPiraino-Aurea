@@ -1,3 +1,7 @@
+# Game cards configuration file.
+# Each card defines the character presenting the proposal, the card description,
+# and the effects produced by refusal or approval.
+# Effects modify one or more game parameters through positive or negative deltas.
 cards:
   - id: prof_publish_pressure #professor 1
     character: PROFESSOR
@@ -989,56 +993,327 @@ cards:
         - parameter: REPUTATION
           delta: 5
 
-  - id: mum_campus_safety
-    character: MUM
-    description: "Many of us are concerned about campus safety and request additional security measures. Will you invest in it?"
+  - id: bus_aws_cloud #businessman 1
+    character: BUSINESSMAN
+    description: "Amazon Web Services proposes to include a new curriculum about cloud training program called AWS Cloud."
     refusal:
-      text: "No, current measures are sufficient"
+      text: "Cloud can wait"
+      effects:
+        - parameter: FINANCES
+          delta: -5
+        - parameter: STUDENTS
+          delta: -6
+    approval:
+      text: "Activate the program"
+      effects:
+        - parameter: FINANCES
+          delta: 10
+        - parameter: STUDENTS
+          delta: 8
+
+  - id: bus_cisco_cyber_lab
+    character: BUSINESSMAN
+    description: "Cisco offers a cybersecurity lab for teachers taught by its technicians."
+    refusal:
+      text: "Our teachers already know everything"
+      effects:
+        - parameter: FINANCES
+          delta: -6
+        - parameter: PROFESSORS
+          delta: -12
+    approval:
+      text: "Open the lab"
+      effects:
+        - parameter: FINANCES
+          delta: 8
+        - parameter: PROFESSORS
+          delta: 9
+
+  - id: bus_nvidia_reseller
+    character: BUSINESSMAN
+    description: "NVIDIA offers us the opportunity to become a chip reseller in Italy."
+    refusal:
+      text: "It's not our mission"
+      effects:
+        - parameter: FINANCES
+          delta: -15
+        - parameter: REPUTATION
+          delta: 7
+    approval:
+      text: "Great proposal"
+      effects:
+        - parameter: FINANCES
+          delta: 10
+        - parameter: REPUTATION
+          delta: -18
+
+  - id: bus_polytechnic_acquisition
+    character: BUSINESSMAN
+    description: "Lately the Polytechnic of Milan has been in financial difficulty, we could propose to acquire it."
+    refusal:
+      text: "It's too expensive"
+      effects:
+        - parameter: PROFESSORS
+          delta: -7
+        - parameter: REPUTATION
+          delta: -6
+    approval:
+      text: "Milan l'è un gran Milan"
+      effects:
+        - parameter: FINANCES
+          delta: -18
+        - parameter: REPUTATION
+          delta: 20
+
+  - id: bus_pnrr_research #5
+    character: BUSINESSMAN
+    description: "The Ministry opens a PNRR opportunity for research infrastructure and data analysis."
+    refusal:
+      text: "Skip the call"
+      effects:
+        - parameter: FINANCES
+          delta: -10
+        - parameter: REPUTATION
+          delta: -10
+    approval:
+      text: "Apply for funding"
+      effects:
+        - parameter: FINANCES
+          delta: 10
+        - parameter: REPUTATION
+          delta: 6
+
+  - id: bus_erasmus_alliance
+    character: BUSINESSMAN
+    description: "A French business school proposes an Erasmus+ cooperation with super high tuition fees."
+    refusal:
+      text: "We don't create elite projects"
+      effects:
+        - parameter: FINANCES
+          delta: -5
+        - parameter: STUDENTS
+          delta: 7
+    approval:
+      text: "Build the alliance"
+      effects:
+        - parameter: FINANCES
+          delta: 11
+        - parameter: REPUTATION
+          delta: 9
+
+  - id: bus_mediolanum_system
+    character: BUSINESSMAN
+    description: "Would you agree to create the new management system for Mediolanum Bank?."
+    refusal:
+      text: "No, we are not able"
+      effects:
+        - parameter: FINANCES
+          delta: -7
+        - parameter: REPUTATION
+          delta: -9
+    approval:
+      text: "We could try"
+      effects:
+        - parameter: FINANCES
+          delta: 9
+        - parameter: REPUTATION
+          delta: 8
+
+  - id: bus_buildings_dormitory
+    character: BUSINESSMAN
+    description: "There are some old buildings in the center of Cesena. Would you like to buy them to create student housing?."
+    refusal:
+      text: "What we have is enough"
+      effects:
+        - parameter: REPUTATION
+          delta: -5
+        - parameter: STUDENTS
+          delta: -5
+    approval:
+      text: "Sure, let's by them"
+      effects:
+        - parameter: FINANCES
+          delta: -14
+        - parameter: STUDENTS
+          delta: 8
+
+  - id: bus_enel_renewable
+    character: BUSINESSMAN
+    description: "Enel proposes to install photovoltaic panels and wind turbines next to the campus to produce energy on-site."
+    refusal:
+      text: "Gas is cheaper"
+      effects:
+        - parameter: FINANCES
+          delta: 6
+        - parameter: REPUTATION
+          delta: -4
+    approval:
+      text: "Renewable energy is the future"
+      effects:
+        - parameter: FINANCES
+          delta: -7
+        - parameter: REPUTATION
+          delta: 6
+
+  - id: bus_cars_dealership #10
+    character: BUSINESSMAN
+    description: "We could provide the teachers with cars by sponsoring a dealership in the city."
+    refusal:
+      text: "I don't want to change my MINI"
+      effects:
+        - parameter: FINANCES
+          delta: -3
+        - parameter: REPUTATION
+          delta: -8
+    approval:
+      text: "Ok, I really needed a new car"
+      effects:
+        - parameter: REPUTATION
+          delta: 11
+        - parameter: PROFESSORS
+          delta: 8
+
+  - id: bus_ranking_judges
+    character: BUSINESSMAN
+    description: "Your university has lost a few positions in the world ranking, you could remedy this by inviting some judges to take a guided tour."
+    refusal:
+      text: "I don't care"
+      effects:
+        - parameter: FINANCES
+          delta: 4
+        - parameter: REPUTATION
+          delta: -10
+    approval:
+      text: "Good idea"
+      effects:
+        - parameter: FINANCES
+          delta: -5
+        - parameter: REPUTATION
+          delta: 9
+
+  - id: bus_google_microsoft
+    character: BUSINESSMAN
+    description: "Google wants to be our software partner instead of Microsoft."
+    refusal:
+      text: "Microsoft 365 is better"
+      effects:
+        - parameter: STUDENTS
+          delta: -6
+        - parameter: PROFESSORS
+          delta: 7
+    approval:
+      text: "I've always wanted to be a Googler"
+      effects:
+        - parameter: FINANCES
+          delta: -7
+        - parameter: STUDENTS
+          delta: 8
+
+  - id: bus_leonardo_weapons
+    character: BUSINESSMAN
+    description: "Given the recent wars, Leonardo offers us a set of defense weapons at a discounted price."
+    refusal:
+      text: "They are out of their minds"
+      effects:
+        - parameter: FINANCES
+          delta: 5
+        - parameter: REPUTATION
+          delta: 9
+    approval:
+      text: "It's better be safe"
+      effects:
+        - parameter: FINANCES
+          delta: -12
+        - parameter: REPUTATION
+          delta: -15
+
+  - id: bus_region_project
+    character: BUSINESSMAN
+    description: "Regione Emilia-Romagna wants to start a project for technology literacy among the over 70s."
+    refusal:
+      text: "Do not apply"
       effects:
         - parameter: REPUTATION
           delta: -7
-        - parameter: FINANCES
-          delta: 3
+        - parameter: PROFESSORS
+          delta: -9
     approval:
-      text: "Yes, student safety is a priority"
+      text: "Submit the project"
+      effects:
+        - parameter: FINANCES
+          delta: 15
+        - parameter: PROFESSORS
+          delta: 5
+
+  - id: bus_unicredit_career_center #15
+    character: BUSINESSMAN
+    description: "Technogym is offering cash in exchange for our top 20 graduates."
+    refusal:
+      text: "Students must be free"
       effects:
         - parameter: REPUTATION
-          delta: 7
+          delta: 6
+        - parameter: STUDENTS
+          delta: 10
+    approval:
+      text: "Let's take that money"
+      effects:
         - parameter: FINANCES
-          delta: -3
+          delta: 18
+        - parameter: REPUTATION
+          delta: -12
 
-  - id: businessman_partenship_project
+  - id: bus_bologna_shutdown
     character: BUSINESSMAN
-    description: "Rector, a company proposes a partnership to fund research in exchange for influence over projects. Do you accept?"
+    description: "The Bologna computer science department fears our competition and wants to shut us down."
+    refusal:
+      text: "Fuck them!"
+      effects:
+        - parameter: PROFESSORS
+          delta: 10
+        - parameter: REPUTATION
+          delta: 20
+    approval:
+      text: "I reluctantly accept"
+      effects:
+        - parameter: STUDENTS
+          delta: -20
+        - parameter: REPUTATION
+          delta: -20
+
+  - id: bus_resident_protest
+    character: BUSINESSMAN
+    description: "Residents of Cesena protest the invasion of students in the city."
+    refusal:
+      text: "They'll get over it"
+      effects:
+        - parameter: STUDENTS
+          delta: 7
+        - parameter: REPUTATION
+          delta: -9
+    approval:
+      text: "Let's pay them to stay silent"
+      effects:
+        - parameter: FINANCES
+          delta: -8
+        - parameter: REPUTATION
+          delta: 6
+
+  - id: businessman_partenship_project #18
+    character: BUSINESSMAN
+    description: "A company proposes a partnership to fund research in exchange for influence over projects. Do you accept?"
     refusal:
       text: "No, academic independence comes first"
       effects:
         - parameter: PROFESSORS
+          delta: 9
+        - parameter: REPUTATION
           delta: 7
-        - parameter: FINANCES
-          delta: -7
     approval:
       text: "Yes, funding is essential for growth"
       effects:
         - parameter: FINANCES
-          delta: 7
+          delta: 12
         - parameter: REPUTATION
-          delta: -3
+          delta: -9
 
-  - id: prof_research_launch
-    character: PROFESSOR
-    description: "Rector, the newly funded research project has started, but costs are exceeding expectations. Additional funding is required to keep it running. What should we do?"
-    refusal:
-      text: "We cannot allocate more funds"
-      effects:
-        - parameter: PROFESSORS
-          delta: -5
-        - parameter: REPUTATION
-          delta: -3
-    approval:
-      text: "Approve additional funding"
-      effects:
-        - parameter: PROFESSORS
-          delta: 4
-        - parameter: FINANCES
-          delta: -5

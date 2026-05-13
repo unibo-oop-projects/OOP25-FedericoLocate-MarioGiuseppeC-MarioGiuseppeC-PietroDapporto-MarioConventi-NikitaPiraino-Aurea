@@ -1,6 +1,6 @@
 #prima riga da sistemare
 followups:
   - parentId: prof_apartments_cesena
-    childId: prof_research_launch
+    childId: bus_resident_protest
     trigger: APPROVAL
     delayTurn: 1
