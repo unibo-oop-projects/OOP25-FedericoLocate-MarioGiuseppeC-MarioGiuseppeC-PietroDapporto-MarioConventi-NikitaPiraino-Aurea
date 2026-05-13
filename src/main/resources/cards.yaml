@@ -741,7 +741,7 @@ cards:
         - parameter: FINANCES
           delta: -10
 
-  - id: mum_grandma_recipe
+  - id: mum_credit_conpensation
     character: MUM
     description: "Would you guarantee 24 credits for my son in exchange for a generous compensation?."
     refusal:
@@ -1480,7 +1480,7 @@ cards:
         - parameter: FINANCES
           delta: -10
 
-  - id: mum_professor_dinner #prof 10
+  - id: mum_professor_dinner #prof child 10
     character: MUM
     description: "Professors received a paid Christmas dinner while my child still brings a sandwich from home."
     refusal:
@@ -1570,7 +1570,7 @@ cards:
         - parameter: STUDENTS
           delta: -10
 
-  - id: prof_oop_resignation #stu child 5
+  - id: prof_oop_resignation #child 5
     character: PROFESSOR
     description: "The OOP professor is furious: he threatens to leave the course saying that without inheritance there is no civilization."
     refusal:
@@ -1677,3 +1677,183 @@ cards:
           delta: 6
         - parameter: REPUTATION
           delta: 5
+
+  - id: prof_java_threat #mum child 1
+    character: PROFESSOR
+    description: "The Java professor threatens legal action after being judged by rumors from parents' WhatsApp groups."
+    refusal:
+      text: "Replace him"
+      effects:
+        - parameter: PROFESSORS
+          delta: -12
+        - parameter: REPUTATION
+          delta: 10
+    approval:
+      text: "Defend his role"
+      effects:
+        - parameter: PROFESSORS
+          delta: 13
+        - parameter: REPUTATION
+          delta: -8
+
+  - id: stu_java_debate
+    character: STUDENT
+    description: "Some students want to remove Java course completely."
+    refusal:
+      text: "Java is outdated"
+      effects:
+        - parameter: PROFESSORS
+          delta: -15
+        - parameter: STUDENTS
+          delta: 4
+    approval:
+      text: "Respect the classics"
+      effects:
+        - parameter: PROFESSORS
+          delta: 11
+        - parameter: STUDENTS
+          delta: -4
+
+  - id: bus_premium_service
+    character: BUSINESSMAN
+    description: "A consultant proposes to formalize the idea: a premium service for families who want personalized academic paths."
+    refusal:
+      text: "This is corruption"
+      effects:
+        - parameter: REPUTATION
+          delta: 11
+        - parameter: STUDENTS
+          delta: 7
+    approval:
+      text: "Create the premium path"
+      effects:
+        - parameter: FINANCES
+          delta: 20
+        - parameter: REPUTATION
+          delta: -18
+
+  - id: stu_paytowin_protest
+    character: STUDENT
+    description: "Students are protesting: they say the university has become pay-to-win."
+    refusal:
+      text: "They are exaggerating"
+      effects:
+        - parameter: STUDENTS
+          delta: -12
+        - parameter: REPUTATION
+          delta: -12
+    approval:
+      text: "Cancel the service"
+      effects:
+        - parameter: STUDENTS
+          delta: 10
+        - parameter: FINANCES
+          delta: -10
+
+  - id: bus_security_system #child 5
+    character: BUSINESSMAN
+    description: "A security company proposes cameras, turnstiles and access monitoring for the entire campus."
+    refusal:
+      text: "Too invasive"
+      effects:
+        - parameter: STUDENTS
+          delta: 11
+        - parameter: REPUTATION
+          delta: -8
+    approval:
+      text: "Install everything"
+      effects:
+        - parameter: REPUTATION
+          delta: 8
+        - parameter: STUDENTS
+          delta: -12
+
+  - id: stu_airport_campus
+    character: STUDENT
+    description: "Students complain that the campus now feels like an airport."
+    refusal:
+      text: "Security comes first"
+      effects:
+        - parameter: STUDENTS
+          delta: -15
+        - parameter: REPUTATION
+          delta: 6
+    approval:
+      text: "Reduce the controls"
+      effects:
+        - parameter: STUDENTS
+          delta: 7
+        - parameter: REPUTATION
+          delta: -9
+
+  - id: stu_foreign_complaint
+    character: STUDENT
+    description: "The foreign students committee complains that the exam blessing brings Catholic influence into a public university."
+    refusal:
+      text: "The blessing stays"
+      effects:
+        - parameter: STUDENTS
+          delta: -10
+        - parameter: REPUTATION
+          delta: 2
+    approval:
+      text: "Make it optional"
+      effects:
+        - parameter: STUDENTS
+          delta: 6
+        - parameter: REPUTATION
+          delta: 2
+
+  - id: mum_catholic_lobby
+    character: MUM
+    description: "A group of Catholic mothers accuses the university of erasing Italian traditions."
+    refusal:
+      text: "Ignore the lobby"
+      effects:
+        - parameter: REPUTATION
+          delta: -16
+        - parameter: STUDENTS
+          delta: 4
+    approval:
+      text: "Restore the tradition"
+      effects:
+        - parameter: REPUTATION
+          delta: 7
+        - parameter: STUDENTS
+          delta: -6
+
+  - id: stu_phone_ban
+    character: STUDENT
+    description: "We use smartphones for notes, calendars and course material."
+    refusal:
+      text: "Phones stay banned"
+      effects:
+        - parameter: STUDENTS
+          delta: -10
+        - parameter: PROFESSORS
+          delta: 10
+    approval:
+      text: "Find a smarter solution"
+      effects:
+        - parameter: STUDENTS
+          delta: 9
+        - parameter: REPUTATION
+          delta: 8
+
+  - id: bus_phone_control #bus child 10
+    character: BUSINESSMAN
+    description: "We could use a software to monitor students' phone usage during lectures, like parental control for children."
+    refusal:
+      text: "That is too much"
+      effects:
+        - parameter: STUDENTS
+          delta: 7
+        - parameter: REPUTATION
+          delta: 11
+    approval:
+      text: "Control their phones"
+      effects:
+        - parameter: REPUTATION
+          delta: -20
+        - parameter: STUDENTS
+          delta: -20

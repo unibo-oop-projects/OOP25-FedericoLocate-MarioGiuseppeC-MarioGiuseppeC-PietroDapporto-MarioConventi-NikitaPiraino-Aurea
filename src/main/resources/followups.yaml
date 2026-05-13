@@ -20,7 +20,7 @@ followups:
     trigger: REFUSAL
     delayTurn: 1
 
-  - parentId: prof_increase_salaries #prof 5
+  - parentId: prof_increase_salaries #5
     childId: prof_week_strike
     trigger: REFUSAL
     delayTurn: 1
@@ -95,7 +95,57 @@ followups:
     trigger: APPROVAL
     delayTurn: 1
 
-  - parentId: stu_gender_bathroom #10
+  - parentId: stu_gender_bathroom #stu 10
     childId: stu_social_campaign
     trigger: REFUSAL
     delayTurn: 0
+
+  - parentId: mum_java_professor #mum 1
+    childId: prof_java_threat
+    trigger: REFUSAL
+    delayTurn: 0
+
+  - parentId: prof_java_threat
+    childId: stu_java_debate
+    trigger: REFUSAL
+    delayTurn: 0
+
+  - parentId: mum_credit_conpensation
+    childId: bus_premium_service
+    trigger: APPROVAL
+    delayTurn: 0
+
+  - parentId: bus_premium_service
+    childId: stu_paytowin_protest
+    trigger: APPROVAL
+    delayTurn: 0
+
+  - parentId: mum_security_attacks #5
+    childId: bus_security_system
+    trigger: APPROVAL
+    delayTurn: 0
+
+  - parentId: bus_security_system
+    childId: stu_airport_campus
+    trigger: APPROVAL
+    delayTurn: 0
+
+  - parentId: mum_exam_blessing
+    childId: stu_foreign_complaint
+    trigger: APPROVAL
+    delayTurn: 1
+
+  - parentId: stu_foreign_complaint
+    childId: mum_catholic_lobby
+    trigger: APPROVAL
+    delayTurn: 0
+
+  - parentId: mum_phone_addiction
+    childId: stu_phone_ban
+    trigger: APPROVAL
+    delayTurn: 0
+
+  - parentId: stu_phone_ban #mum 10
+    childId: bus_phone_control
+    trigger: APPROVAL
+    delayTurn: 1
