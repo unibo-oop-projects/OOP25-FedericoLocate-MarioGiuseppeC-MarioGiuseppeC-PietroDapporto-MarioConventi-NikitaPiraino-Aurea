@@ -1,6 +1,51 @@
 #prima riga da sistemare
 followups:
   - parentId: prof_apartments_cesena
-    childId: bus_resident_protest
+    childId: bus_realestate_offer
     trigger: APPROVAL
+    delayTurn: 1
+
+  - parentId: prof_apartments_cesena
+    childId: stu_professor_housing
+    trigger: APPROVAL
+    delayTurn: 4
+
+  - parentId: prof_river_proximity
+    childId: prof_campus_flooding
+    trigger: REFUSAL
+    delayTurn: 2
+
+  - parentId: prof_campus_flooding
+    childId: mum_safety_protest
+    trigger: REFUSAL
+    delayTurn: 1
+
+  - parentId: prof_increase_salaries
+    childId: prof_week_strike
+    trigger: REFUSAL
+    delayTurn: 1
+
+  - parentId: prof_week_strike
+    childId: stu_closed_spaces
+    trigger: APPROVAL
+    delayTurn: 1
+
+  - parentId: prof_drug_test
+    childId: prof_majority_suspended
+    trigger: APPROVAL
+    delayTurn: 2
+
+  - parentId: prof_majority_suspended
+    childId: stu_tuition_refund
+    trigger: REFUSAL
+    delayTurn: 1
+
+  - parentId: prof_christmas_dinner
+    childId: stu_christmas_party
+    trigger: APPROVAL
+    delayTurn: 1
+
+  - parentId: stu_christmas_party
+    childId: mum_professor_dinner
+    trigger: REFUSAL
     delayTurn: 1
