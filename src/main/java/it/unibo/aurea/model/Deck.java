@@ -12,6 +12,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import it.unibo.aurea.model.api.Card;
 import it.unibo.aurea.model.api.CharacterType;
+import it.unibo.aurea.model.api.FollowUp;
 import it.unibo.aurea.model.api.ParameterType;
 import it.unibo.aurea.model.dto.CardDTO;
 import it.unibo.aurea.model.dto.CardsFile;
@@ -24,7 +25,8 @@ import it.unibo.aurea.model.dto.FollowUpsFile;
  */
 public class Deck {
     private final List<Card> cardsDeck = new ArrayList<>();
-    private final List<FollowUpImpl> followUps = new ArrayList<>();
+    private final List<FollowUp> followUps = new ArrayList<>();
+    private final List<Card> childCards = new ArrayList<>();
 
     /**
      * Constructor of the deck from a .yaml file. 
@@ -32,19 +34,50 @@ public class Deck {
      * @throws IOException if the reading from the file doesn't work
      */
     public Deck() {
-        try (
-            InputStream cardIn = Deck.class.getClassLoader().getResourceAsStream("cards.yaml");
-            InputStream followUpIn = Deck.class.getClassLoader().getResourceAsStream("followups.yaml")) {
-            if (Objects.isNull(cardIn) || Objects.isNull(followUpIn)) {
-                throw new IllegalStateException("unable to find .yaml file");
-            }
-            final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-            final CardsFile cFile = mapper.readValue(cardIn, CardsFile.class);
-            final FollowUpsFile fuFile = mapper.readValue(followUpIn, FollowUpsFile.class);
-            this.cardsDeck.addAll(cFile.cards().stream().map(this::toCard).toList());
-            this.followUps.addAll(fuFile.followups().stream().map(this::toFollowUp).toList());
+        final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+
+        this.cardsDeck.addAll(this.loadCards(mapper, "cards.yaml"));
+        this.childCards.addAll(this.loadCards(mapper, "childCards.yaml"));
+        this.followUps.addAll(this.loadFollowUp(mapper, "followups.yaml"));
+    }
+
+    /**
+     * Loads and converts card definitions from the given YAML resource file.
+     *
+     * @param mapper the object mapper used to deserialize the YAML file
+     * @param fileName the name of the YAML resource file to load
+     * @return the list of loaded cards
+     */
+    private List<Card> loadCards(final ObjectMapper mapper, final String fileName) {
+        final InputStream input = Deck.class.getClassLoader().getResourceAsStream(fileName);
+        if (Objects.isNull(input)) {
+            throw new IllegalStateException("Unable to find" + fileName);
+        }
+        try {
+            final CardsFile cardFile = mapper.readValue(input, CardsFile.class);
+            return cardFile.cards().stream().map(this::toCard).toList();
         } catch (final IOException e) {
-            throw new IllegalStateException("Failed to load cards and follow-up from YAML", e);
+            throw new IllegalStateException("Failed to load" + fileName + ":" + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Loads and converts follow-up rules from the given YAML resource file.
+     *
+     * @param mapper the object mapper used to deserialize the YAML file
+     * @param fileName the name of the YAML resource file to load
+     * @return the list of loaded follow-up rules
+     */
+    private List<FollowUp> loadFollowUp(final ObjectMapper mapper, final String fileName) {
+        final InputStream input = Deck.class.getClassLoader().getResourceAsStream(fileName);
+        if (Objects.isNull(input)) {
+            throw new IllegalStateException("Unable to find" + fileName);
+        }
+        try {
+            final FollowUpsFile followUpFile = mapper.readValue(input, FollowUpsFile.class);
+            return followUpFile.followups().stream().map(this::toFollowUp).toList();
+        } catch (final IOException e) {
+            throw new IllegalStateException("Failed to load" + fileName + ":" + e.getMessage(), e);
         }
     }
 
@@ -58,9 +91,18 @@ public class Deck {
     }
 
     /**
+     * It gets all the child cards. 
+     * 
+     * @return a {@code List} of cards
+     */
+    public List<Card> getAllChildCards() {
+        return List.copyOf(this.childCards);
+    }
+
+    /**
      * @return a copy list of all the follow-up
      */
-    public List<FollowUpImpl> getAllFollowUps() {
+    public List<FollowUp> getAllFollowUps() {
         return List.copyOf(this.followUps);
     }
 
@@ -136,7 +178,7 @@ public class Deck {
      * @param fuDTO the input element
      * @return the correct output
      */
-    private FollowUpImpl toFollowUp(final FollowUpDTO fuDTO) {
+    private FollowUp toFollowUp(final FollowUpDTO fuDTO) {
         return new FollowUpImpl(fuDTO.parentId(), fuDTO.childId(), fuDTO.trigger(), fuDTO.delayTurn());
     }
 
