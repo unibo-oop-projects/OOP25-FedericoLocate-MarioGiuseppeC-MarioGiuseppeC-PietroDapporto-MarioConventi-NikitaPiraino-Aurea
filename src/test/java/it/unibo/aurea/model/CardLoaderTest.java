@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import it.unibo.aurea.model.api.Card;
 import it.unibo.aurea.model.api.CharacterType;
+import it.unibo.aurea.model.api.FollowUp;
 import it.unibo.aurea.model.api.OutcomeType;
 import it.unibo.aurea.model.api.ParameterType;
 
@@ -59,7 +60,7 @@ class CardLoaderTest {
 
     @Test
     void loadFollowUps() throws IOException {
-        final FollowUpImpl firstFU = cards.getAllFollowUps().getFirst();
+        final FollowUp firstFU = cards.getAllFollowUps().getFirst();
         assertEquals("prof_apartments_cesena", firstFU.getParentId());
         assertEquals(OutcomeType.APPROVAL, firstFU.getTrigger()); 
     }
