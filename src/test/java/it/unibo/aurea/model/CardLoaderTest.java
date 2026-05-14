@@ -1,10 +1,16 @@
 package it.unibo.aurea.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
@@ -15,53 +21,75 @@ import it.unibo.aurea.model.api.OutcomeType;
 import it.unibo.aurea.model.api.ParameterType;
 
 /** 
- * Small test to ensure loading cards from .yaml file works.
+ * Tests the loading of cards, child cards, follow-up rules,
+ * and related resource consistency from YAML configuration files.
  */
 class CardLoaderTest {
-    private static final int MEDIUM_CHANGE = 8;
-    private static final int IMPOSSIBLE_OCCURENCE = 2;
+    private static final int BIG_CHANGE = 15;
     private final Deck cards = new Deck();
 
     @Test
-    void deckLoader() throws IOException {
+    void shouldLoadCards() throws IOException {
         final Card first = cards.getAllCards().get(0);
         assertEquals("prof_publish_pressure", first.getId());
         assertEquals(CharacterType.PROFESSOR, first.getCharacter());
         assertEquals(ParameterType.PROFESSORS, first.getRefusal().getEffects().getFirst().getParameter());
         assertEquals("No, quality matters more", first.getRefusal().getAnswer());
-        final Card third = cards.getAllCards().get(2);
-        assertEquals("prof_cancel_hours", third.getId());
-        assertEquals(CharacterType.PROFESSOR, third.getCharacter());
-        assertEquals(ParameterType.PROFESSORS, third.getApproval().getEffects().getFirst().getParameter());
-        assertEquals(MEDIUM_CHANGE, third.getApproval().getEffects().getFirst().getDelta());
+        final Card firstChild = cards.getAllChildCards().getFirst();
+        assertEquals("bus_realestate_offer", firstChild.getId());
+        assertEquals(CharacterType.BUSINESSMAN, firstChild.getCharacter());
+        assertEquals(ParameterType.PROFESSORS, firstChild.getApproval().getEffects().getFirst().getParameter());
+        assertEquals(BIG_CHANGE, firstChild.getApproval().getEffects().getFirst().getDelta());
     }
 
     @Test
-    void differentIdCards() throws IOException {
-        for (final Card tmp : cards.getAllCards()) {
-            int occurence = 0;
-            for (final Card current : cards.getAllCards()) {
-                if (current.getId().equals(tmp.getId())) {
-                    occurence++;
-                }
-            }
-            assertNotEquals(IMPOSSIBLE_OCCURENCE, occurence);
+    void shouldLoadFollowUp() throws IOException {
+        final FollowUp firstFU = cards.getAllFollowUps().getFirst();
+        assertEquals("prof_apartments_cesena", firstFU.getParentId());
+        assertEquals("bus_realestate_offer", firstFU.getChildId());
+        assertEquals(OutcomeType.APPROVAL, firstFU.getTrigger()); 
+    }
+
+    @Test
+    void shouldHaveUniqueIdCards() throws IOException {
+        final Set<String> ids = new HashSet<>();
+        for (final Card card : cards.getAllCards()) {
+            assertTrue(ids.add(card.getId()), "Duplicated main card id:" + card.getId());
         }
     }
 
     @Test
-    void imageLoader() throws IOException {
-        for (final Card c : cards.getAllCards()) {
+    void shouldHaveUniqueIdChildCards() throws IOException {
+        final Set<String> ids = new HashSet<>();
+        for (final Card card : cards.getAllChildCards()) {
+            assertTrue(ids.add(card.getId()), "Duplicated child card id:" + card.getId());
+        }
+    }
+
+    @Test
+    void shouldNotBeSharedIds() throws IOException {
+        final Set<String> mainCardIds = cards.getAllCards().stream()
+            .map(Card::getId)
+            .collect(Collectors.toSet());
+        for (final Card childCard : cards.getAllChildCards()) {
+            assertFalse(
+                mainCardIds.contains(childCard.getId()),
+                "Child card id already used by main card: " + childCard.getId()
+            );
+        }
+    }
+
+    @Test
+    void shouldCharacterImageExist() throws IOException {
+        final List<Card> allCards = Stream.concat(
+            this.cards.getAllCards().stream(), 
+            this.cards.getAllChildCards().stream()
+        ).toList();
+        for (final Card c : allCards) {
             assertNotNull(
                 getClass().getResource(c.getCharacter().getImagePath()),
                 "image not found" + c.getCharacter().getImagePath());
         }
     }
 
-    @Test
-    void loadFollowUps() throws IOException {
-        final FollowUp firstFU = cards.getAllFollowUps().getFirst();
-        assertEquals("prof_apartments_cesena", firstFU.getParentId());
-        assertEquals(OutcomeType.APPROVAL, firstFU.getTrigger()); 
-    }
 }
