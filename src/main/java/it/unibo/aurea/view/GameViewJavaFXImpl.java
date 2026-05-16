@@ -101,6 +101,7 @@ public final class GameViewJavaFXImpl implements GameView {
     private Label timeLabel;
     private Label playerLabel;
     private EndgameOverlay endgameOverlay;
+    private ReportImpl semesterReport;
     private final Runnable onRestart;
 
     /**
@@ -142,7 +143,7 @@ public final class GameViewJavaFXImpl implements GameView {
         root.setCenter(gameColumn);
         BorderPane.setMargin(gameColumn, new Insets(PADDING_NORMAL));
 
-        final StackPane sceneRoot = new StackPane(root, endgameOverlay);
+        final StackPane sceneRoot = new StackPane(root, semesterReport);
 
         final Scene scene = new Scene(sceneRoot, SCENE_WIDTH, SCENE_HEIGHT);
         final var stylesheet = getClass().getResource("/styles.css");
@@ -164,6 +165,8 @@ public final class GameViewJavaFXImpl implements GameView {
 
         final HBox parametersGroup = new HBox(TOP_BAR_SPACING);
         parametersGroup.setAlignment(Pos.CENTER);
+        //getChildren is a javaFX method used to return a list where we can add components. 
+        //we don't set the position because javaFX does it autonomously by the layout settings.
         parametersGroup.getChildren().addAll(
             parameterIcons.get(ParameterType.FINANCES),
             parameterIcons.get(ParameterType.STUDENTS),
@@ -291,7 +294,7 @@ public final class GameViewJavaFXImpl implements GameView {
         this.characterNameLabel = new Label("");
         this.characterNameLabel.getStyleClass().add("character-name");
 
-        this.timeLabel = new Label("Year I · Session I");
+        this.timeLabel = new Label("Year I · Semester I");
         this.timeLabel.getStyleClass().add("time-label");
 
         this.playerLabel = new Label("");
@@ -311,6 +314,7 @@ public final class GameViewJavaFXImpl implements GameView {
             }
         });
 
+        this.semesterReport = new ReportImpl();
         this.endgameOverlay = new EndgameOverlay(this::handleRestart);
     }
 
@@ -387,8 +391,12 @@ public final class GameViewJavaFXImpl implements GameView {
     public void updateTime(final int semester, final int turn) {
         Platform.runLater(() -> {
             final int year = (semester / SEMESTERS_PER_YEAR) + OFFSET_YEAR;
-            final int visualSession = (semester % SEMESTERS_PER_YEAR) + OFFSET_YEAR;
-            this.timeLabel.setText("Year " + toRoman(year) + " · Session " + toRoman(visualSession));
+            final int visualSemester = (semester % SEMESTERS_PER_YEAR) + OFFSET_YEAR;
+            final String semesterLabel = "Year " + toRoman(year) + " · Semester " + toRoman(visualSemester);
+            this.timeLabel.setText(semesterLabel);
+            if (turn == 0 && semester > 0) {
+                semesterReport.show(semesterLabel, buildFinalRecap());
+            }
         });
     }
 
@@ -485,6 +493,7 @@ public final class GameViewJavaFXImpl implements GameView {
         Platform.runLater(() -> {
             this.cardPanel.clear();
             this.endgameOverlay.reveal(
+                this.semesterReport,
                 "Aurea Mediocritas",
                 "The annals shall remember your Golden Age. A true visionary.",
                 buildFinalRecap(),
@@ -498,6 +507,7 @@ public final class GameViewJavaFXImpl implements GameView {
         Platform.runLater(() -> {
             this.cardPanel.clear();
             this.endgameOverlay.reveal(
+                this.semesterReport,
                 "The Realm Crumbles",
                 "Your reign is over. The university falls into oblivion.",
                 buildFinalRecap(),
@@ -511,6 +521,7 @@ public final class GameViewJavaFXImpl implements GameView {
         Platform.runLater(() -> {
             this.cardPanel.clear();
             this.endgameOverlay.reveal(
+                this.semesterReport,
                 "Tragic Demise",
                 reason + " The court has ousted you.",
                 buildFinalRecap(),
