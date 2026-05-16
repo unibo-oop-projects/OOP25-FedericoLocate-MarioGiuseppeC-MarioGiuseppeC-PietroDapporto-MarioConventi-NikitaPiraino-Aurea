@@ -143,7 +143,7 @@ public final class GameViewJavaFXImpl implements GameView {
         root.setCenter(gameColumn);
         BorderPane.setMargin(gameColumn, new Insets(PADDING_NORMAL));
 
-        final StackPane sceneRoot = new StackPane(root, endgameOverlay);
+        final StackPane sceneRoot = new StackPane(root, semesterReport);
 
         final Scene scene = new Scene(sceneRoot, SCENE_WIDTH, SCENE_HEIGHT);
         final var stylesheet = getClass().getResource("/styles.css");
@@ -165,6 +165,8 @@ public final class GameViewJavaFXImpl implements GameView {
 
         final HBox parametersGroup = new HBox(TOP_BAR_SPACING);
         parametersGroup.setAlignment(Pos.CENTER);
+        //getChildren is a javaFX method used to return a list where we can add components. 
+        //we don't set the position because javaFX does it autonomously by the layout settings.
         parametersGroup.getChildren().addAll(
             parameterIcons.get(ParameterType.FINANCES),
             parameterIcons.get(ParameterType.STUDENTS),
@@ -312,8 +314,8 @@ public final class GameViewJavaFXImpl implements GameView {
             }
         });
 
-        this.endgameOverlay = new EndgameOverlay(this::handleRestart);
         this.semesterReport = new ReportImpl();
+        this.endgameOverlay = new EndgameOverlay(semesterReport, this::handleRestart);
     }
 
     private Set<ParameterType> computePreview(final boolean isApproval) {
