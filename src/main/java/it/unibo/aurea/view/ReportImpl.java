@@ -66,7 +66,7 @@ public final class ReportImpl extends VBox implements Report {
     @Override
     public void show(final String semesterLabel, final Map<ParameterType, Integer> levels) {
         titleLabel.setText("End of " + semesterLabel);
-        subtitleLabel.setText("Here is the state of the Realm at the close of this session.");
+        subtitleLabel.setText("Here is the state of the Realm at the close of this semester.");
         populateRecap(levels);
 
         setStyle("-fx-background-color: " + BG_SEMESTER + "; -fx-padding: 80 40 80 40;");
