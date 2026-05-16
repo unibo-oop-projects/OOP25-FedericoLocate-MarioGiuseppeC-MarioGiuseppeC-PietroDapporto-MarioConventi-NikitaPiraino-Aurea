@@ -7,45 +7,42 @@ import it.unibo.aurea.view.api.Report;
 import javafx.animation.FadeTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 /**
  * implementation usable for intermatiate and final stages of the game.
  */
-public final class ReportImpl implements Report {
-    private static final int WIDTH = 400;
-    private static final int HEIGHT = 360;
-    private static final int SPACING = 18;
-    private static final int RECAP_HGAP = 60;
-    private static final int RECAP_VGAP = 8;
-    private static final int PADDING = 24;
+public final class ReportImpl extends VBox implements Report {
+
+    private static final int CONTAINER_SPACING = 18;
+    private static final int RECAP_SPACING_H = 30;
+    private static final int RECAP_SPACING_V = 8;
+    private static final int BUTTON_ROW_TOP_PADDING = 24;
     private static final double FADE_MILLIS = 900;
 
-    private final Stage stage;
+    private static final String BG_SEMESTER = "rgba(0, 0, 0, 0.82)";
+
     private final Label titleLabel;
     private final Label subtitleLabel;
     private final GridPane recapGrid;
 
     /**
-     * Builds the report popup (not yet visible).
+     * Builds the report overlay (not yet visible).
      */
     public ReportImpl() {
-        this.stage = new Stage();
-        stage.initStyle(StageStyle.UTILITY);
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setResizable(false);
+        setAlignment(Pos.CENTER);
+        setSpacing(CONTAINER_SPACING);
+        setMouseTransparent(false);
+        setOpacity(0);
+        setVisible(false);
+        getStyleClass().add("endgame-overlay");
 
         this.titleLabel = new Label();
         this.titleLabel.getStyleClass().add("endgame-title");
-        this.titleLabel.setWrapText(true);
 
         this.subtitleLabel = new Label();
         this.subtitleLabel.getStyleClass().add("endgame-subtitle");
@@ -53,43 +50,32 @@ public final class ReportImpl implements Report {
 
         this.recapGrid = new GridPane();
         this.recapGrid.setAlignment(Pos.CENTER);
-        this.recapGrid.setHgap(RECAP_HGAP);
-        this.recapGrid.setVgap(RECAP_VGAP);
+        this.recapGrid.setHgap(RECAP_SPACING_H);
+        this.recapGrid.setVgap(RECAP_SPACING_V);
         this.recapGrid.getStyleClass().add("endgame-recap");
 
         final Button continueBtn = new Button("Continue");
         continueBtn.getStyleClass().add("counsellor-dismiss");
+        continueBtn.setPadding(new Insets(BUTTON_ROW_TOP_PADDING, 0, 0, 0));
         continueBtn.setOnAction(e -> close());
 
-        final VBox content = new VBox(SPACING);
-        content.setAlignment(Pos.CENTER);
-        content.setPadding(new Insets(PADDING));
-        content.getStyleClass().add("counsellor-content");
-        content.getChildren().addAll(titleLabel, subtitleLabel, recapGrid, continueBtn);
-
-        final Scene scene = new Scene(content, WIDTH, HEIGHT);
-        final var stylesheet = Report.class.getResource("/styles.css");
-        if (stylesheet != null) {
-            scene.getStylesheets().add(stylesheet.toExternalForm());
-        }
-        stage.setScene(scene);
+        getChildren().addAll(titleLabel, subtitleLabel, recapGrid, continueBtn);
     }
 
     @Override
     public void show(final String semesterLabel, final Map<ParameterType, Integer> levels) {
-        stage.setTitle("Semester Report");
         titleLabel.setText("End of " + semesterLabel);
         subtitleLabel.setText("Here is the state of the Realm at the close of this session.");
         populateRecap(levels);
 
-        final var root = stage.getScene().getRoot();
-        root.setOpacity(0);
-        stage.show();
-        final FadeTransition fade = new FadeTransition(Duration.millis(FADE_MILLIS), root);
+        setStyle("-fx-background-color: " + BG_SEMESTER + "; -fx-padding: 80 40 80 40;");
+        setVisible(true);
+        setMouseTransparent(false);
+
+        final FadeTransition fade = new FadeTransition(Duration.millis(FADE_MILLIS), this);
         fade.setFromValue(0);
         fade.setToValue(1.0);
         fade.play();
-        stage.showAndWait();
     }
 
     private void populateRecap(final Map<ParameterType, Integer> levels) {
@@ -117,6 +103,7 @@ public final class ReportImpl implements Report {
 
     @Override
     public void close() {
-        stage.close();
+        setVisible(false);
+        setOpacity(0);
     }
 }
