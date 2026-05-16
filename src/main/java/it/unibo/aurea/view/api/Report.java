@@ -28,29 +28,22 @@ public interface Report {
     void setTitle(String title);
 
     /**
-     * 
      * @param subtitle  is the new subtitle.
      */
     void setSubtitle(String subtitle);
 
     /**
-     * 
      * @param levels  are the new values of the parameters.
      */
-    
     void setLevels(Map<ParameterType, Integer> levels);
 
     /**
-     * 
-     * @param buttonRow  is the new buttonRow.
+     * @param actions  is the new buttonRow.
      */
-    
     void setButtonAction(HBox actions);
 
     /**
-     * 
      * @param background  is the new background, it's used when the backgorun changes(endgame).
      */
-    
     void reveal(String background);
 }
