@@ -10,6 +10,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
@@ -99,6 +100,34 @@ public final class ReportImpl extends VBox implements Report {
             recapGrid.add(number, 1, row);
             row++;
         }
+    }
+
+    void setTitle(final String title) {
+        titleLabel.setText(title);
+    }
+
+    void setSubtitle(final String subtitle) {
+        subtitleLabel.setText(subtitle);
+    }
+
+    void setLevels(final Map<ParameterType, Integer> levels) {
+        populateRecap(levels);
+    }
+
+    void setBottomNode(final HBox buttonRow) {
+        getChildren().remove(getChildren().size() - 1);
+        getChildren().add(buttonRow);
+    }
+
+    void revealWithStyle(final String background) {
+        setStyle("-fx-background-color: " + background + "; -fx-padding: 80 40 80 40;");
+        setVisible(true);
+        setMouseTransparent(false);
+
+        final FadeTransition fade = new FadeTransition(Duration.millis(FADE_MILLIS), this);
+        fade.setFromValue(0);
+        fade.setToValue(1.0);
+        fade.play();
     }
 
     @Override
