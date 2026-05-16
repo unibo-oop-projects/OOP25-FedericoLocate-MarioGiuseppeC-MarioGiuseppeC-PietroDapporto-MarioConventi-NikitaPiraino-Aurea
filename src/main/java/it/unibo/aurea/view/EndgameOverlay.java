@@ -24,39 +24,37 @@ public final class EndgameOverlay {
     private static final String BG_VICTORY = "rgba(0, 0, 0, 0.82)";
     private static final String BG_DEFEAT = "rgba(20, 0, 0, 0.88)";
 
-    private final Report report;
     private final Runnable onRestart;
 
     /**
      * Builds the overlay.
      *
-     * @param report    the shared report overlay used to display content
      * @param onRestart callback invoked when the player chooses to play again
      */
-    public EndgameOverlay(final Report report, final Runnable onRestart) {
-        this.report = report;
+    public EndgameOverlay(final Runnable onRestart) {
         this.onRestart = onRestart;
     }
 
     /**
      * Reveals the overlay with the given content and a fade-in animation.
      *
+     * @param report the report overlay to display content on
      * @param title the headline text
      * @param subtitle the narrative explanation
      * @param finalLevels snapshot of the four parameters at game end
      * @param victory    true for victory (golden tint), false for defeat (red tint)
      */
-    public void reveal(final String title, final String subtitle,
+    public void reveal(final Report report, final String title, final String subtitle,
         final Map<ParameterType, Integer> finalLevels,
         final boolean victory) {
         report.setTitle(title);
         report.setSubtitle(subtitle);
         report.setLevels(finalLevels);
-        report.setButtonAction(buildButtonRow());
+        report.setButtonAction(buildButtonRow(report));
         report.reveal(victory ? BG_VICTORY : BG_DEFEAT);
     }
 
-    private HBox buildButtonRow() {
+    private HBox buildButtonRow(final Report report) {
         final Button quitBtn = new Button("Leave the Realm");
         quitBtn.getStyleClass().add("endgame-button-quit");
         quitBtn.setOnAction(e -> javafx.application.Platform.exit());

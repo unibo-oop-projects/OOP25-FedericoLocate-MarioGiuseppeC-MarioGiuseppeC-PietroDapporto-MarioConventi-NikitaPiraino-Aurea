@@ -315,7 +315,7 @@ public final class GameViewJavaFXImpl implements GameView {
         });
 
         this.semesterReport = new ReportImpl();
-        this.endgameOverlay = new EndgameOverlay(semesterReport, this::handleRestart);
+        this.endgameOverlay = new EndgameOverlay(this::handleRestart);
     }
 
     private Set<ParameterType> computePreview(final boolean isApproval) {
@@ -493,6 +493,7 @@ public final class GameViewJavaFXImpl implements GameView {
         Platform.runLater(() -> {
             this.cardPanel.clear();
             this.endgameOverlay.reveal(
+                this.semesterReport,
                 "Aurea Mediocritas",
                 "The annals shall remember your Golden Age. A true visionary.",
                 buildFinalRecap(),
@@ -506,6 +507,7 @@ public final class GameViewJavaFXImpl implements GameView {
         Platform.runLater(() -> {
             this.cardPanel.clear();
             this.endgameOverlay.reveal(
+                this.semesterReport,
                 "The Realm Crumbles",
                 "Your reign is over. The university falls into oblivion.",
                 buildFinalRecap(),
@@ -519,6 +521,7 @@ public final class GameViewJavaFXImpl implements GameView {
         Platform.runLater(() -> {
             this.cardPanel.clear();
             this.endgameOverlay.reveal(
+                this.semesterReport,
                 "Tragic Demise",
                 reason + " The court has ousted you.",
                 buildFinalRecap(),
