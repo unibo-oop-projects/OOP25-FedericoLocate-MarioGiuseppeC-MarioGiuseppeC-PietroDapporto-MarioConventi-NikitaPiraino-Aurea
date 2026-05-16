@@ -294,7 +294,7 @@ public final class GameViewJavaFXImpl implements GameView {
         this.characterNameLabel = new Label("");
         this.characterNameLabel.getStyleClass().add("character-name");
 
-        this.timeLabel = new Label("Year I · Session I");
+        this.timeLabel = new Label("Year I · Semester I");
         this.timeLabel.getStyleClass().add("time-label");
 
         this.playerLabel = new Label("");
@@ -392,7 +392,7 @@ public final class GameViewJavaFXImpl implements GameView {
         Platform.runLater(() -> {
             final int year = (semester / SEMESTERS_PER_YEAR) + OFFSET_YEAR;
             final int visualSession = (semester % SEMESTERS_PER_YEAR) + OFFSET_YEAR;
-            final String semesterLabel = "Year " + toRoman(year) + " · Session " + toRoman(visualSession);
+            final String semesterLabel = "Year " + toRoman(year) + " · Semester " + toRoman(visualSession);
             this.timeLabel.setText(semesterLabel);
             if (turn == 0 && semester > 0) {
                 semesterReport.show(semesterLabel, buildFinalRecap());
