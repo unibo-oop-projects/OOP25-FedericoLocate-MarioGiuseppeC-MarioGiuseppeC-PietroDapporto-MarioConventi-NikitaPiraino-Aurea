@@ -102,24 +102,29 @@ public final class ReportImpl extends VBox implements Report {
         }
     }
 
-    void setTitle(final String title) {
+    @Override
+    public void setTitle(final String title) {
         titleLabel.setText(title);
     }
 
-    void setSubtitle(final String subtitle) {
+    @Override
+    public void setSubtitle(final String subtitle) {
         subtitleLabel.setText(subtitle);
     }
 
-    void setLevels(final Map<ParameterType, Integer> levels) {
+    @Override
+    public void setLevels(final Map<ParameterType, Integer> levels) {
         populateRecap(levels);
     }
 
-    void setBottomNode(final HBox buttonRow) {
+    @Override
+    public void setBottomNode(final HBox buttonRow) {
         getChildren().remove(getChildren().size() - 1);
         getChildren().add(buttonRow);
     }
 
-    void revealWithStyle(final String background) {
+    @Override
+    public void revealWithStyle(final String background) {
         setStyle("-fx-background-color: " + background + "; -fx-padding: 80 40 80 40;");
         setVisible(true);
         setMouseTransparent(false);
