@@ -391,8 +391,8 @@ public final class GameViewJavaFXImpl implements GameView {
     public void updateTime(final int semester, final int turn) {
         Platform.runLater(() -> {
             final int year = (semester / SEMESTERS_PER_YEAR) + OFFSET_YEAR;
-            final int visualSession = (semester % SEMESTERS_PER_YEAR) + OFFSET_YEAR;
-            final String semesterLabel = "Year " + toRoman(year) + " · Semester " + toRoman(visualSession);
+            final int visualSemester = (semester % SEMESTERS_PER_YEAR) + OFFSET_YEAR;
+            final String semesterLabel = "Year " + toRoman(year) + " · Semester " + toRoman(visualSemester);
             this.timeLabel.setText(semesterLabel);
             if (turn == 0 && semester > 0) {
                 semesterReport.show(semesterLabel, buildFinalRecap());
