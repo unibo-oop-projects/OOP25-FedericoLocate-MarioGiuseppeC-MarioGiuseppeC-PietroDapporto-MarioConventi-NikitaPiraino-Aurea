@@ -3,6 +3,7 @@ package it.unibo.aurea.view.api;
 import java.util.Map;
 
 import it.unibo.aurea.model.api.ParameterType;
+import javafx.scene.layout.HBox;
 
 /**
  * Will create a GUI report for the player. 
@@ -20,4 +21,36 @@ public interface Report {
      * Closes the report and continues the game. This method is made to don't receive the functional interface from PMD MAIN
      */
     void close();
+
+    /**
+     * @param title is the new Title.
+     */
+    void setTitle(String title);
+
+    /**
+     * 
+     * @param subtitle  is the new subtitle.
+     */
+    void setSubtitle(String subtitle);
+
+    /**
+     * 
+     * @param levels  are the new values of the parameters.
+     */
+    
+    void setLevels(Map<ParameterType, Integer> levels);
+
+    /**
+     * 
+     * @param buttonRow  is the new buttonRow.
+     */
+    
+    void setBottomNode(HBox buttonRow);
+
+    /**
+     * 
+     * @param background  is the new background, it's used when the backgorun changes(endgame).
+     */
+    
+    void revealWithStyle(String background);
 }
