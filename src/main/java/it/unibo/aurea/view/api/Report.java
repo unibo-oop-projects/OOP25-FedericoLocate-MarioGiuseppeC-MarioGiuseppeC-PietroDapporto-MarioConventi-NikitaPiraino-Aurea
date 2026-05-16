@@ -45,12 +45,12 @@ public interface Report {
      * @param buttonRow  is the new buttonRow.
      */
     
-    void setBottomNode(HBox buttonRow);
+    void setButtonAction(HBox actions);
 
     /**
      * 
      * @param background  is the new background, it's used when the backgorun changes(endgame).
      */
     
-    void revealWithStyle(String background);
+    void reveal(String background);
 }

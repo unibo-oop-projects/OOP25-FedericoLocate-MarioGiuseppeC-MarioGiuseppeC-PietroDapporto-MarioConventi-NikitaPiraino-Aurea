@@ -118,13 +118,13 @@ public final class ReportImpl extends VBox implements Report {
     }
 
     @Override
-    public void setBottomNode(final HBox buttonRow) {
+    public void setButtonAction(final HBox buttonRow) {
         getChildren().remove(getChildren().size() - 1);
         getChildren().add(buttonRow);
     }
 
     @Override
-    public void revealWithStyle(final String background) {
+    public void reveal(final String background) {
         setStyle("-fx-background-color: " + background + "; -fx-padding: 80 40 80 40;");
         setVisible(true);
         setMouseTransparent(false);

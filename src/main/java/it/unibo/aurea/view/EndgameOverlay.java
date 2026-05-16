@@ -3,6 +3,7 @@ package it.unibo.aurea.view;
 import java.util.Map;
 
 import it.unibo.aurea.model.api.ParameterType;
+import it.unibo.aurea.view.api.Report;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -23,7 +24,7 @@ public final class EndgameOverlay {
     private static final String BG_VICTORY = "rgba(0, 0, 0, 0.82)";
     private static final String BG_DEFEAT = "rgba(20, 0, 0, 0.88)";
 
-    private final ReportImpl report;
+    private final Report report;
     private final Runnable onRestart;
 
     /**
@@ -32,7 +33,7 @@ public final class EndgameOverlay {
      * @param report    the shared report overlay used to display content
      * @param onRestart callback invoked when the player chooses to play again
      */
-    public EndgameOverlay(final ReportImpl report, final Runnable onRestart) {
+    public EndgameOverlay(final Report report, final Runnable onRestart) {
         this.report = report;
         this.onRestart = onRestart;
     }
@@ -51,8 +52,8 @@ public final class EndgameOverlay {
         report.setTitle(title);
         report.setSubtitle(subtitle);
         report.setLevels(finalLevels);
-        report.setBottomNode(buildButtonRow());
-        report.revealWithStyle(victory ? BG_VICTORY : BG_DEFEAT);
+        report.setButtonAction(buildButtonRow());
+        report.reveal(victory ? BG_VICTORY : BG_DEFEAT);
     }
 
     private HBox buildButtonRow() {
