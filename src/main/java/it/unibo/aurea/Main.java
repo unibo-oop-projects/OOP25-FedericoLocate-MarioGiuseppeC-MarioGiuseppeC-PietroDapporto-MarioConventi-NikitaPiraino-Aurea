@@ -48,7 +48,7 @@ public final class Main extends Application {
      */
     private void startGame(final PlayerInfo playerInfo) {
         try {
-            final GameConfig config = GameConfigImpl.createStandard();
+            final GameConfig config = GameConfigImpl.createShort();
             final Deck deck = new Deck();
             final GameEngine engine = new GameEngineImpl(config, deck);
 
