@@ -31,13 +31,19 @@ class GameControllerImplTest {
         try {
             // Initialize the real Model
             final Deck deck = new Deck();
-            final GameEngineImpl engine = new GameEngineImpl(GameConfigImpl.createStandard(), deck);
-
+            final GameEngineImpl engine = new GameEngineImpl(
+                GameConfigImpl.createStandard(it.unibo.aurea.model.api.Difficulty.EASY),
+                deck
+            );
             // Initialize the fake View
             fakeView = new FakeView();
 
             // Create the Controller
-            controller = new GameControllerImpl(fakeView, engine, new PlayerInfo("Test Rector", "Test Faculty"));
+            controller = new GameControllerImpl(
+                fakeView,
+                engine,
+                new PlayerInfo("Test Rector", "Test Faculty", it.unibo.aurea.model.api.Difficulty.EASY)
+            );
             // Connect the controller to the fake view (as per interface requirement)
             fakeView.setController(controller);
 
@@ -55,7 +61,7 @@ class GameControllerImplTest {
     @Test
     void testMakeDecisionUpdatesView() {
         controller.startGame();
-        fakeView.setCardDisplayed(false); 
+        fakeView.setCardDisplayed(false);
         controller.makeDecision(true);
         assertTrue(fakeView.isCardDisplayed(), "The View should have been updated after the decision.");
     }

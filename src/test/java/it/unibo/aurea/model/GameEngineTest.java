@@ -20,7 +20,7 @@ class GameEngineTest {
      */
     @BeforeEach
     void setUp() {
-        this.engine = new GameEngineImpl(GameConfigImpl.createStandard(), new Deck());
+        this.engine = new GameEngineImpl(GameConfigImpl.createStandard(it.unibo.aurea.model.api.Difficulty.EASY), new Deck());
     }
 
     /**

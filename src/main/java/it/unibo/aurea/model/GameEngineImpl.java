@@ -30,9 +30,9 @@ public final class GameEngineImpl implements GameEngine {
     private static final double HARD_WEIGHT_DIVISOR = 500.0;
 
     // Constants for difficulty multipliers
-    private static final double EASY_DAMAGE_MULTIPLIER = 0.7;
+    private static final double EASY_DAMAGE_MULTIPLIER = 0.1;
     private static final double NORMAL_DAMAGE_MULTIPLIER = 1.0;
-    private static final double HARD_DAMAGE_MULTIPLIER = 1.5;
+    private static final double HARD_DAMAGE_MULTIPLIER = 1.3;
 
     private final Deck deck;
     private final GameConfig config;
@@ -110,10 +110,20 @@ public final class GameEngineImpl implements GameEngine {
         updateEventQueue();
         for (final ActiveFollowUp activeEvent : eventQueue) {
             if (activeEvent.getRemainingTurns() <= 0) {
-                final Card forcedCard = deck.getAllCards().stream()
-                    .filter(c -> c.getId().equals(activeEvent.getFollowUp().getChildId()))
+                final String childId = activeEvent.getFollowUp().getChildId();
+                Card forcedCard = deck.getAllCards().stream()
+                    .filter(c -> c.getId().equals(childId))
                     .findFirst()
                     .orElse(null);
+
+                // If not found in the base deck, search in the child cards deck
+                if (forcedCard == null) {
+                    forcedCard = deck.getAllChildCards().stream()
+                        .filter(c -> c.getId().equals(childId))
+                        .findFirst()
+                        .orElse(null);
+                }
+
                 if (forcedCard != null && !forcedCard.isUsed()) {
                     eventQueue.remove(activeEvent);
                     return forcedCard;
@@ -240,9 +250,7 @@ public final class GameEngineImpl implements GameEngine {
 
             if (p != null) {
                 final int originalDelta = e.getDelta();
-                final int modifiedDelta = originalDelta < 0
-                    ? (int) Math.round(originalDelta * this.damageMultiplier)
-                    : originalDelta;
+                final int modifiedDelta = (int) Math.round(originalDelta * this.damageMultiplier);
 
                 p.modify(modifiedDelta);
             }
