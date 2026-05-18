@@ -741,7 +741,7 @@ cards:
         - parameter: FINANCES
           delta: -10
 
-  - id: mum_credit_conpensation
+  - id: mum_credit_compensation
     character: MUM
     description: "Would you guarantee 24 credits for my son in exchange for a generous compensation?."
     refusal:
@@ -867,7 +867,7 @@ cards:
         - parameter: FINANCES
           delta: -8
 
-  - id: mum_christams_presents
+  - id: mum_christmas_presents
     character: MUM
     description: "with all the money we pay, you should give Christmas presents to our children."
     refusal:
@@ -893,7 +893,7 @@ cards:
       effects:
         - parameter: REPUTATION
           delta: -9
-        - parameter: 
+        - parameter: PROFESSORS
           delta: -5
     approval:
       text: "I will replace him"

@@ -96,6 +96,7 @@ public final class GameEngineImpl implements GameEngine {
     }
 
     private Card extractNextCard() {
+        this.printDebugLog();
         updateEventQueue();
         for (final ActiveFollowUp activeEvent : eventQueue) {
             if (activeEvent.getRemainingTurns() <= 0) {
@@ -213,6 +214,7 @@ public final class GameEngineImpl implements GameEngine {
             .filter(fu -> fu.getParentId().equals(parentId))
             .filter(fu -> fu.getTrigger() == actualOutcome)
             .forEach(fu -> eventQueue.add(new ActiveFollowUp(fu, fu.getDelayTurn())));
+            this.printDebugLog();
     }
 
     @Override
@@ -243,6 +245,21 @@ public final class GameEngineImpl implements GameEngine {
     @Override
     public GameClock getGameClock() {
         return this.gameClock;
+    }
+
+    /**
+     * Prints the current game state parameters for debugging and balancing.
+     */
+    @SuppressWarnings("PMD.SystemPrintln")
+    private void printDebugLog() {
+        System.out.println("\n=== 📊 GAME ENGINE DEBUG LOG ===");
+        System.out.println("Weight Divisor Corrente: " + this.weightDivisor);
+        System.out.println("Stato dei Parametri:");
+        for (final var param : this.parameters) {
+            System.out.printf("  • %-12s : %3d / 100 (Alive: %b)%n", 
+                param.getName(), param.getLevel(), param.isAlive());
+        }
+        System.out.println("================================\n");
     }
 
     private static class ActiveFollowUp {
