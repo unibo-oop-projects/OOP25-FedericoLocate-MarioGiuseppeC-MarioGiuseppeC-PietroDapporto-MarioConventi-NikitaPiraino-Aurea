@@ -395,9 +395,14 @@ public final class GameViewJavaFXImpl implements GameView {
             final String semesterLabel = "Year " + toRoman(year) + " · Semester " + toRoman(visualSemester);
             this.timeLabel.setText(semesterLabel);
             if (turn == 0 && semester > 0) {
-                semesterReport.show(semesterLabel, buildFinalRecap());
+                final int prevSemester = semester - 1;
+                final int prevYear = (prevSemester / SEMESTERS_PER_YEAR) + OFFSET_YEAR;
+                final int prevVisualSemester = (prevSemester % SEMESTERS_PER_YEAR) + OFFSET_YEAR;
+                final String prevLabel = "Year " + toRoman(prevYear)
+                    + " · Semester " + toRoman(prevVisualSemester);
+                semesterReport.show(prevLabel, buildFinalRecap());
             }
-        });
+                    });
     }
 
     private String toRoman(final int number) {
