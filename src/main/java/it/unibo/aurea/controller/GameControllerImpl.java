@@ -204,7 +204,6 @@ public final class GameControllerImpl implements GameController {
     @Override
     public void quitGame() {
         LOGGER.info(() -> "Game terminated safely.");
-        // TODO I should understand if this is usable to quit safely with the
-        // GUI or to save locally the data, or for now is useless.
+        javafx.application.Platform.exit();
     }
 }
