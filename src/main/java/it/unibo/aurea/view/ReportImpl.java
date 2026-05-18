@@ -57,6 +57,8 @@ public final class ReportImpl extends VBox implements Report {
         this.recapGrid.getStyleClass().add("endgame-recap");
         this.recapGrid.setMaxWidth(Region.USE_PREF_SIZE);
 
+        this.recapGrid.setMaxWidth(Region.USE_PREF_SIZE);
+
         final Button continueBtn = new Button("Continue");
         continueBtn.getStyleClass().add("counsellor-dismiss");
         continueBtn.setPadding(new Insets(BUTTON_ROW_TOP_PADDING, 0, 0, 0));
@@ -141,5 +143,11 @@ public final class ReportImpl extends VBox implements Report {
     public void close() {
         setVisible(false);
         setOpacity(0);
+    }
+
+    @Override
+    public void applyStyle(final boolean victory) {
+        titleLabel.getStyleClass().removeAll("endgame-title-victory", "endgame-title-defeat");
+        titleLabel.getStyleClass().add(victory ? "endgame-title-victory" : "endgame-title-defeat");
     }
 }
