@@ -17,6 +17,12 @@ import it.unibo.aurea.model.api.ParameterType;
  */
 class ParameterImplTest {
 
+    private static final int SMALL_DELTA = 10;
+    private static final int MEDIUM_DELTA = 15;
+    private static final int LARGE_DELTA = 60;
+    private static final int EXACT_DELTA = 50;
+    private static final int TINY_DELTA = 5;
+
     private ParameterImpl parameter;
 
     @BeforeEach
@@ -37,58 +43,58 @@ class ParameterImplTest {
 
     @Test
     void testModifyIncrease() {
-        parameter.modify(10);
-        assertEquals(ParameterImpl.START_LEVEL + 10, parameter.getLevel(),
+        parameter.modify(SMALL_DELTA);
+        assertEquals(ParameterImpl.START_LEVEL + SMALL_DELTA, parameter.getLevel(),
             "Level should increase by delta");
     }
 
     @Test
     void testModifyDecrease() {
-        parameter.modify(-15);
-        assertEquals(ParameterImpl.START_LEVEL - 15, parameter.getLevel(),
+        parameter.modify(-MEDIUM_DELTA);
+        assertEquals(ParameterImpl.START_LEVEL - MEDIUM_DELTA, parameter.getLevel(),
             "Level should decrease by delta");
     }
 
     @Test
     void testClampAtMax() {
-        parameter.modify(60);
+        parameter.modify(LARGE_DELTA);
         assertEquals(ParameterImpl.MAX_LEVEL, parameter.getLevel(),
             "Level should be clamped at MAX_LEVEL");
     }
 
     @Test
     void testClampAtMin() {
-        parameter.modify(-60);
+        parameter.modify(-LARGE_DELTA);
         assertEquals(ParameterImpl.MIN_LEVEL, parameter.getLevel(),
             "Level should be clamped at MIN_LEVEL");
     }
 
     @Test
     void testDeadAtMax() {
-        parameter.modify(60);
+        parameter.modify(LARGE_DELTA);
         assertFalse(parameter.isAlive(),
             "Parameter should be dead when level reaches MAX_LEVEL");
     }
 
     @Test
     void testDeadAtMin() {
-        parameter.modify(-60);
+        parameter.modify(-LARGE_DELTA);
         assertFalse(parameter.isAlive(),
             "Parameter should be dead when level reaches MIN_LEVEL");
     }
 
     @Test
     void testModifyIgnoredWhenDead() {
-        parameter.modify(-60);
+        parameter.modify(-LARGE_DELTA);
         final int levelAfterDeath = parameter.getLevel();
-        parameter.modify(50);
+        parameter.modify(EXACT_DELTA);
         assertEquals(levelAfterDeath, parameter.getLevel(),
             "Modify should be ignored when parameter is already dead");
     }
 
     @Test
     void testDeathReasonAtMin() {
-        parameter.modify(-60);
+        parameter.modify(-LARGE_DELTA);
         final String reason = parameter.getDeathReason();
         assertTrue(reason.contains("dropped to zero"),
             "Death reason should mention 'dropped to zero'");
@@ -96,7 +102,7 @@ class ParameterImplTest {
 
     @Test
     void testDeathReasonAtMax() {
-        parameter.modify(60);
+        parameter.modify(LARGE_DELTA);
         final String reason = parameter.getDeathReason();
         assertTrue(reason.contains("maximum capacity"),
             "Death reason should mention 'maximum capacity'");
@@ -120,27 +126,26 @@ class ParameterImplTest {
     void testObserverNotified() {
         final int[] notifiedLevel = {-1};
         parameter.addObserver((type, level) -> notifiedLevel[0] = level);
-        parameter.modify(10);
-        assertEquals(ParameterImpl.START_LEVEL + 10, notifiedLevel[0],
+        parameter.modify(SMALL_DELTA);
+        assertEquals(ParameterImpl.START_LEVEL + SMALL_DELTA, notifiedLevel[0],
             "Observer should receive the updated level");
     }
 
     @Test
     void testObserverNotifiedWithCorrectType() {
-        final it.unibo.aurea.model.api.ParameterType[] notifiedType =
-            {null};
+        final ParameterType[] notifiedType = {null};
         parameter.addObserver((type, level) -> notifiedType[0] = type);
-        parameter.modify(5);
+        parameter.modify(TINY_DELTA);
         assertEquals(ParameterType.FINANCES, notifiedType[0],
             "Observer should receive the correct parameter type");
     }
 
     @Test
     void testObserverNotNotifiedWhenDead() {
-        parameter.modify(-60);
+        parameter.modify(-LARGE_DELTA);
         final int[] callCount = {0};
         parameter.addObserver((type, level) -> callCount[0]++);
-        parameter.modify(10);
+        parameter.modify(SMALL_DELTA);
         assertEquals(0, callCount[0],
             "Observer should not be notified when parameter is dead");
     }
@@ -153,7 +158,7 @@ class ParameterImplTest {
 
     @Test
     void testExactBoundaryMax() {
-        parameter.modify(50);
+        parameter.modify(EXACT_DELTA);
         assertEquals(ParameterImpl.MAX_LEVEL, parameter.getLevel(),
             "Level should be exactly MAX_LEVEL at boundary");
         assertFalse(parameter.isAlive(),
@@ -162,7 +167,7 @@ class ParameterImplTest {
 
     @Test
     void testExactBoundaryMin() {
-        parameter.modify(-50);
+        parameter.modify(-EXACT_DELTA);
         assertEquals(ParameterImpl.MIN_LEVEL, parameter.getLevel(),
             "Level should be exactly MIN_LEVEL at boundary");
         assertFalse(parameter.isAlive(),

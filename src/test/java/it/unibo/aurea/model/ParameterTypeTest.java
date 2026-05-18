@@ -63,7 +63,7 @@ class ParameterTypeTest {
         for (final ParameterType type : ParameterType.values()) {
             assertEquals(
                 type.name().charAt(0),
-                type.getDisplayName().toUpperCase().charAt(0),
+                type.getDisplayName().toUpperCase(java.util.Locale.ROOT).charAt(0),
                 type.name() + " display name should start with same letter as enum name"
             );
         }
