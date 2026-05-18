@@ -23,10 +23,16 @@ public final class GameEngineImpl implements GameEngine {
 
     private static final double DEFAULT_WEIGHT = 10.0;
     private static final int NEUTRAL_DISTANCE = 50;
-    // Constants for difficulty balancing (avoids Checkstyle magic numbers)
+
+    // Constants for difficulty balancing
     private static final double EASY_WEIGHT_DIVISOR = 25.0;
     private static final double NORMAL_WEIGHT_DIVISOR = 50.0;
     private static final double HARD_WEIGHT_DIVISOR = 500.0;
+
+    // Constants for difficulty multipliers
+    private static final double EASY_DAMAGE_MULTIPLIER = 0.7;
+    private static final double NORMAL_DAMAGE_MULTIPLIER = 1.0;
+    private static final double HARD_DAMAGE_MULTIPLIER = 1.5;
 
     private final Deck deck;
     private final GameConfig config;
@@ -37,6 +43,7 @@ public final class GameEngineImpl implements GameEngine {
 
     // Variables depending on the difficulty
     private final double weightDivisor;
+    private final double damageMultiplier;
     private final List<Parameter> parameters;
 
     /**
@@ -55,10 +62,13 @@ public final class GameEngineImpl implements GameEngine {
         // 2. Set up the balancing levers based on the difficulty
         if (difficulty == Difficulty.HARD) {
             this.weightDivisor = HARD_WEIGHT_DIVISOR;
+            this.damageMultiplier = HARD_DAMAGE_MULTIPLIER;
         } else if (difficulty == Difficulty.NORMAL) {
             this.weightDivisor = NORMAL_WEIGHT_DIVISOR;
+            this.damageMultiplier = NORMAL_DAMAGE_MULTIPLIER;
         } else {
             this.weightDivisor = EASY_WEIGHT_DIVISOR;
+            this.damageMultiplier = EASY_DAMAGE_MULTIPLIER;
         }
 
         // 3. Parameters ALWAYS start at default (50), regardless of difficulty
@@ -206,15 +216,37 @@ public final class GameEngineImpl implements GameEngine {
 
     @Override
     public void registerChoiceConsequences(final String parentId, final boolean wasApproval) {
-         final it.unibo.aurea.model.api.OutcomeType actualOutcome = wasApproval
-             ? it.unibo.aurea.model.api.OutcomeType.APPROVAL
-             : it.unibo.aurea.model.api.OutcomeType.REFUSAL;
+        final it.unibo.aurea.model.api.OutcomeType actualOutcome = wasApproval
+            ? it.unibo.aurea.model.api.OutcomeType.APPROVAL
+            : it.unibo.aurea.model.api.OutcomeType.REFUSAL;
 
          deck.getAllFollowUps().stream()
             .filter(fu -> fu.getParentId().equals(parentId))
             .filter(fu -> fu.getTrigger() == actualOutcome)
             .forEach(fu -> eventQueue.add(new ActiveFollowUp(fu, fu.getDelayTurn())));
             this.printDebugLog();
+    }
+
+    @Override
+    public void applyEffects(final List<Effect> effects) {
+        if (effects == null) {
+            return;
+        }
+        for (final Effect e : effects) {
+            final Parameter p = this.parameters.stream()
+                .filter(param -> param.getName() == e.getParameter())
+                .findFirst()
+                .orElse(null);
+
+            if (p != null) {
+                final int originalDelta = e.getDelta();
+                final int modifiedDelta = originalDelta < 0
+                    ? (int) Math.round(originalDelta * this.damageMultiplier)
+                    : originalDelta;
+
+                p.modify(modifiedDelta);
+            }
+        }
     }
 
     @Override
@@ -256,7 +288,7 @@ public final class GameEngineImpl implements GameEngine {
         System.out.println("Weight Divisor Corrente: " + this.weightDivisor);
         System.out.println("Stato dei Parametri:");
         for (final var param : this.parameters) {
-            System.out.printf("  • %-12s : %3d / 100 (Alive: %b)%n", 
+            System.out.printf("  • %-12s : %3d / 100 (Alive: %b)%n",
                 param.getName(), param.getLevel(), param.isAlive());
         }
         System.out.println("================================\n");

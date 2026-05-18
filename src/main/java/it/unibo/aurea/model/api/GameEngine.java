@@ -56,4 +56,13 @@ public interface GameEngine {
      * @param wasApproval true if approved
      */
     void registerChoiceConsequences(String parentId, boolean wasApproval);
+
+    /**
+     * Applies the given list of effects to the game parameters, 
+     * considering the current difficulty multiplier.
+     *
+     * @param effects the list of effects to apply
+     */
+    void applyEffects(List<Effect> effects);
 }
+
