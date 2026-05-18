@@ -14,5 +14,10 @@ public interface GameConfig {
      */
     int getSemestersPerGame();
 
+    /**
+     * @return the chosen game difficulty.
+     */
+    Difficulty getDifficulty();
+
     //HERE WE ALSO SHOULD ADD THE CARD STORAGE(like name of the structure or the content itself)
 }

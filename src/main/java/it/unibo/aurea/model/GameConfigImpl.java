@@ -42,4 +42,11 @@ public final class GameConfigImpl implements GameConfig {
     public static GameConfig createShort() {
         return new GameConfigImpl(MINIMAL_NUMBER_CARDS, MINIMAL_NUMBER_SEMESTER);
     }
+
+    @Override
+    public it.unibo.aurea.model.api.Difficulty getDifficulty() {
+        // Easy by Default
+        return it.unibo.aurea.model.api.Difficulty.EASY;
+    }
+
 }

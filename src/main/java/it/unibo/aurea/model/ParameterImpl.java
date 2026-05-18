@@ -1,15 +1,14 @@
 package it.unibo.aurea.model;
 
+import it.unibo.aurea.model.api.Parameter;
+import it.unibo.aurea.model.api.ParameterObserver;
+import it.unibo.aurea.model.api.ParameterType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import it.unibo.aurea.model.api.Parameter;
-import it.unibo.aurea.model.api.ParameterObserver;
-import it.unibo.aurea.model.api.ParameterType;
-
 /**
- * {@inheritDoc}.
+ * Implementation of a game parameter.
  */
 public final class ParameterImpl implements Parameter {
 
@@ -26,7 +25,7 @@ public final class ParameterImpl implements Parameter {
     private boolean alive;
 
     /**
-     * Constructor of a specific parameter.
+     * Constructor of a specific parameter with the default starting level (50).
      *
      * @param name the name of a {@code ParameterType}
      */
