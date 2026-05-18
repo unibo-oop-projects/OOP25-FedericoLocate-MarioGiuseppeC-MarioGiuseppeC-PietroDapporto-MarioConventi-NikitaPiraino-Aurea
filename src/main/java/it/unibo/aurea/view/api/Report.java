@@ -46,4 +46,11 @@ public interface Report {
      * @param background  is the new background, it's used when the backgorun changes(endgame).
      */
     void reveal(String background);
+
+    /**
+     * Applies a visual style based on the game outcome.
+     *
+     * @param victory true for victory styling, false for defeat styling
+     */
+    void applyStyle(boolean victory);
 }

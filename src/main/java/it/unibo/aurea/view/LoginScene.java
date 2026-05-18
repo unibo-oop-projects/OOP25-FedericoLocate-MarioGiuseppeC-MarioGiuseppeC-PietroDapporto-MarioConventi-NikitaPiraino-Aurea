@@ -162,19 +162,17 @@ public final class LoginScene {
     }
 
     private void applyBackground(final StackPane root) {
-        try (InputStream bgIs = getClass().getResourceAsStream("/bgLogin.png")) {
+        try (InputStream bgIs = getClass().getResourceAsStream("/background.png")) {
             if (Objects.nonNull(bgIs)) {
                 final BackgroundSize coverSize = new BackgroundSize(
-                    BackgroundSize.AUTO, BackgroundSize.AUTO,
-                    true, true,
-                    false, true
-                );
-                root.setBackground(new Background(new BackgroundImage(
-                    new Image(bgIs),
-                    BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
-                    BackgroundPosition.CENTER,
-                    coverSize
-                )));
+                1.0, 1.0, true, true, false, false
+            );
+            root.setBackground(new Background(new BackgroundImage(
+                new Image(bgIs),
+                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.CENTER,
+                coverSize
+            )));
             } else {
                 root.setBackground(new Background(new BackgroundFill(
                     Color.web("#1a0f08"), CornerRadii.EMPTY, Insets.EMPTY)));

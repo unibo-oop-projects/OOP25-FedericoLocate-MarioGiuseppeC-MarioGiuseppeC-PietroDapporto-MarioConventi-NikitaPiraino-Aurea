@@ -169,26 +169,25 @@
 /* ---------- LoginScene ---------- */
 
 .login-form {
-    -fx-background-color: rgba(10, 6, 3, 0.88);
+    -fx-background-color: transparent;
     -fx-background-radius: 14;
-    -fx-border-color: #8b6914;
-    -fx-border-width: 2;
-    -fx-border-radius: 14;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.9), 30, 0, 0, 0);
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
 }
 
 .login-title {
     -fx-font-family: 'IM Fell English', 'Cinzel', serif;
     -fx-font-size: 36px;
     -fx-text-fill: #d4a043;
-    -fx-effect: dropshadow(gaussian, black, 8, 0.6, 0, 0);
+    -fx-effect: dropshadow(gaussian, black, 14, 0.9, 0, 0);
 }
 
 .login-subtitle {
     -fx-font-family: 'IM Fell English', 'Cinzel', serif;
     -fx-font-size: 15px;
-    -fx-text-fill: #a88e6e;
+    -fx-text-fill: #f0ddb0;
     -fx-font-style: italic;
+    -fx-effect: dropshadow(gaussian, black, 10, 0.8, 0, 0);
 }
 
 .login-field {
@@ -348,10 +347,20 @@
 
 .endgame-title {
     -fx-font-family: 'IM Fell English', 'Cinzel', 'Georgia', serif;
-    -fx-font-size: 56px;
+    -fx-font-size: 52px;
     -fx-font-weight: bold;
     -fx-text-fill: #d4a043;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.95), 18, 0.6, 0, 4);
+}
+
+.endgame-title-victory {
+    -fx-text-fill: #d4a043;
+    -fx-effect: dropshadow(gaussian, rgba(212, 160, 67, 0.5), 18, 0.5, 0, 4);
+}
+
+.endgame-title-defeat {
+    -fx-text-fill: #e05050;
+    -fx-effect: dropshadow(gaussian, rgba(200, 50, 50, 0.5), 20, 0.4, 0, 0);
 }
 
 .endgame-subtitle {
@@ -364,7 +373,7 @@
 }
 
 .endgame-recap {
-    -fx-padding: 16 30 16 30;
+    -fx-padding: 12 24 12 24;
     -fx-background-color: rgba(20, 12, 5, 0.7);
     -fx-background-radius: 8;
     -fx-border-color: #8b6914;

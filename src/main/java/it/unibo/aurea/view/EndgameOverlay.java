@@ -51,6 +51,7 @@ public final class EndgameOverlay {
         report.setSubtitle(subtitle);
         report.setLevels(finalLevels);
         report.setButtonAction(buildButtonRow(report));
+        report.applyStyle(victory);
         report.reveal(victory ? BG_VICTORY : BG_DEFEAT);
     }
 

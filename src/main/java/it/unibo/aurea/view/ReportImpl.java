@@ -11,6 +11,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
@@ -54,6 +55,9 @@ public final class ReportImpl extends VBox implements Report {
         this.recapGrid.setHgap(RECAP_SPACING_H);
         this.recapGrid.setVgap(RECAP_SPACING_V);
         this.recapGrid.getStyleClass().add("endgame-recap");
+        this.recapGrid.setMaxWidth(Region.USE_PREF_SIZE);
+
+        this.recapGrid.setMaxWidth(Region.USE_PREF_SIZE);
 
         final Button continueBtn = new Button("Continue");
         continueBtn.getStyleClass().add("counsellor-dismiss");
@@ -139,5 +143,11 @@ public final class ReportImpl extends VBox implements Report {
     public void close() {
         setVisible(false);
         setOpacity(0);
+    }
+
+    @Override
+    public void applyStyle(final boolean victory) {
+        titleLabel.getStyleClass().removeAll("endgame-title-victory", "endgame-title-defeat");
+        titleLabel.getStyleClass().add(victory ? "endgame-title-victory" : "endgame-title-defeat");
     }
 }
