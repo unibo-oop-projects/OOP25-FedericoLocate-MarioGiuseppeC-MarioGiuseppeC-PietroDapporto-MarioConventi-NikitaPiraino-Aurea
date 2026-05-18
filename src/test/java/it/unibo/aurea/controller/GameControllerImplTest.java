@@ -1,6 +1,10 @@
 package it.unibo.aurea.controller;
 
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +14,7 @@ import it.unibo.aurea.controller.api.PlayerInfo;
 import it.unibo.aurea.model.Deck;
 import it.unibo.aurea.model.GameConfigImpl;
 import it.unibo.aurea.model.GameEngineImpl;
+import it.unibo.aurea.model.ParameterImpl;
 import it.unibo.aurea.model.api.Card;
 import it.unibo.aurea.model.api.ParameterType;
 import it.unibo.aurea.view.api.GameView;
@@ -76,6 +81,63 @@ class GameControllerImplTest {
             controller.makeDecision(false);
             controller.makeDecision(true);
         }, "The controller should never throw unexpected exceptions during decisions.");
+    }
+
+    @Test
+    void testGetPlayerInfo() {
+        final PlayerInfo info = controller.getPlayerInfo();
+        assertNotNull(info, "getPlayerInfo() should never return null");
+        assertEquals("Test Rector", info.rectorName(),
+            "rectorName should match the value passed at construction");
+        assertEquals("Test Faculty", info.faculty(),
+            "faculty should match the value passed at construction");
+    }
+
+    @Test
+    void testGetCurrentParametersLevels() {
+        controller.startGame();
+        final Map<ParameterType, Integer> levels = controller.getCurrentParametersLevels();
+        assertNotNull(levels, "getCurrentParametersLevels() should not return null");
+        assertEquals(4, levels.size(),
+            "Should return levels for all 4 parameter types");
+        for (final ParameterType type : ParameterType.values()) {
+            assertTrue(levels.containsKey(type),
+                "Levels map should contain key: " + type);
+            assertTrue(levels.get(type) >= ParameterImpl.MIN_LEVEL
+                && levels.get(type) <= ParameterImpl.MAX_LEVEL,
+                "Level for " + type + " should be within valid range");
+        }
+    }
+
+    @Test
+    void testPreviewDecisionDeltasReturnsNonNull() {
+        controller.startGame();
+        final Map<ParameterType, Integer> deltas =
+            controller.previewDecisionDeltas(true);
+        assertNotNull(deltas,
+            "previewDecisionDeltas() should not return null");
+    }
+
+    @Test
+    void testPreviewDecisionDeltasPositiveValues() {
+        controller.startGame();
+        final Map<ParameterType, Integer> deltas =
+            controller.previewDecisionDeltas(true);
+        for (final Map.Entry<ParameterType, Integer> entry : deltas.entrySet()) {
+            assertTrue(entry.getValue() >= 0,
+                "All delta values should be absolute (non-negative)");
+        }
+    }
+
+    @Test
+    void testPreviewDecisionDeltasBothDirections() {
+        controller.startGame();
+        final Map<ParameterType, Integer> approval =
+            controller.previewDecisionDeltas(true);
+        final Map<ParameterType, Integer> refusal =
+            controller.previewDecisionDeltas(false);
+        assertNotNull(approval, "Approval deltas should not be null");
+        assertNotNull(refusal, "Refusal deltas should not be null");
     }
 
     /**
