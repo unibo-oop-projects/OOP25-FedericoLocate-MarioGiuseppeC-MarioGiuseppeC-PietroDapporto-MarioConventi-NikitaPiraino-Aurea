@@ -140,6 +140,33 @@ class GameControllerImplTest {
         assertNotNull(refusal, "Refusal deltas should not be null");
     }
 
+    @Test
+    void testPreviewDecisionNeverThrows() {
+        assertDoesNotThrow(() -> controller.previewDecision(true),
+            "previewDecision() should not throw before startGame()");
+        assertNotNull(controller.previewDecision(true),
+            "previewDecision() should never return null");
+    }
+
+    @Test
+    void testParameterLevelsChangeAfterDecision() {
+        controller.startGame();
+        final Map<ParameterType, Integer> before =
+            new java.util.EnumMap<>(controller.getCurrentParametersLevels());
+        controller.makeDecision(true);
+        final Map<ParameterType, Integer> after =
+            controller.getCurrentParametersLevels();
+        boolean anyChanged = false;
+        for (final ParameterType type : ParameterType.values()) {
+            if (!before.get(type).equals(after.get(type))) {
+                anyChanged = true;
+                break;
+            }
+        }
+        assertTrue(anyChanged,
+            "At least one parameter level should change after a decision");
+    }
+
     /**
      * A fake class that acts as a "spy" on the Controller's actions.
      */
