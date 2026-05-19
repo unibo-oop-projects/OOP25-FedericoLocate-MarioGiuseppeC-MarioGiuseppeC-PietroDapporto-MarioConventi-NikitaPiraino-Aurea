@@ -84,16 +84,9 @@ public final class GameControllerImpl implements GameController {
 
             if (decision == null || decision.getEffects() == null) {
                 LOGGER.warning(() -> "Missing decision data on card: " + currentCard);
-            } else {
-                // Apply all effects to the corresponding parameters
-                for (final Effect effect : decision.getEffects()) {
-                    final Parameter p = parametersMap.get(effect.getParameter());
-                    if (p != null) {
-                        p.modify(effect.getDelta()); // automatically triggers the Observer notification
-                    } else {
-                        LOGGER.warning(() -> "YAML Error: Unknown parameter requested -> " + effect.getParameter());
-                    }
-                }
+           } else {
+                // Delega l'applicazione dei calcoli e dei danni al Model
+                model.applyEffects(decision.getEffects());
             }
 
             currentCard.changeUsage();

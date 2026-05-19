@@ -3,49 +3,66 @@ package it.unibo.aurea.model.api;
 import java.util.List;
 
 /**
- * is the class, who manage the game, when it starts, how it ends.
+ * Interface that manages the core game flow.
  */
 public interface GameEngine {
 
     /**
-     * start the game with the selected configuration, probably the configuration will be edited by the programers.
+     * Starts the game.
      */
     void start();
 
     /**
-     * Checks the game has reached a terminal condition.
+     * Checks if time is finished.
      *
-     * @return true if the game is over and the endgame phase should begin, false otherwise.
+     * @return true if time is over.
      */
     boolean isTimeFinished();
 
     /**
-     * @return the actual configuration for this game.
+     * @return active configuration.
      */
     GameConfig getGameConfig();
 
     /**
-     * @return the current card.
+     * @return current card.
      */
     Card getCurrentCard();
 
     /**
-     * @return the list of parameters, it gives direct access to the object, so use it only if you need to change something.
+     * @return list of parameters.
      */
     List<Parameter> getParameters();
 
     /**
-     * @return  copy of the list of parameters.
+     * @return copy of parameters.
      */
     List<Parameter> getCopyOfParameters();
 
     /**
-     * @return the gameClock, it allows to the other part of the code to use the clock.
+     * @return game clock.
      */
     GameClock getGameClock();
 
     /**
-     * @return one of the possible states of the game: WON, LOST or CONTINUE.
+     * @return game state.
      */
     GameState getGameState();
+
+    /**
+     * Registers consequences.
+     *
+     * @param parentId the ID of the card
+     * @param wasApproval true if approved
+     */
+    void registerChoiceConsequences(String parentId, boolean wasApproval);
+
+    /**
+     * Applies the given list of effects to the game parameters, 
+     * considering the current difficulty multiplier.
+     *
+     * @param effects the list of effects to apply
+     */
+    void applyEffects(List<Effect> effects);
 }
+

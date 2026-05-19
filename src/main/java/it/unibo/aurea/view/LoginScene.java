@@ -38,7 +38,6 @@ import javafx.stage.Stage;
  * with the collected {@link PlayerInfo}. The login stage is then closed and the
  * caller is responsible for opening the game stage.
  */
-
 public final class LoginScene {
 
     private static final Logger LOGGER = Logger.getLogger(LoginScene.class.getName());
@@ -93,7 +92,9 @@ public final class LoginScene {
             change.getControlNewText().length() <= MAX_FACULTY_LENGTH ? change : null
         ));
 
-        final HBox diffRow = buildDifficultyRow();
+        // Creiamo la ChoiceBox qui in modo che sia visibile all'azione del bottone
+        final ChoiceBox<String> diffBox = new ChoiceBox<>();
+        final HBox diffRow = buildDifficultyRow(diffBox);
 
         final Label errorLabel = new Label();
         errorLabel.getStyleClass().add("login-error");
@@ -109,8 +110,20 @@ public final class LoginScene {
                 errorLabel.setVisible(true);
                 return;
             }
+
+            // Convertiamo il testo della UI nel rispettivo valore dell'Enum Difficulty
+            final String selectedDiff = diffBox.getValue();
+            final it.unibo.aurea.model.api.Difficulty difficulty;
+            if ("Hard".equals(selectedDiff)) {
+                difficulty = it.unibo.aurea.model.api.Difficulty.HARD;
+            } else if ("Medium".equals(selectedDiff)) {
+                difficulty = it.unibo.aurea.model.api.Difficulty.NORMAL;
+            } else {
+                difficulty = it.unibo.aurea.model.api.Difficulty.EASY;
+            }
+
             stage.close();
-            onLoginComplete.accept(new PlayerInfo(name, fac));
+            onLoginComplete.accept(new PlayerInfo(name, fac, difficulty));
         });
 
         facultyField.setOnAction(e -> startBtn.fire());
@@ -146,11 +159,10 @@ public final class LoginScene {
         stage.setScene(scene);
     }
 
-    private HBox buildDifficultyRow() {
+    private HBox buildDifficultyRow(final ChoiceBox<String> diffBox) {
         final Label diffLabel = new Label("Difficulty:");
         diffLabel.getStyleClass().add("login-subtitle");
 
-        final ChoiceBox<String> diffBox = new ChoiceBox<>();
         diffBox.getItems().addAll("Easy", "Medium", "Hard");
         diffBox.setValue("Easy");
         diffBox.getStyleClass().add("diff-choice");

@@ -10,7 +10,7 @@ import it.unibo.aurea.model.api.GameConfig;
 
 /**
  * this class is used to test the functionality of the gameClock
- * this is uìsed to chek that every modification to the implementation doesn't 
+ * this is uìsed to chek that every modification to the implementation doesn't
  * contains errors in the functionality.
  */
 final class GameClockTest {
@@ -19,7 +19,7 @@ final class GameClockTest {
 
     @BeforeEach
     void configuration() {
-        config = GameConfigImpl.createStandard(); //TO DO check if is better
+        config = GameConfigImpl.createStandard(it.unibo.aurea.model.api.Difficulty.EASY); //TO DO check if is better
         //to have it like a field or a a local variable
         clock = new GameClockImpl(config);
     }
