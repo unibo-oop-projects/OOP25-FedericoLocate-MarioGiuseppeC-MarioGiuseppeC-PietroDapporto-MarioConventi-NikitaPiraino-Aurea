@@ -16,6 +16,9 @@ import it.unibo.aurea.model.api.ParameterType;
  */
 class ParameterObserverTest {
 
+    private static final int INITIAL_LEVEL = 50;
+    private static final int UPDATED_LEVEL = 75;
+
     @Test
     void testIsInstantiableAsLambda() {
         // A @FunctionalInterface can be assigned from a lambda; if this
@@ -28,7 +31,7 @@ class ParameterObserverTest {
     void testReceivesCorrectType() {
         final ParameterType[] receivedType = {null};
         final ParameterObserver observer = (type, level) -> receivedType[0] = type;
-        observer.onParameterChanged(ParameterType.FINANCES, 50);
+        observer.onParameterChanged(ParameterType.FINANCES, INITIAL_LEVEL);
         assertEquals(ParameterType.FINANCES, receivedType[0],
             "Observer should receive the correct ParameterType");
     }
@@ -37,8 +40,8 @@ class ParameterObserverTest {
     void testReceivesCorrectLevel() {
         final int[] receivedLevel = {-1};
         final ParameterObserver observer = (type, level) -> receivedLevel[0] = level;
-        observer.onParameterChanged(ParameterType.STUDENTS, 75);
-        assertEquals(75, receivedLevel[0],
+        observer.onParameterChanged(ParameterType.STUDENTS, UPDATED_LEVEL);
+        assertEquals(UPDATED_LEVEL, receivedLevel[0],
             "Observer should receive the correct level value");
     }
 }
