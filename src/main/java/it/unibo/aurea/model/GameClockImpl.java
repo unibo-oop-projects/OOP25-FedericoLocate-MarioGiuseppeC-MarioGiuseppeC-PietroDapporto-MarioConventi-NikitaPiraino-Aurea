@@ -26,7 +26,6 @@ public final class GameClockImpl implements GameClock {
 
     @Override
     public void nextTurn() {
-        //TO DO implement the conditions for the parameters evaluation
         if (timeFinished) {
             throw new IllegalStateException("Game already finished");
         }
