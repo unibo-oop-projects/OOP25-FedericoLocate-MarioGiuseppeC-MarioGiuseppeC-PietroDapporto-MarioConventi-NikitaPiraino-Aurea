@@ -601,19 +601,19 @@ cards:
     character: STUDENT
     description: "New dormitory regulations would impose stricter curfews."
     refusal:
-      text: "Students deserve freedom"
-      effects:
-        - parameter: STUDENTS
-          delta: 7
-        - parameter: REPUTATION
-          delta: -2
-    approval:
       text: "Enforce stricter rules"
       effects:
         - parameter: STUDENTS
           delta: -8
         - parameter: REPUTATION
           delta: 3
+    approval:
+      text: "Students deserve freedom"
+      effects:
+        - parameter: STUDENTS
+          delta: 7
+        - parameter: REPUTATION
+          delta: -2
 
   - id: stu_course_cuts
     character: STUDENT
