@@ -51,8 +51,9 @@ public interface GameView {
     /**
      * Updates the time counter on the UI.
      * 
-     * @param semester the current semester/session
-     * @param turn the current turn
+     * @param semester the current semester/session.
+     * @param turn the current turn.
      */
     void updateTime(int semester, int turn);
+
 }

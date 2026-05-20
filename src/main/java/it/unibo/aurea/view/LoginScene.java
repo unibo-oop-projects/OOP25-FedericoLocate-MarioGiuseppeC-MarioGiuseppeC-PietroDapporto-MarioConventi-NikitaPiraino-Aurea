@@ -24,6 +24,7 @@ import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -144,12 +145,21 @@ public final class LoginScene {
         veil.setStyle("-fx-background-color: rgba(6, 3, 1, 0.45);");
         veil.setMouseTransparent(true);
 
+        final Button infoBtn = new InfoButtonImpl().build();
+        final BorderPane overlay = new BorderPane();
+        overlay.setBottom(infoBtn);
+        BorderPane.setAlignment(infoBtn, Pos.BOTTOM_RIGHT);
+        BorderPane.setMargin(infoBtn, new Insets(0, FORM_SPACING, FORM_SPACING, 0));
+        overlay.setMouseTransparent(false);
+        overlay.setPickOnBounds(false);
+
         final StackPane root = new StackPane();
         applyBackground(root);
         veil.setMaxWidth(Double.MAX_VALUE);
         veil.setMaxHeight(Double.MAX_VALUE);
         root.getChildren().add(veil);
         root.getChildren().add(form);
+        root.getChildren().add(overlay);
 
         final Scene scene = new Scene(root, SCENE_WIDTH, SCENE_HEIGHT);
         final var stylesheet = getClass().getResource("/styles.css");
