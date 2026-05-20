@@ -22,13 +22,11 @@ import it.unibo.aurea.view.api.GameView;
 
 /**
  * Implementation of the GameController.
- * Manages the flow between the Deck (Model) and the GUI (View).
+ * Manages the flow between the Model and the View.
  */
 public final class GameControllerImpl implements GameController {
 
-    // Logger to track the error, so the game doesn't crash
     private static final Logger LOGGER = Logger.getLogger(GameControllerImpl.class.getName());
-
     private final GameView view;
     private final GameEngine model;
     private final Map<ParameterType, Parameter> parametersMap;
@@ -38,22 +36,17 @@ public final class GameControllerImpl implements GameController {
      * Constructor for the controller.
      * Sets up the reactive connection between Model and View.
      *
-     * @param view the {@code GameView} to update
-     * @param model the {@code GameEngine} used
+     * @param view       the {@code GameView} to update
+     * @param model      the {@code GameEngine} used
      * @param playerInfo the player identity collected at login
      */
-    @SuppressFBWarnings(
-        value = "EI_EXPOSE_REP2",
-        justification = "The view must be stored as a reference to allow communication."
-    )
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "The view must be stored as a reference.")
     public GameControllerImpl(final GameView view, final GameEngine model, final PlayerInfo playerInfo) {
         this.view = view;
         this.model = model;
         this.playerInfo = Objects.requireNonNull(playerInfo);
-
         this.parametersMap = model.getParameters().stream()
-            .collect(Collectors.toMap(Parameter::getName, p -> p));
-
+                .collect(Collectors.toMap(Parameter::getName, p -> p));
         this.parametersMap.values().forEach(p -> p.addObserver(this.view::updateSingleParameter));
     }
 
@@ -61,33 +54,29 @@ public final class GameControllerImpl implements GameController {
     public void startGame() {
         LOGGER.info("Starting a new game session...");
         model.start();
-
-        this.parametersMap.values().forEach(p ->
-            view.updateSingleParameter(p.getName(), p.getLevel())
-        );
+        this.parametersMap.values().forEach(p -> view.updateSingleParameter(p.getName(), p.getLevel()));
         updateUI();
     }
 
     @Override
     public void makeDecision(final boolean isApproval) {
         final Card currentCard = model.getCurrentCard();
-
         if (currentCard == null) {
-            LOGGER.severe("CRITICAL: Tried to make a decision but currentCard is null!");
+            LOGGER.severe("CRITICAL: currentCard is null!");
             return;
         }
 
-        // Ensure the game is running and a card is active
         if (model.getGameState() == GameState.RUNNING) {
-            // Retrieve the chosen decision (Approval or Refusal)
             final Decision decision = isApproval ? currentCard.getApproval() : currentCard.getRefusal();
 
             if (decision == null || decision.getEffects() == null) {
                 LOGGER.warning(() -> "Missing decision data on card: " + currentCard);
-           } else {
-                // Delega l'applicazione dei calcoli e dei danni al Model
+            } else {
                 model.applyEffects(decision.getEffects());
             }
+
+            // Register choice consequences to trigger follow-up events
+            model.registerChoiceConsequences(currentCard.getId(), isApproval);
 
             currentCard.changeUsage();
             model.getGameClock().nextTurn();
@@ -98,8 +87,6 @@ public final class GameControllerImpl implements GameController {
     @Override
     public Set<ParameterType> previewDecision(final boolean isApproval) {
         final Card currentCard = model.getCurrentCard();
-
-        // Fail-safe: if there isn't card or the game is not running, return an empty set
         if (currentCard == null || model.getGameState() != GameState.RUNNING) {
             return Collections.emptySet();
         }
@@ -109,10 +96,9 @@ public final class GameControllerImpl implements GameController {
             return Collections.emptySet();
         }
 
-        // Map the effects to their parameter types and collect them in a Set (to avoid duplicates)
         return decision.getEffects().stream()
-            .map(Effect::getParameter)
-            .collect(Collectors.toSet());
+                .map(Effect::getParameter)
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -147,12 +133,8 @@ public final class GameControllerImpl implements GameController {
         return this.playerInfo;
     }
 
-    /**
-     * Synchronizes the View with the current state of the Model.
-     */
     private void updateUI() {
         final GameState state = model.getGameState();
-
         if (state == GameState.RUNNING) {
             view.updateTime(model.getGameClock().getCurrentSemester(), model.getGameClock().getCurrentTurn());
             view.displayCard(model.getCurrentCard());
@@ -161,11 +143,6 @@ public final class GameControllerImpl implements GameController {
         }
     }
 
-    /**
-     * Handles the graphic transitions for game termination.
-     *
-     * @param state the terminal state of the game
-     */
     private void handleGameEnd(final GameState state) {
         switch (state) {
             case WON -> {
@@ -181,17 +158,12 @@ public final class GameControllerImpl implements GameController {
         }
     }
 
-    /**
-     * Helper method to analyze parameters and find the cause of the defeat.
-     *
-     * @return a string indicating which parameter reached zero or max capacity.
-     */
     private String determineDefeatReason() {
         return parametersMap.values().stream()
-            .filter(p -> !p.isAlive())
-            .map(Parameter::getDeathReason)
-            .findFirst()
-            .orElse("Unknown Causes");
+                .filter(p -> !p.isAlive())
+                .map(Parameter::getDeathReason)
+                .findFirst()
+                .orElse("Unknown Causes");
     }
 
     @Override

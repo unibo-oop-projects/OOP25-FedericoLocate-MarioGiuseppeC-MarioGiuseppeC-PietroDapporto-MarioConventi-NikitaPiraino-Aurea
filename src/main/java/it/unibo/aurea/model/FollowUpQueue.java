@@ -27,19 +27,24 @@ public final class FollowUpQueue {
 
     /**
      * Checks if there is a forced child card ready to be played.
+     *
      * 
      * @param deck the game deck
      * @return an Optional containing the forced card, or empty
      */
     public Optional<Card> pollForcedCard(final Deck deck) {
-        for (final ActiveFollowUp activeEvent : eventQueue) {
+        final Iterator<ActiveFollowUp> iterator = eventQueue.iterator();
+        while (iterator.hasNext()) {
+            final ActiveFollowUp activeEvent = iterator.next();
             if (activeEvent.getRemainingTurns() <= 0) {
-                final Card forcedCard = deck.getAllCards().stream()
+                iterator.remove();
+
+                final Card forcedCard = deck.getAllChildCards().stream()
                         .filter(c -> c.getId().equals(activeEvent.getFollowUp().getChildId()))
                         .findFirst()
                         .orElse(null);
+
                 if (forcedCard != null && !forcedCard.isUsed()) {
-                    eventQueue.remove(activeEvent);
                     return Optional.of(forcedCard);
                 }
             }
@@ -49,7 +54,7 @@ public final class FollowUpQueue {
 
     /**
      * Registers a new follow-up event based on the player's choice.
-     * 
+     *
      * @param deck        the game deck
      * @param parentId    the id of the played card
      * @param wasApproval true if approved, false if refused
