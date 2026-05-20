@@ -564,12 +564,27 @@ public final class GameViewJavaFXImpl implements GameView {
     }
 
     @Override
-    public  String getColorNameGold() {
+    public String getColorNameGold() {
         return COLOR_NAME_GOLD;
     }
 
     @Override
-    public  double getInfoIconScale() {
+    public double getInfoIconScale() {
         return INFO_ICON_SCALE;
+    }
+
+    @Override
+    public int getPaddingNormal() {
+        return PADDING_NORMAL;
+    }
+
+    @Override
+    public int getRulesPopupWidth() {
+        return RULES_POPUP_WIDTH;
+    }
+
+    @Override
+    public int getRulesPopupHeight() {
+        return RULES_POPUP_HEIGHT;
     }
 }

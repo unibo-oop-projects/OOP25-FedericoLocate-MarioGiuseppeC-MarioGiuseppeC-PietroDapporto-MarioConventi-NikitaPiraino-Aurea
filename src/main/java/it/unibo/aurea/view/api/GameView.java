@@ -65,4 +65,19 @@ public interface GameView {
      * @return the value of the info icon scale.
      */
     double getInfoIconScale();
+
+    /**
+     * @return the standard padding value used in the UI.
+     */
+    int getPaddingNormal();
+
+    /**
+     * @return the width of the rules popup window.
+     */
+    int getRulesPopupWidth();
+
+    /**
+     * @return the height of the rules popup window.
+     */
+    int getRulesPopupHeight();
 }
