@@ -77,14 +77,16 @@ public final class GameEngineImpl implements GameEngine {
     }
 
     private Card extractNextCard() {
-        // 1. Update queue turns and poll for any forced child card
-        this.followUpQueue.updateTurns();
+        // 1. First, extract the forced card if its timer has expired
         final Optional<Card> forcedCard = this.followUpQueue.pollForcedCard(this.deck);
         if (forcedCard.isPresent()) {
             return forcedCard.get();
         }
 
-        // 2. Algorithmic selection of the base card (Delegated to CardSelector)
+        // 2. Decrement the turns for the next cycle
+        this.followUpQueue.updateTurns();
+
+        // 3. Standard card selection
         return this.cardSelector.selectNextCard(this.deck, this.parameters, this.difficultySettings);
     }
 
