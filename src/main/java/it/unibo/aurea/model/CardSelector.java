@@ -21,7 +21,7 @@ public final class CardSelector {
     /**
      * Selects the next card from the deck based on parameters state and difficulty
      * settings.
-     * 
+     *
      * @param deck               the game deck
      * @param parameters         the current game parameters
      * @param difficultySettings the difficulty settings for scaling weights
@@ -58,11 +58,15 @@ public final class CardSelector {
             }
         }
 
+        // Security-Fullback
         if (playableCards.isEmpty()) {
             return deck.getAllCards().stream()
                     .filter(c -> !c.isUsed())
                     .findFirst()
-                    .orElse(deck.getAllCards().get(0));
+                    .orElseGet(() -> {
+                        deck.getAllCards().forEach(Card::changeUsage);
+                        return deck.getAllCards().get(0);
+                    });
         }
 
         final double randomVal = randomGenerator.nextDouble() * totalWeight;
