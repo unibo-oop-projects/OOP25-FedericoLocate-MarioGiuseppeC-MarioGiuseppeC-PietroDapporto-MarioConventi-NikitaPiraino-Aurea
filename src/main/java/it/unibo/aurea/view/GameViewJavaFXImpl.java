@@ -562,4 +562,14 @@ public final class GameViewJavaFXImpl implements GameView {
             .forEach(Stage::close);
         onRestart.run();
     }
+
+    @Override
+    public  String getColorNameGold() {
+        return COLOR_NAME_GOLD;
+    }
+
+    @Override
+    public  double getInfoIconScale() {
+        return INFO_ICON_SCALE;
+    }
 }

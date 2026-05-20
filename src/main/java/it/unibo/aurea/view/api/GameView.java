@@ -51,8 +51,18 @@ public interface GameView {
     /**
      * Updates the time counter on the UI.
      * 
-     * @param semester the current semester/session
-     * @param turn the current turn
+     * @param semester the current semester/session.
+     * @param turn the current turn.
      */
     void updateTime(int semester, int turn);
+
+    /**
+     * @return the value of the gold colour.
+     */
+    String getColorNameGold();
+
+    /**
+     * @return the value of the info icon scale.
+     */
+    double getInfoIconScale();
 }
