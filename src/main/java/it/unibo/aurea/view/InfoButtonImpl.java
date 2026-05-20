@@ -17,7 +17,7 @@ import javafx.stage.StageStyle;
 /**
  * Builds the info button that opens the rules popup.
  */
-public class InfoButtonImpl implements InfoButton {
+public final class InfoButtonImpl implements InfoButton {
 
     /**
      * Builds and returns the info button.
@@ -75,6 +75,7 @@ public class InfoButtonImpl implements InfoButton {
             GameViewJavaFXImpl.getRulesPopupHeight()
         );
         final var ss = getClass().getResource("/styles.css");
+        //final var ss = InfoButtonImpl.class.getResource("/styles.css");
         if (ss != null) {
             scene.getStylesheets().add(ss.toExternalForm());
         }
