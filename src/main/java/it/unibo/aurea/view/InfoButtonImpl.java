@@ -21,34 +21,24 @@ public class InfoButtonImpl {
     /**
      * Builds and returns the info button.
      *
-     * @param colorNameGold    hex colour for the info icon
-     * @param infoIconScale    scale factor for the info icon
-     * @param paddingNormal    standard padding used inside the popup
-     * @param rulesPopupWidth  width of the rules popup window
-     * @param rulesPopupHeight height of the rules popup window
      * @return the configured {@link Button}
      */
-    public Button build(
-            final String colorNameGold,
-            final double infoIconScale,
-            final int paddingNormal,
-            final int rulesPopupWidth,
-            final int rulesPopupHeight) {
+    public Button build() {
         final SVGPath infoIcon = new SVGPath();
         infoIcon.setContent("M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"
             + "m1 15h-2v-6h2v6zm0-8h-2V7h2v2z");
-        infoIcon.setFill(Color.web(colorNameGold));
-        infoIcon.setScaleX(infoIconScale);
-        infoIcon.setScaleY(infoIconScale);
+        infoIcon.setFill(Color.web(GameViewJavaFXImpl.getColorNameGold()));
+        infoIcon.setScaleX(GameViewJavaFXImpl.getInfoIconScale());
+        infoIcon.setScaleY(GameViewJavaFXImpl.getInfoIconScale());
 
         final Button btn = new Button();
         btn.setGraphic(infoIcon);
         btn.getStyleClass().add("info-button");
-        btn.setOnAction(e -> showRules(paddingNormal, rulesPopupWidth, rulesPopupHeight));
+        btn.setOnAction(e -> showRules());
         return btn;
     }
 
-    private void showRules(final int paddingNormal, final int rulesPopupWidth, final int rulesPopupHeight) {
+    private void showRules() {
         final Stage popup = new Stage();
         popup.initStyle(StageStyle.UTILITY);
         popup.initModality(Modality.APPLICATION_MODAL);
@@ -65,19 +55,23 @@ public class InfoButtonImpl {
         final ScrollPane scroll = new ScrollPane(body);
         scroll.getStyleClass().add("rules-scroll");
         scroll.setFitToWidth(true);
-        scroll.setPrefViewportHeight(rulesPopupHeight - 100);
+        scroll.setPrefViewportHeight(GameViewJavaFXImpl.getRulesPopupHeight() - 100);
 
         final Button closeBtn = new Button("Close the Tome");
         closeBtn.getStyleClass().add("counsellor-dismiss");
         closeBtn.setOnAction(e -> popup.close());
 
         final VBox content = new VBox(12);
-        content.setPadding(new Insets(paddingNormal));
+        content.setPadding(new Insets(GameViewJavaFXImpl.getPaddingNormal()));
         content.setAlignment(Pos.CENTER);
         content.getStyleClass().add("counsellor-content");
         content.getChildren().addAll(title, scroll, closeBtn);
 
-        final Scene scene = new Scene(content, rulesPopupWidth, rulesPopupHeight);
+        final Scene scene = new Scene(
+            content,
+            GameViewJavaFXImpl.getRulesPopupWidth(),
+            GameViewJavaFXImpl.getRulesPopupHeight()
+        );
         final var ss = getClass().getResource("/styles.css");
         if (ss != null) {
             scene.getStylesheets().add(ss.toExternalForm());
