@@ -1,5 +1,6 @@
 package it.unibo.aurea.view;
 
+import it.unibo.aurea.view.api.InfoButton;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -16,13 +17,14 @@ import javafx.stage.StageStyle;
 /**
  * Builds the info button that opens the rules popup.
  */
-public class InfoButtonImpl {
+public class InfoButtonImpl implements InfoButton {
 
     /**
      * Builds and returns the info button.
      *
      * @return the configured {@link Button}
      */
+    @Override
     public Button build() {
         final SVGPath infoIcon = new SVGPath();
         infoIcon.setContent("M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"
