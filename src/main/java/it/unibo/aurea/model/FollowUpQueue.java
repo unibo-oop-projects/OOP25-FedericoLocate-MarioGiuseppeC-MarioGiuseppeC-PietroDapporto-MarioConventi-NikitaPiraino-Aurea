@@ -7,11 +7,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 /**
  * Manages the queue of delayed sub-events (child cards).
  */
 public final class FollowUpQueue {
+
+    // Constant declarations must be at the very top of the class
+    private static final Logger LOGGER = Logger.getLogger(FollowUpQueue.class.getName());
     private final List<ActiveFollowUp> eventQueue = new ArrayList<>();
 
     /**
@@ -28,7 +32,6 @@ public final class FollowUpQueue {
     /**
      * Checks if there is a forced child card ready to be played.
      *
-     * 
      * @param deck the game deck
      * @return an Optional containing the forced card, or empty
      */
@@ -44,7 +47,13 @@ public final class FollowUpQueue {
                         .findFirst()
                         .orElse(null);
 
-                if (forcedCard != null && !forcedCard.isUsed()) {
+                if (forcedCard == null) {
+                    LOGGER.warning("FollowUp child card not found for id: "
+                            + activeEvent.getFollowUp().getChildId());
+                    continue;
+                }
+
+                if (!forcedCard.isUsed()) {
                     return Optional.of(forcedCard);
                 }
             }
