@@ -60,26 +60,8 @@ public final class GameControllerImpl implements GameController {
 
     @Override
     public void makeDecision(final boolean isApproval) {
-        final Card currentCard = model.getCurrentCard();
-        if (currentCard == null) {
-            LOGGER.severe("CRITICAL: currentCard is null!");
-            return;
-        }
-
         if (model.getGameState() == GameState.RUNNING) {
-            final Decision decision = isApproval ? currentCard.getApproval() : currentCard.getRefusal();
-
-            if (decision == null || decision.getEffects() == null) {
-                LOGGER.warning(() -> "Missing decision data on card: " + currentCard);
-            } else {
-                model.applyEffects(decision.getEffects());
-            }
-
-            // Register choice consequences to trigger follow-up events
-            model.registerChoiceConsequences(currentCard.getId(), isApproval);
-
-            currentCard.changeUsage();
-            model.getGameClock().nextTurn();
+            model.makeDecision(isApproval);
             updateUI();
         }
     }

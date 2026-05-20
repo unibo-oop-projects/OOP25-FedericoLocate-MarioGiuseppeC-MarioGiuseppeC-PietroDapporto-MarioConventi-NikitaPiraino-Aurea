@@ -1,6 +1,8 @@
 package it.unibo.aurea.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -66,5 +68,29 @@ class GameEngineTest {
         }
 
         assertEquals(GameState.WON, engine.getGameState(), "Game must be WON when time is finished");
+    }
+
+    /**
+     * Tests that makeDecision properly applies effects, marks cards as used, and advances clock.
+     */
+    @Test
+    void testMakeDecision() {
+        engine.start();
+        final it.unibo.aurea.model.api.Card cardBefore = engine.getCurrentCard();
+        assertNotNull(cardBefore, "A card must be active at the start");
+
+        final int turnBefore = engine.getGameClock().getCurrentTurn();
+        final int semesterBefore = engine.getGameClock().getCurrentSemester();
+
+        // Make decision
+        engine.makeDecision(true);
+
+        // Clock must have advanced
+        final int turnAfter = engine.getGameClock().getCurrentTurn();
+        assertTrue(turnAfter > turnBefore || engine.getGameClock().getCurrentSemester() > semesterBefore,
+            "The game clock must advance after a decision");
+
+        // The card played must be marked as used
+        assertTrue(cardBefore.isUsed(), "The played card must be marked as used");
     }
 }

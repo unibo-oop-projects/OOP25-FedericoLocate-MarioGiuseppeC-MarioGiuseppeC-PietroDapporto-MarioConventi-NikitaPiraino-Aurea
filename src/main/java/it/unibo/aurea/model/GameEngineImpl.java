@@ -138,4 +138,42 @@ public final class GameEngineImpl implements GameEngine {
     public GameClock getGameClock() {
         return this.gameClock;
     }
+
+    @Override
+    public void makeDecision(final boolean isApproval) {
+        if (getGameState() != GameState.RUNNING) {
+            return;
+        }
+        final Card currentCard = getCurrentCard();
+        if (currentCard == null) {
+            return;
+        }
+
+        final Decision decision = isApproval ? currentCard.getApproval() : currentCard.getRefusal();
+        if (decision != null && decision.getEffects() != null) {
+            applyEffects(decision.getEffects());
+        }
+
+        registerChoiceConsequences(currentCard.getId(), isApproval);
+        currentCard.changeUsage();
+        this.gameClock.nextTurn();
+
+        final StringBuilder paramStr = new StringBuilder();
+        for (final Parameter p : this.parameters) {
+            paramStr.append(p.getName().getDisplayName())
+                    .append(": ")
+                    .append(p.getLevel())
+                    .append("/100 | ");
+        }
+        if (paramStr.length() > 3) {
+            paramStr.setLength(paramStr.length() - 3);
+        }
+
+        // Using System.out for explicit cmd logging as requested by the user
+        System.out.println("\n--- GAME STATUS UPDATE ---"); // NOPMD - Explicitly requested by user
+        System.out.println("Card Name:   " + currentCard.getId()); // NOPMD - Explicitly requested by user
+        System.out.println("Choice:      " + (isApproval ? "APPROVAL" : "REFUSAL")); // NOPMD - Explicitly requested by user
+        System.out.println("Parameters:  " + paramStr); // NOPMD - Explicitly requested by user
+        System.out.println("---------------------------\n"); // NOPMD - Explicitly requested by user
+    }
 }
