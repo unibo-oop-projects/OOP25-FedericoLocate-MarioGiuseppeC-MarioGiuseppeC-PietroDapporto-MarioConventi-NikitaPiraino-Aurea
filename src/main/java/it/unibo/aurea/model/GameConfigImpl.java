@@ -8,11 +8,6 @@ import it.unibo.aurea.model.api.GameConfig;
  * For example in future could be interesting to create an apocalypse mode.
  */
 final class GameConfigImpl implements GameConfig {
-    private static final int STANDARD_CARDS_PER_SEMESTER = 6;
-    private static final int STANDARD_SEMESTERS_PER_GAME = 6;
-    private static final int MINIMAL_NUMBER_SEMESTER = 2;
-    private static final int MINIMAL_NUMBER_CARDS = 2;
-
     private final int semesters;
     private final int cardsPerSemester;
     private final Difficulty difficulty;
