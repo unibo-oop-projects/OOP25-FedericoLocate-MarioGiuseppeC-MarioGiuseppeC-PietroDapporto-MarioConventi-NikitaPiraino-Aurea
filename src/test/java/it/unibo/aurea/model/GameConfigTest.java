@@ -15,7 +15,7 @@ class GameConfigTest {
 
     @BeforeEach
     void setUp() {
-        config = GameConfigImpl.createStandard(it.unibo.aurea.model.api.Difficulty.EASY);
+        config = GameConfigFactory.createStandard(it.unibo.aurea.model.api.Difficulty.EASY);
     }
 
     @Test
