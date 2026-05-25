@@ -18,7 +18,7 @@ public interface Report {
     void show(String semesterLabel, Map<ParameterType, Integer> levels);
 
     /**
-     * Closes the report and continues the game. This method is made to don't receive the functional interface from PMD MAIN
+     * Closes the report and continues the game.
      */
     void close();
 
