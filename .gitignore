@@ -9,3 +9,13 @@ out/
 .DS_Store
 *.log
 !gradle/wrapper/gradle-wrapper.jar
+# LaTeX auxiliary files
+*.aux
+*.log
+*.toc
+*.out
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.blg
+*.bbl

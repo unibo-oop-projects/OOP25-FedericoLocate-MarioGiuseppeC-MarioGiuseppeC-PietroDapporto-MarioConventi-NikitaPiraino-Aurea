@@ -1,0 +1,679 @@
+% =============================================================================
+% Relazione progetto OOP 2025/26 -- Aurea Mediocritas
+% Gruppo: Dapporto Pietro, Piraino Nikita, Conventi Mario, Locatelli Federico
+% Struttura conforme alla metarelazione (Pianini, 14 aprile 2026)
+%
+% Compilazione consigliata:
+%   pdflatex report.tex
+%   pdflatex report.tex   (seconda passata per indice e riferimenti)
+% =============================================================================
+
+\documentclass[11pt, a4paper, oneside]{report}
+
+% --- Pacchetti di base -------------------------------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{lmodern}
+\usepackage[a4paper, margin=2.5cm]{geometry} 
+\usepackage{microtype} 
+
+% --- Grafica, link, codice ---------------------------------------------------
+\usepackage{graphicx}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=blue,
+    citecolor=black,
+    pdftitle={Relazione progetto Aurea -- OOP 2025/26},
+    pdfauthor={Dapporto, Piraino, Conventi, Locatelli}
+}
+\usepackage{xcolor}
+\usepackage{listings}
+\lstset{
+    basicstyle=\ttfamily\footnotesize,
+    breaklines=true,
+    columns=fullflexible,
+    frame=single,
+    showstringspaces=false,
+    keywordstyle=\color{blue!70!black}\bfseries,
+    commentstyle=\color{green!50!black}\itshape,
+    stringstyle=\color{red!70!black},
+    language=Java,
+    captionpos=b,
+    tabsize=2
+}
+
+% --- Indice e capitoli -------------------------------------------------------
+\usepackage{titlesec}
+\usepackage[titles]{tocloft}
+
+% --- Frontespizio ------------------------------------------------------------
+\title{%
+    \vspace{-1.5cm}
+    \rule{\linewidth}{0.5mm} \\[0.4cm]
+    {\Huge \textbf{Aurea Mediocritas}} \\[0.2cm]
+    {\Large Relazione del progetto di Programmazione ad Oggetti} \\ 
+    \rule{\linewidth}{0.5mm} \\[0.4cm]
+    {\large A.A. 2025/26 -- Universit\`a di Bologna}
+}
+\author{%
+    Pietro Dapporto \\ \texttt{pietro.dapporto@studio.unibo.it}
+    \and
+    Nikita Piraino \\ \texttt{nikita.piraino@studio.unibo.it}
+    \and
+    Mario Conventi \\ \texttt{mario.conventi@studio.unibo.it}
+    \and
+    Federico Locatelli \\ \texttt{federico.locatelli3@studio.unibo.it}
+}
+\date{\today}
+
+% =============================================================================
+\begin{document}
+% =============================================================================
+
+\maketitle
+\tableofcontents
+
+% =============================================================================
+\chapter{Analisi}
+% =============================================================================
+In questo capitolo si effettua l'analisi dei requisiti e del dominio applicativo
+del progetto \emph{Aurea Mediocritas}, senza alcun riferimento al design o alle
+tecnologie implementative.
+
+% -----------------------------------------------------------------------------
+\section{Descrizione e requisiti}
+% -----------------------------------------------------------------------------
+\emph{Aurea Mediocritas} \`e un'applicazione che riproduce le vicende di un
+Rettore universitario impegnato a gestire un Ateneo bilanciando iniziative da
+intraprendere e situazioni critiche da risolvere. Il gioco si ispira al gioco
+di strategia a carte \emph{Reigns}: il giocatore impersona il Magnifico per la
+durata di tre anni accademici (sei semestri) e deve arrivare al termine del
+mandato mantenendo l'equilibrio fra i parametri che descrivono lo stato
+dell'Universit\`a.
+
+A ogni turno il giocatore riceve una carta che descrive un evento (un'iniziativa
+proposta, una protesta studentesca, un'opportunit\`a di finanziamento, eccetera)
+e deve scegliere fra due alternative. Ciascuna scelta modifica i valori dei
+parametri di gioco. La partita si conclude positivamente se il Rettore arriva
+al termine del proprio mandato senza che alcun parametro raggiunga un valore
+critico; si conclude negativamente nel momento in cui un qualsiasi parametro
+raggiunge il livello minimo o massimo.
+
+\paragraph{Requisiti funzionali}
+\begin{itemize}
+    \item Generazione di carte (eventi), ciascuna con un effetto associato alla scelta del giocatore.
+    \item Costruzione di un mazzo che modella la successione di eventi della partita.
+    \item Risposta del giocatore agli eventi tramite una scelta binaria.
+    \item Aggiornamento dei parametri di gioco a seguito della scelta effettuata.
+    \item Gestione delle condizioni di fine partita: vittoria al termine del mandato; sconfitta al raggiungimento dei valori critici di un parametro.
+\end{itemize}
+
+\paragraph{Requisiti funzionali opzionali}
+\begin{itemize}
+    \item Scoreboard per la visualizzazione dello stato dei parametri.
+    \item Suddivisione della partita in semestri con riepilogo intermedio.
+    \item Modalit\`a ``apocalittica'' con eventi pi\`u fantasiosi.
+    \item Easter egg ambientati nel contesto unibo.
+\end{itemize}
+
+\paragraph{Requisiti non funzionali}
+\begin{itemize}
+    \item L'applicazione deve essere distribuita como singolo file JAR eseguibile su qualunque piattaforma con Java~21.
+    \item L'interfaccia grafica deve essere reattiva e gradevole, con animazioni fluide nelle transizioni di stato.
+    \item Il software deve poter essere avviato senza configurazioni esterne, partendo dal solo JAR.
+\end{itemize}
+
+% -----------------------------------------------------------------------------
+\section{Modello del Dominio}
+% -----------------------------------------------------------------------------
+Le entit\`a principali del dominio sono il \emph{Rettore} (il giocatore), che
+gestisce un insieme di \emph{Parametri} dell'Ateneo (ad esempio, finanze,
+ricerca, soddisfazione studentesca, prestigio). Lo svolgimento della partita
+\`e scandito da una sequenza di \emph{Carte} prelevate da un \emph{Mazzo}: ogni
+carta descrive un evento e propone al giocatore due \emph{Scelte} alternative.
+A ciascuna scelta \`e associato un \emph{Effetto} che modifica i valori di uno
+o pi\`u parametri.
+
+Il \emph{Tempo di gioco} \`e organizzato in turni raggruppati in semestri; un
+mandato completo \`e composto da sei semestri. Lo \emph{Stato di gioco}
+descrive in ogni istante l'andamento della partita: la partita \`e in corso,
+\`e stata vinta (il mandato \`e terminato senza fallimenti), oppure \`e stata
+persa (un parametro ha raggiunto un valore critico).
+
+% -- inserire qui il diagramma UML del dominio --
+\begin{figure}[h]
+    \centering
+    \fbox{\parbox[c][5cm][c]{0.9\linewidth}{\centering \textit{Diagramma UML del modello di dominio (da inserire).}}}
+    \caption{Modello del dominio di Aurea Mediocritas: entit\`a, attributi principali e relazioni.}
+    \label{fig:domain-model}
+\end{figure}
+
+\paragraph{Aspetti impegnativi}
+Particolare attenzione richieder\`a la modellazione dell'algoritmo che determina
+quale carta presentare al giocatore di turno in turno: la successione delle
+carte non deve essere puramente casuale, ma deve evolvere nel tempo in funzione
+dello stato dell'Ateneo e dello storico di gioco. Anche l'equilibrio fra
+l'impatto delle carte e i valori dei parametri costituisce una sfida di
+bilanciamento non triviale.
+
+% =============================================================================
+\chapter{Design}
+% =============================================================================
+In questo capitolo si descrivono le strategie messe in campo per soddisfare i
+requisiti identificati in fase di analisi: prima la visione architetturale
+complessiva, poi gli aspetti di design di dettaglio pi\`u rilevanti svolti
+singolarmente da ciascun membro del gruppo.
+
+% -----------------------------------------------------------------------------
+\section{Architettura}
+% -----------------------------------------------------------------------------
+L'architettura dell'applicazione segue il pattern \textbf{Model-View-Controller
+(MVC)}, con una netta separazione delle responsabilit\`a fra i tre livelli e
+una sostituibilit\`a in blocco della view senza impatto sul resto del sistema.
+
+\begin{itemize}
+    \item Il \textbf{Model} (package \texttt{it.unibo.aurea.model}) racchiude la
+        logica di gioco e lo stato dell'Ateneo: gli ingressi principali sono
+        l'interfaccia \texttt{GameEngine} (orchestratore della partita) e le
+        sue dipendenze \texttt{GameConfig}, \texttt{GameClock}, \texttt{Deck},
+        \texttt{Card} e \texttt{Parameter}.
+    \item Il \textbf{Controller} (package \texttt{it.unibo.aurea.controller})
+        coordina il flusso di interazione fra utente e modello: riceve le
+        scelte del giocatore dalla view, le inoltra al modello, recupera lo
+        stato aggiornato e lo passa alla view per la presentazione.
+    \item La \textbf{View} (package \texttt{it.unibo.aurea.view}) \`e realizzata
+        in JavaFX e presenta all'utente lo stato del gioco, le carte, le
+        scelte disponibili e i riepiloghi inter-semestrali. Il punto di
+        ingresso \`e una \texttt{Stage} principale che ospita scene
+        specializzate per le diverse fasi del gioco.
+\end{itemize}
+
+% -- inserire qui il diagramma UML architetturale --
+\begin{figure}[h]
+    \centering
+    \fbox{\parbox[c][5cm][c]{0.9\linewidth}{\centering \textit{Diagramma UML architetturale (MVC, da inserire).}}}
+    \caption{Architettura complessiva del sistema: interfacce principali di Model, View e Controller.}
+    \label{fig:architecture}
+\end{figure}
+
+La scelta di MVC guarantees che (i)~il modello sia completamente indipendente
+dalla libreria grafica utilizzata, (ii)~la view possa essere sostituita in
+blocco (per esempio passando da JavaFX a Swing) senza modificare modello o
+controller, e (iii)~l'aggiunta di nuove funzionalit\`a possa essere realizzata
+intervenendo soltanto sui componenti effettivamente coinvolti.
+
+% -----------------------------------------------------------------------------
+\section{Design dettagliato}
+% -----------------------------------------------------------------------------
+Questa sezione contiene il design di dettaglio prodotto individualmente da
+ciascun membro del gruppo. Per ogni aspect trattato vengono presentati: il
+problema da risolvere, la soluzione proposta (con eventuali alternative
+considerate), uno schema UML di supporto e l'eventuale identificazione di
+pattern di progettazione utilizzati.
+
+% --- 2.2.1 ---------------------------------------------------------
+\subsection{Pietro Dapporto -- Modello delle carte e contenuti}
+\subsubsection{Problema: modellazione delle carte di gioco}
+
+Nel gioco ogni carta rappresenta una proposta sottoposta al giocatore da un determinato personaggio. Si deve modellare una carta che non sia un semplice insieme di dati, ma che permetta di rappresentare in modo chiaro le due possibili decisioni del giocatore e le relative conseguenze sui parametri della partita. 
+
+\textbf{Soluzione} \\
+La soluzione adottata consiste nel modellare la carta come un aggregato di oggetti più semplici, ciascuno con una responsabilità specifica. 
+Una \texttt{Card} contiene un identificativo, una descrizione, il \texttt{Character} che la presenta e due oggetti \texttt{Decision}, rispettivamente associati al rifiuto e all'approvazione della proposta. 
+Ogni \texttt{Decision} contiene il testo della risposta mostrata al giocatore e una collezione di \texttt{Effect}, che rappresentano le variazioni prodotte sui parametri del gioco.
+
+In questo modo la carta non deve conoscere direttamente la logica di aggiornamento dei parametri, ma si limita a esporre le informazioni necessarie alla gestione della scelta. 
+
+Infine, il flag \texttt{usage} permette di distinguere le carte già utilizzate da quelle ancora disponibili, evitando che la stessa carta venga riproposta più volte durante la partita.
+
+\textbf{UML} \\
+
+\textbf{Pattern utilizzati} \\
+In questa parte non è stato applicato un design pattern comportamentale in senso stretto. 
+La scelta progettuale principale è basata sulla composizione: \texttt{Card} viene costruita aggregando oggetti più piccoli. 
+L'uso di interfacce come \texttt{Card} ed \texttt{Effect} consente comunque di mantenere il modello estendibile, poiché eventuali implementazioni alternative potrebbero essere introdotte senza modificare il codice che dipende dalle astrazioni.
+
+\subsubsection{Problema: scalare la creazione delle carte}
+
+La creazione manuale di un numero elevato di carte direttamente nel codice avrebbe reso il sistema poco leggibile, difficile da modificare e soggetto a ripetizioni. 
+Il problema principale era quindi permettere l'aggiunta e la modifica delle carte in modo semplice e mantenibile, senza dover intervenire ogni volta sulla logica Java del model.
+
+\textbf{Soluzione} \\
+In una prima fase sono state considerate diverse soluzioni basate sulla costruzione diretta degli oggetti nel codice, ad esempio tramite il costruttore di \texttt{CardImpl}, tramite factory method o attraverso il pattern Builder. 
+Queste soluzioni avrebbero però mantenuto la definizione delle carte troppo vicina al codice Java, rendendo meno immediata la lettura del contenuto di gioco e più costosa l'aggiunta di nuove carte.
+
+Per questo motivo si è scelto di separare i dati dalla logica applicativa, spostando le informazioni delle carte in un file esterno in formato YAML. 
+Il file contiene la descrizione dichiarativa delle carte, delle decisioni disponibili e degli effetti prodotti sui parametri del gioco. 
+In questo modo il model non dipende dal modo in cui le carte sono scritte nel file, ma riceve oggetti già costruiti e coerenti con le primi astrazioni.
+
+Il caricamento delle carte avviene all'interno della classe \texttt{Deck}, tramite metodi dedicati. 
+Il file YAML viene deserializzato in una struttura intermedia rappresentata da \texttt{CardsFile}, che contiene una collezione di \texttt{CardDTO}: ciascuna contiene le decisioni \texttt{DecisionDTO} che a loro volta contengono i relativi \texttt{EffectDTO}. 
+Durante questa fase, i dati letti dal file vengono convertiti dagli oggetti DTO agli oggetti effettivi del dominio, come \texttt{Card}, \texttt{Decision} ed \texttt{Effect}. 
+
+Questa scelta migliora la mantenibilità perché nuove carte possono essere aggiunte o modificate intervenendo principalmente sul file di configurazione. 
+La soluzione introduce però anche un livello di astrazione aggiuntivo: potenzialmente sarebbe possibile convertire le informazioni del file YAML in modelli di carta differenti, ma nel progetto attuale tutte le carte vengono ricondotte allo stesso modello interno. 
+
+\textbf{UML} \\
+
+\textbf{Pattern utilizzati} \\
+In questa parte non è stato applicato un design pattern classico. 
+Tuttavia per gestire il passaggio tra il file YAML e gli oggetti del model è stato utilizzato il concetto di DTO (\emph{Data Transfer Object}). 
+Un DTO è un oggetto usato per trasferire dati tra due parti del sistema senza contenere logica di dominio significativa. 
+In questo ambito agiscono quindi come classi ponte tra la rappresentazione esterna delle carte, definita nel file YAML, e la rappresentazione interna usata dal model. 
+
+\subsubsection{Problema: gestione delle carte figlie}
+
+Il gioco deve permettere che alcune decisioni producano conseguenze non immediate, facendo apparire nei turni successivi una carta collegata alla scelta effettuata. 
+Inoltre la carta figlia deve apparire solo dopo una decisione su un'altra carta e non casualmente come una normale carta del mazzo principale.
+
+\textbf{Soluzione} \\
+Per implementare questo comportamento è stato introdotto il concetto di \texttt{FollowUp}, anch'esso definito tramite file YAML. 
+Un \texttt{FollowUp} rappresenta una relazione logica tra una carta padre e una carta figlia, identificandole tramite i rispettivi \texttt{id} univoci. 
+Oltre agli identificativi, il \texttt{FollowUp} specifica il trigger che attiva la relazione, cioè la scelta necessaria tra approvazione e rifiuto, e il numero di turni di ritardo dopo i quali la carta figlia potrà essere proposta.
+
+Le carte figlie sono mantenute in un file YAML separato rispetto al mazzo principale. 
+Durante il caricamento, il mazzo principale e le carte figlie vengono quindi convertiti in strutture dati distinte: il primo rappresenta le carte pescabili normalmente, mentre la seconda struttura contiene le carte disponibili solo come conseguenza di un \texttt{FollowUp}.
+
+Quando il giocatore prende una decisione su una carta, il sistema verifica se esiste un \texttt{FollowUp} compatibile con l'id della carta e con la scelta effettuata. 
+In caso positivo, la carta figlia viene programmata per comparire dopo il numero di turni indicato. 
+
+\textbf{UML} \\
+
+\textbf{Pattern utilizzati} \\
+In questa parte non è stato applicato un design pattern classico in senso stretto. 
+La soluzione si basa principalmente sulla separazione delle responsabilità e sulla rappresentazione esplicita delle relazioni tra carte tramite configurazione esterna.
+
+% --- 2.2.2 ---------------------------------------------------------
+\subsection{Mario Conventi -- Algoritmo di selezione delle carte}
+\emph{[Sezione da redigere: progettazione del package \texttt{model.selection},
+\texttt{CardSelector} e implementazioni (\texttt{WeightedRandomSelector},
+\texttt{ProgressiveSelector}), gestione di cooldown e storico, identificazione
+del pattern Strategy.]}
+
+% --- 2.2.3 ---------------------------------------------------------
+\subsection{Federico Locatelli -- Sistema di regole ed effetti}
+\emph{[Sezione da redigere: progettazione del package \texttt{model.rules},
+gerarchia degli \texttt{Effect} (immediati, composti, scheduled), motore di
+applicazione delle scelte, eventuale uso dei pattern Composite e Command.]}
+
+% --- 2.2.4 ---------------------------------------------------------
+\subsection{Nikita Piraino -- Game loop, tempo e condizioni di fine partita}
+
+La parte di progetto di mia responsabilità copre la logica di stato della partita e il ciclo temporale del gioco:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Compito} & \textbf{Nome interfaccia} & \textbf{Nome implementazione} \\ \hline
+Configurazione partita & GameConfig & GameConfigImpl \\ \hline
+Gestore turni & GameClock & GameClockImpl \\ \hline
+Orchestratore logica gioco & GameEngine & GameEngineImpl \\ \hline
+Pagina iniziale & VERIFICARE & VERIFICARE \\ \hline
+Report sullo stato dei parametri & Report & ReportImpl \\ \hline
+Pagina vittoria o sconfitta & VERIFICARE & VERIFICARE \\ \hline
+\end{tabular}
+\end{table}
+
+\subsubsection{Pattern Static Factory Method in GameConfigImpl}
+
+\textbf{Problema:} Sono previste più versioni di configurazione del gioco: una standard (6 carte per semestre, 6 semestri), una ridotta (2 carte, 2 semestri) pensata per facilitare i test intermedi e di fine partita. C'è anche il desiderio di implementare future versioni alternative di partite come ad esempio la modalità ``apocalisse''. Occorre quindi controllare l'istanziazione della configurazione, vincolando gli utilizzatori a versioni standardizzate di partita, facilmente sceglibili tramite i metodi pubblici e statici della classe.
+
+\textbf{Soluzione:} La classe \texttt{GameConfigImpl} adotta il pattern Static Factory Method articolato in tre elementi sinergici:
+
+\begin{itemize}
+    \item Costruttore privato. Il costruttore \texttt{GameConfigImpl(int cardsPerSemester, int semestersPerGame)} è dichiarato private: impedisce l'istanziazione diretta da parte dei client e concentra il controllo della validità dei parametri in un unico punto.
+    
+    \item Costanti di configurazione private. I valori numerici delle due modalità sono incapsulati in quattro costanti statiche private di tipo \texttt{int}:
+\begin{lstlisting}
+private static final int STANDARD_CARDS_PER_SEMESTER = 6;
+private static final int STANDARD_SEMESTERS_PER_GAME = 6;
+private static final int MINIMAL_NUMBER_SEMESTER = 2;
+private static final int MINIMAL_NUMBER_CARDS = 2;
+\end{lstlisting}
+    L'uso di \texttt{static final} garantisce l'unicità del valore in memoria e ne impedisce la modifica a runtime; l'ordinamento rispetta la regola Checkstyle Declaration Order (costanti statiche prima dei campi di istanza).
+
+    \item Factory method pubblici e statici. \texttt{createStandard()} produce la configurazione normale, \texttt{createShort()} la ridotta per testing. Il tipo di ritorno dichiarato è l'interfaccia \texttt{GameConfig} (non l'implementazione concreta): i client dipendono dall'astrazione, conformemente al Dependency Inversion Principle. Ciò rende possibile introdurre nuove configurazioni (per esempio una ``Modalità Apocalisse'') senza modificare i client. La classe è dichiarata final: la sottoclasse è impedita e l'invariante di immutabilità di ogni istanza creata viene rafforzato.
+\end{itemize}
+
+Pattern identificato Static Factory Method (creazionale): i metodi \texttt{createStandard()} e \texttt{createShort()} sono le factory; \texttt{GameConfig} è il tipo prodotto; \texttt{GameConfigImpl} è l'implementazione concreta resa inaccessibile direttamente dal client.
+
+\subsubsection{Orchestrazione del modello in GameEngineImpl}
+
+\textbf{Problema:} La logica di partita richiede di coordinare più oggetti collaboranti: configurazione, orologio, mazzo, parametri. Occorre un punto di ingresso unico per il controller, garantendo immutabilità strutturale del modello dopo la costruzione e fail-fast sulle dipendenze nulle.
+
+\textbf{Soluzione:} \texttt{GameEngineImpl} implementa \texttt{GameEngine} ed è la classe centrale del sottosistema model. Coordina tre dipendenze: la configurazione (\texttt{GameConfig}), l'orologio (\texttt{GameClock}) e il mazzo (\texttt{Deck}). Tutti i campi sono final; in particolare \texttt{parameters} è inizializzato con \texttt{List.of(...)}, che restituisce una lista non modificabile: nessun client può aggiungere o rimuovere parametri dopo la costruzione dell'istanza.
+
+Il costruttore applica la Dependency Injection ricevendo \texttt{GameConfig} e \texttt{Deck} como argomenti, e crea internamente il \texttt{GameClockImpl}:
+\begin{lstlisting}
+public GameEngineImpl(final GameConfig config, final Deck deck) {
+    this.config = config;
+    this.gameClock = new GameClockImpl(config);
+    this.deck = Objects.requireNonNull(deck, "Deck cannot be null");
+}
+\end{lstlisting}
+La chiamata a \texttt{Objects.requireNonNull} applica il principio fail-fast: se il client passa null, una NullPointerException viene sollevata immediatamente nel costruttore con un messaggio esplicativo, evitando errori latenti che si manifesterebbero solo durante l'esecuzione.
+
+Il metodo \texttt{getCurrentCard()} è stato refattorizzato per utilizzare lo Stream API al posto di un accesso diretto per indice, individuando la prima carta non ancora utilizzata nel mazzo:
+\begin{lstlisting}
+return deck.getAllCards().stream()
+    .filter(card -> !card.isUsed())
+    .findFirst()
+    .orElseGet(() -> deck.getAllCards().get(0));
+\end{lstlisting}
+Il terminale \texttt{orElseGet} esegue il fallback solo se lo stream è vuoto (tutte le carte sono state utilizzate), restituendo la prima carta como comportamento di default.
+
+Alcune alternative sono:
+\begin{itemize}
+    \item Accesso per indice: non scelto perché richiede un controllo esplicito sulla lista vuota e rende esplicita nel codice l'intenzione del metodo.
+\end{itemize}
+\textbf{Eventuali pattern:} nessuno in senso stretto oltre alla Dependency Injection.
+
+\subsubsection{State Machine in getGameState()}
+
+\textbf{Problema:} Lo stato di una partita può essere in corso, vinta o persa; queste tre alternative sono mutuamente esclusive e dipendono dallo stato corrente dei parametri e dell'orologio. La consultazione dello stato è frequente (a ogni interazione del controller con il modello), per cui un campo di stato esplicito introdurrebbe rischi di disallineamento fra i dati interni e la valutazione restituita.
+
+\textbf{Soluzione:} Il metodo \texttt{getGameState()} nella classe \texttt{GameEngineImpl} avvia un processo di identificazione dello stato, che poi restituirà uno dei valori dell'enumerazione GameState: RUNNING, WON, LOST.
+\begin{lstlisting}
+public GameState getGameState() {
+    if (!areAllParametersAlive()) {
+        return GameState.LOST;
+    }
+    if (gameClock.isTimeFinished()) {
+        return GameState.WON;
+    }
+    return GameState.RUNNING;
+}
+\end{lstlisting}
+L'ordine dei controlli è semanticamente obbligatorio: il controllo LOST (morte di un parametro) precede WON (tempo esaurito) perché nell'ultimo turno di gioco entrambe le condizioni possono essere simultaneamente vere; in tal caso la morte di un parametro deve prevalere sulla vittoria per tempo.
+
+Lo stato viene calcolato ad ogni chiamata: l'approccio è stateless, elimina il rischio di stato inconsistente tra le transizioni e non richiede aggiornamenti espliciti dopo ogni operazione.
+
+Alcune alternative sono:
+\begin{itemize}
+    \item Restituire una stringa al posto degli elementi dell'enum: non idoneo con gli standard di programmazione moderni.
+    \item Nelle condizioni non richiamare delle funzioni ma mettere il loro contenuto direttamente nel metodo \texttt{getGameState()}: supporta meno per necessità future i principi DRY e SRP.
+\end{itemize}
+
+\subsubsection{Stream API e areAllParametersAlive()}
+
+\textbf{Problema:} La condizione di sconfitta richiede di verificare che tutti i parametri siano vivi. La verifica deve essere efficiente (idealmente interrompendo l'analisi al primo parametro non valido) e leggibile.
+
+\textbf{Soluzione:} Il metodo privato \texttt{areAllParametersAlive()} nella classe \texttt{GameEngineImpl} incapsula la verifica:
+\begin{lstlisting}
+private boolean areAllParametersAlive() {
+    return parameters.stream().allMatch(Parameter::isAlive);
+}
+\end{lstlisting}
+Il terminale \texttt{allMatch} applica il predicato \texttt{isAlive()} a ogni elemento tramite method reference. Restituisce true solo se il predicato è soddisfatto da tutti gli elementi, e interrompe l'elaborazione al primo elemento che lo viola (Fail Fast Principle).
+
+Alcune alternative sono:
+\begin{itemize}
+    \item Utilizzare un ciclo for imperativo: avrebbe potuto adottare il fail-fast, ma sarebbe stato più verboso.
+    \item Usare lo stream senza \texttt{allMatch}: non avrebbe adottato la logica di corto circuito del fail-fast.
+\end{itemize}
+
+\subsubsection{Progressione temporale in GameClockImpl}
+
+\textbf{Problema:} La progressione del tempo deve trasportare tre informazioni: turno corrente nel semestre, semestre corrente, terminazione della partita. La logica di avanzamento deve garantire che il flusso turno -> semestre successivo -> fine partita avvenga deterministicamente e che non sia possibile incrementare l'orologio dopo la fine del mandato.
+
+\textbf{Soluzione:} \texttt{GameClockImpl} gestisce il ciclo temporale tramite le variabili di stato \texttt{currentTurn}, \texttt{currentSemester} e \texttt{timeFinished}. Il metodo \texttt{nextTurn()} implementa la logica di avanzamento con una catena if/else if/else che garantisce che esattamente uno dei tre rami venga eseguito per ogni chiamata:
+\begin{lstlisting}
+public void nextTurn() {
+    if (timeFinished) {
+        throw new IllegalStateException("Game already finished");
+    }
+    if (hasNextTurnInSemester()) {
+        currentTurn++;
+    } else if (hasNextSemester()) {
+        currentSemester++;
+        currentTurn = 0;
+    } else {
+        timeFinished = true;
+    }
+}
+\end{lstlisting}
+La condizione iniziale su \texttt{timeFinished} implementa il fail-fast principle per chiamate illegali su un orologio già terminato. I due metodi privati \texttt{hasNextTurnInSemester()} e \texttt{hasNextSemester()} verificano in modo isolato le condizioni di avanzamento, mantenendo bassa la complessità ciclomatica di \texttt{nextTurn()}.
+
+Alcune alternative sono:
+\begin{itemize}
+    \item Scrivere il codice delle funzioni dentro le condizioni: riduce la flessibilità del codice per futuri aggiornamenti e non supporta pienamente il principio DRY.
+\end{itemize}
+
+\subsubsection{Design di ReportImpl come componente JavaFX riutilizzabile}
+
+\textbf{Problema:} Alla fine di ogni semestre e alla fine della partita si vuole presentare un report al giocatore nel quale sono presenti i valori di ogni parametro e delle frasi di storytelling.
+
+\textbf{Soluzione:} \texttt{ReportImpl} è un componente della View e implementa l'interfaccia \texttt{Report}. È progettato per essere riutilizzato sia come schermata di riepilogo inter-semestrale sia come schermata di fine partita, senza creare istanze multiple.
+
+Alcune alternative sono:
+\begin{itemize}
+    \item Pattern Strategy: Definire un'interfaccia comune per il report e realizzare implementazioni separate per le diverse tipologie di riepilogo. Questa alternativa non è stata scelta poiché le differenze grafiche e logiche tra i report sono attualmente minime, e l'introduzione del pattern avrebbe comportato solo una maggiore complessità del codice.
+    \item Creare elementi al livello sopra: invece di cancellare con \texttt{.children().clear()} si aggiunge un nuovo report sopra. Permetterebbe di creare delle animazioni in cui si mostra la modifica dei parametri, però richiederebbe molto più utilizzo di memoria.
+\end{itemize}
+
+
+% =============================================================================
+\chapter{Sviluppo}
+% =============================================================================
+
+% -----------------------------------------------------------------------------
+\section{Testing automatizzato}
+% -----------------------------------------------------------------------------
+Il testing automatizzato \`e stato realizzato con \textbf{JUnit~5 (Jupiter)},
+con test posti in \texttt{src/test/java} e package paralleli a quelli dei
+sorgenti. I test non richiedono alcuna interazione utente e sono eseguiti
+automaticamente dal task \texttt{gradle build}.
+
+I componenti sottoposti a test automatizzato comprendono il sottosistema
+model in tutte le sue parti: configurazione, orologio, motore di gioco,
+mazzo di carte, regole di applicazione degli effetti e algoritmo di
+selezione. Per ciascun membro del gruppo, le strategie adottate sono
+descritte in maggior dettaglio nella sezione di note di sviluppo individuale.
+
+\paragraph{Nikita Piraino -- strategia di testing per transizioni di stato}
+La strategia adottata \`e il \emph{State Transition Testing}: ogni test
+verifica che il sistema si trovi nello stato corretto prima e dopo
+un'operazione che ne altera il comportamento. L'annotazione
+\texttt{@BeforeEach} garantisce l'isolamento fra test: ogni metodo riceve
+un'istanza fresca del sistema sotto test, eliminando dipendenze di ordine.
+
+Le classi di test coprono tre classi di implementazione:
+\texttt{GameEngineTest} (transizioni di stato),
+\texttt{GameClockTest} (progressione temporale),
+\texttt{GameConfigTest} (validit\`a della configurazione).
+
+\subparagraph{\texttt{GameEngineTest}}
+\texttt{setUp()} inizializza il motore con la configurazione standard e un
+mazzo vuoto:
+\begin{lstlisting}
+this.engine = new GameEngineImpl(GameConfigImpl.createStandard(), new Deck());
+\end{lstlisting}
+\begin{itemize}
+    \item \texttt{testGameInitialization()}: verifica che lo stato iniziale
+        sia \texttt{RUNNING} prima e dopo \texttt{engine.start()}, documentando
+        che l'inizializzazione non altera lo stato logico del gioco.
+    \item \texttt{testGameLostOnParameterDeath()}: simula la morte del
+        parametro \texttt{FINANCES} azzerandone il livello; verifica che
+        \texttt{areAllParametersAlive()} rilevi il parametro morto e che
+        \texttt{getGameState()} risponda con \texttt{LOST}.
+    \item \texttt{testGameWonOnTimeFinished()}: verifica la transizione
+        \texttt{RUNNING} -> \texttt{WON} esaurendo il tempo tramite un ciclo
+        \texttt{while (!isTimeFinished()) nextTurn();}, controllando anche
+        la collaborazione fra \texttt{GameEngineImpl} e \texttt{GameClockImpl}.
+\end{itemize}
+
+\subparagraph{\texttt{GameClockTest}}
+\texttt{configuration()} inizializza orologio e configurazione con
+\texttt{createStandard()}.
+\begin{itemize}
+    \item \texttt{testSingleTurnProgression()}: verifica che una singola
+        \texttt{nextTurn()} incrementi \texttt{currentTurn} di 1 senza
+        alterare \texttt{currentSemester}. La cattura dei valori iniziali
+        rende l'asserzione indipendente dalla configurazione specifica.
+    \item \texttt{testSemesterFlow()}: verifica che dopo
+        \texttt{cardsPerSemester} chiamate a \texttt{nextTurn()} il semestre
+        avanzi di 1 e il contatore dei turni venga azzerato a 0.
+    \item \texttt{testEndofTime()}: esegue il ciclo completo dei turni e
+        verifica che \texttt{isTimeFinished()} diventi \texttt{true} al
+        termine di tutti i semestri.
+\end{itemize}
+
+\subparagraph{\texttt{GameConfigTest}}
+\texttt{testStandardConfigurationValidity()} verifica che
+\texttt{getCardsPerSemester()} e \texttt{getSemestersPerGame()} restituiscano
+valori strettamente positivi per la configurazione standard. Il contratto
+coperto \`e minimo per design: verificare i valori esatti (6~e~6) renderebbe
+il test fragile rispetto a future variazioni della configurazione standard.
+
+\paragraph{Pietro Dapporto -- testing caricamento elementi YAML} 
+I test riguardano principalmente il sistema di carte e il caricamento dei dati da file YAML. Vista la brevità ho raggruppato in un'unica classe più test.
+
+Sono stati sottoposti a test i seguenti aspetti:
+\begin{itemize}
+    \item \texttt{shouldLoadCards()}: verifica che le informazioni scritte nei file YAML coincidano con ciò che è contenuto dentro l'implementazione delle carte create.
+    \item \texttt{shouldLoadFollowUp()}: esegue la stessa verifica ma sui followup.
+    \item \texttt{shouldHaveUniqueIdCards()}: verifica che le carte base abbiano tutte un identificatore (\texttt{String id}) diverso.
+    \item \texttt{shouldHaveUniqueIdChildCards()}: esegue la stessa verifica ma sulle carte figlie.
+    \item \texttt{shouldNotBeSharedIds()}: verifica che non ci siano identificatori comuni tra le carte base e quelle figlie.
+    \item \texttt{shouldCharacterImageExist()}: verifica che ogni personaggio all'interno delle carte abbia il riferimento ad un'immagine da mostrare durante il gioco.
+\end{itemize}
+
+\paragraph{Mario Conventi, Federico Locatelli}
+\emph{[Sezioni di testing individuali da redigere.]}
+
+% -----------------------------------------------------------------------------
+\section{Note di sviluppo}
+% -----------------------------------------------------------------------------
+
+% --- 3.2.1 ---------------------------------------------------------
+\subsection{Pietro Dapporto}
+\begin{itemize}
+    \item \textbf{Libreria esterna Jackson YAML} \\
+    \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/dd18617aeefb0d0e4c01236c24cc8c7b8c0a804d/src/main/java/it/unibo/aurea/model/Deck.java#L31-L82}
+
+    \item \textbf{Record Java come Data Transfer Object} - usati per \texttt{CardDTO}, \texttt{EffectDTO}, \texttt{DecisionDTO}, \texttt{FollowUpDTO}, \texttt{FollowUpsFile}, \texttt{CardsFile} di seguito solo un esempio.\\
+    \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/dd18617aeefb0d0e4c01236c24cc8c7b8c0a804d/src/main/java/it/unibo/aurea/model/dto/CardDTO.java#L5-L21}
+
+    \item \textbf{Stream API e method reference} - usati anche nei test automatizzati (\texttt{CardLoaderTest}) \\
+    \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/dd18617aeefb0d0e4c01236c24cc8c7b8c0a804d/src/main/java/it/unibo/aurea/model/Deck.java#L58-L78}
+\end{itemize}
+
+% --- 3.2.2 ---------------------------------------------------------
+\subsection{Mario Conventi}
+\emph{[Sezione da redigere: feature avanzate del linguaggio Java utilizzate, ciascuna con permalink GitHub al punto del codice.]}
+
+% --- 3.2.3 ---------------------------------------------------------
+\subsection{Federico Locatelli}
+\emph{[Sezione da redigere: feature avanzate del linguaggio Java utilizzate, ciascuna con permalink GitHub al punto del codice.]}
+
+% --- 3.2.4 ---------------------------------------------------------
+\subsection{Nikita Piraino}
+Di seguito le feature avanzate del linguaggio e dell'ecosistema Java utilizzate nella mia parte di progetto, ciascuna corredata del permalink GitHub al punto del codice in cui \`e impiegata.
+\begin{itemize}
+    \item \textbf{Stream API} -- \texttt{allMatch} con method reference (\texttt{Parameter::isAlive}). \\
+        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/model/GameEngineImpl.java#L90}
+    \item \textbf{Stream API} -- \texttt{filter}, \texttt{findFirst}, \texttt{orElseGet} per la selezione della carta non ancora utilizzata. \\
+        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/model/GameEngineImpl.java#L55}
+    \item \textbf{Immutable collections} -- \texttt{List.of()} per la lista non modificabile dei parametri. \\
+        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/model/GameEngineImpl.java#L22}
+    \item \textbf{Static Factory Method} -- \texttt{createStandard()} e \texttt{createShort()} con tipo di ritorno l'interfaccia \texttt{GameConfig}. \\
+        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/model/GameConfigImpl.java#L35}
+    \item \textbf{\texttt{Objects.requireNonNull}} -- fail-fast sui parametri del costruttore di \texttt{GameEngineImpl}. \\
+        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/model/GameEngineImpl.java#L40}
+    \item \textbf{JavaFX Animation API} -- \texttt{FadeTransition} per l'ingresso fluido dell'overlay \texttt{ReportImpl}. \\
+        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/view/ReportImpl.java#L78}
+    \item \textbf{Ereditariet\`a da componente JavaFX} -- \texttt{extends VBox} per integrare \texttt{ReportImpl} nella scena. \\
+        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/view/ReportImpl.java#L22}
+    \item \textbf{Enum \texttt{GameState}} come tipo di ritorno della State Machine. \\
+        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/model/GameEngineImpl.java#L76}
+\end{itemize}
+
+\paragraph{Codice di terze parti}
+Nessuna porzione di codice della mia parte di progetto \`e stata tratta da fonti esterne. L'unica libreria utilizzata, oltre a Java~21 e JUnit~5, \`e JavaFX per il componente \texttt{ReportImpl}.
+
+% =============================================================================
+\chapter{Commenti finali}
+% =============================================================================
+In quest'ultimo capitolo si tirano le somme del lavoro svolto e si delineano eventuali sviluppi futuri.
+
+% -----------------------------------------------------------------------------
+\section{Autovalutazione e lavori futuri}
+% -----------------------------------------------------------------------------
+
+% --- Pietro -----------------------------------------------------
+\subsection{Pietro Dapporto}
+Il mio ruolo all'interno del gruppo ha riguardato soprattutto la struttura di base del gioco e la modellazione delle carte. Per questo motivo, in alcune parti del mio contributo non è stato necessario utilizzare costrutti Java particolarmente complessi: l'obiettivo principale era costruire una struttura chiara, coerente e facilmente estendibile.
+
+La parte più creativa del lavoro, di cui sono particolarmente soddisfatto, è stata la creazione delle carte di gioco. Dal punto di vista implementativo, questa attività non ha richiesto tecnicismi avanzati, ma ha comportato un lavoro importante di progettazione del contenuto: definire las situazioni proposte al giocatore, le possibili risposte e i pesi associati agli effetti sui parametri del gioco. Ritengo inoltre di aver adottato soluzioni strutturali discrete, soprattutto per quanto riguarda la separazione tra i dati delle carte in file di configurazione esterni e la logica principale dell'applicazione.
+
+Considero positivo il fatto di aver progressivamente migliorato l'architettura del sistema, passando da soluzioni inizialmente più semplici ma meno scalabili a una struttura più modulare e mantenibile. 
+
+Per quanto riguarda i punti deboli, il file YAML contenente le carte è diventato piuttosto esteso. Con l'aggiunta di altre carte la gestione di un unico file può diventare meno comoda. Ho valutato la possibilità di suddividerlo in più file, ma ho ritenuto che, almeno in questa fase del progetto, mantenere un unico file fosse più semplice da gestire e riducesse il rischio di frammentare eccessivamente le informazioni.
+
+Un altro limite riguarda il livello di astrazione introdotto. In alcuni punti la struttura del codice è stata pensata per supportare possibili estensioni future, come modelli diversi di carte o di effetti, che però non sono state effettivamente sviluppate nel progetto finale. Lo stesso vale per l'utilizzo dei DTO, che separano bene la rappresentazione esterna dei dati dal model, ma introducono anche un passaggio intermedio aggiuntivo. Nel complesso, quindi, ritengo che la struttura realizzata sia abbastanza flessibile e adatta a evoluzioni future, anche se alcune di queste possibilità non sono state sfruttate pienamente nella versione attuale del progetto.
+
+% --- Mario ------------------------------------------------------
+\subsection{Mario Conventi}
+\emph{[Autovalutazione individuale da redigere.]}
+
+% --- Federico ---------------------------------------------------
+\subsection{Federico Locatelli}
+\emph{[Autovalutazione individuale da redigere.]}
+
+% --- Nikita -----------------------------------------------------
+\subsection{Nikita Piraino}
+\paragraph{Contributi principali}
+Ho progettato e implementato il sottosistema model del gioco, responsabile della logica di stato e del ciclo temporale: \texttt{GameConfigImpl} con il pattern Static Factory (inclusa la configurazione ridotta \texttt{createShort()} per i test), \texttt{GameClockImpl} con la gestione turno/semestre/fine partita, e \texttt{GameEngineImpl} come orchestratore centrale con la State Machine a tre stati.
+
+Come contributo aggiuntivo al layer view ho sviluppato \texttt{ReportImpl}, il componente JavaFX che gestisce la visualizzazione dei riepiloghi inter-semestrali e della schermata di fine partita, progettato per essere riutilizzato senza creare istanze multiple.
+
+\paragraph{Aspetti tecnici rilevanti}
+L'uso dello Stream~API in \texttt{areAllParametersAlive()} e in \texttt{getCurrentCard()} rappresenta una scelta consapevole di leggibilit\`a e correttezza rispetto all'approccio imperativo. La lista \texttt{parameters} dichiarata con \texttt{List.of()} garantisce l'immutabilit\`a strutturale del gioco dopo la costruzione dell'istanza. La separazione fra \texttt{getParameters()} (accesso diretto) e \texttt{getCopyOfParameters()} (copia difensiva) consente al controller di ottenere il riferimento necessario per le modifiche, lasciando aperta la possibilit\`a di esporre il modello in sola lettura in futuro.
+
+\paragraph{Aspetti migliorabili e lavori futuri}
+Il metodo \texttt{start()} \`e attualmente privo di logica (il commento nel sorgente indica che la selezione della carta \`e stata spostata in \texttt{getCurrentCard()}). In una versione pi\`u matura, \texttt{start()} potrebbe inizializzare lo stato del mazzo o validare le precondizioni prima dell'inizio della partita.
+
+La gestione dell'accesso in scrittura ai parametri da parte di attori diversi (controller, view) \`e ancora aperta: \texttt{getParameters()} espone la lista originale, il che consentirebbe alla view di modificare direttamente i parametri senza passare dal controller. Una soluzione futura potrebbe essere esporre solo \texttt{getCopyOfParameters()} all'esterno e introdurre un metodo \texttt{applyEffect()} nel \texttt{GameEngine} per incanalare tutte le modifiche attraverso il modello.
+
+% -----------------------------------------------------------------------------
+\section{Difficolt\`a incontrate e commenti per i docenti}
+% -----------------------------------------------------------------------------
+\emph{[Sezione opzionale: eventuali difficolt\`a incontrate dal gruppo nel corso o nello svolgimento del progetto, e commenti utili al miglioramento del corso. Il contenuto della sezione non impatter\`a il voto finale.]}
+
+% =============================================================================
+\appendix
+% =============================================================================
+
+% =============================================================================
+\chapter{Guia utente}
+% =============================================================================
+\emph{[Da redigere: istruzioni d'uso essenziali per consentire ai docenti di avviare ed esplorare le funzionalit\`a primarie dell'applicazione, eventualmente corredate di screenshot. In particolare: come avviare il JAR, come iniziare una partita, come effettuare una scelta su una carta, come interpretare la barra dei parametri, come consultare il riepilogo di fine semestre, come riconoscere la fine partita.]}
+
+% =============================================================================
+\chapter{Esercitazioni di laboratorio}
+% =============================================================================
+In questo capitolo ciascuno studente elenca gli esercizi di laboratorio svolti, indicando i permalink dei post sul forum dove \`e avvenuta la consegna.
+
+\section*{pietro.dapporto@studio.unibo.it}
+\begin{itemize}
+    \item lab09: \url{https://virtuale.unibo.it/mod/forum/discuss.php?d=208718#p287289}
+    \item lab11: \url{https://virtuale.unibo.it/mod/forum/discuss.php?d=208718#p287289}
+\end{itemize}
+
+\section*{nikita.piraino@studio.unibo.it}
+\emph{[Permalink delle consegne di laboratorio di Nikita Piraino.]}
+\begin{itemize}
+    \item Laboratorio \emph{NN}: \url{https://virtuale.unibo.it/mod/forum/discuss.php?d=...#p...}
+\end{itemize}
+
+\section*{mario.conventi@studio.unibo.it}
+\emph{[Permalink delle consegne di laboratorio di Mario Conventi.]}
+
+\section*{federico.locatelli3@studio.unibo.it}
+\emph{[Permalink delle consegne di laboratorio di Federico Locatelli.]}
+
+\end{document}
