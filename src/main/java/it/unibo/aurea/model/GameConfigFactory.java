@@ -8,6 +8,13 @@ import it.unibo.aurea.model.api.GameConfig;
  * Centralizes initialization logic by hiding the concrete implementation class.
  */
 public final class GameConfigFactory {
+    private static final int STANDARD_CARDS_PER_SEMESTER = 6;
+    private static final int STANDARD_SEMESTERS_PER_GAME = 6;
+    private static final int MINIMAL_NUMBER_CARDS = 2;
+    private static final int MINIMAL_NUMBER_SEMESTER = 2;
+
+    private GameConfigFactory() { }
+
     /**
      * Creates a standard configuration (3 years, 6 cards per semester).
      *
@@ -16,7 +23,7 @@ public final class GameConfigFactory {
      * @return a GameConfig instance
      */
     public static GameConfig createStandard(final Difficulty difficulty) {
-        return new GameConfigImpl(6, 6, difficulty);
+        return new GameConfigImpl(STANDARD_CARDS_PER_SEMESTER, STANDARD_SEMESTERS_PER_GAME, difficulty);
     }
 
     /**
@@ -27,6 +34,6 @@ public final class GameConfigFactory {
      * @return a GameConfig instance
      */
     public static GameConfig createShort(final Difficulty difficulty) {
-        return new GameConfigImpl(2, 2, difficulty);
+        return new GameConfigImpl(MINIMAL_NUMBER_CARDS, MINIMAL_NUMBER_SEMESTER, difficulty);
     }
 }
