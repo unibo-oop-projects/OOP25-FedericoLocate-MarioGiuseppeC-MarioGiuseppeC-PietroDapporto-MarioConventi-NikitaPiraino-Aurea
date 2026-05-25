@@ -43,7 +43,7 @@ public interface Report {
     void setButtonAction(HBox actions);
 
     /**
-     * @param background  is the new background, it's used when the background changes(endgame).
+     * @param background  is the new background, it's used when the background should change(ex. endgame).
      */
     void reveal(String background);
 
