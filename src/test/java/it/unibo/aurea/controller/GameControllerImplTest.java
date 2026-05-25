@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import it.unibo.aurea.controller.api.GameController;
 import it.unibo.aurea.controller.api.PlayerInfo;
 import it.unibo.aurea.model.Deck;
-import it.unibo.aurea.model.GameConfigImpl;
+import it.unibo.aurea.model.GameConfigFactory;
 import it.unibo.aurea.model.GameEngineImpl;
 import it.unibo.aurea.model.ParameterImpl;
 import it.unibo.aurea.model.api.Card;
@@ -37,7 +37,7 @@ class GameControllerImplTest {
             // Initialize the real Model
             final Deck deck = new Deck();
             final GameEngineImpl engine = new GameEngineImpl(
-                GameConfigImpl.createStandard(it.unibo.aurea.model.api.Difficulty.EASY),
+                GameConfigFactory.createStandard(it.unibo.aurea.model.api.Difficulty.EASY),
                 deck
             );
             // Initialize the fake View

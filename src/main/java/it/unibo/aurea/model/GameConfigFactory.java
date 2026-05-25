@@ -8,10 +8,6 @@ import it.unibo.aurea.model.api.GameConfig;
  * Centralizes initialization logic by hiding the concrete implementation class.
  */
 public final class GameConfigFactory {
-
-    // Private constructor to prevent instantiation of the factory itself
-    private GameConfigFactory() { }
-
     /**
      * Creates a standard configuration (3 years, 6 cards per semester).
      *
@@ -20,7 +16,6 @@ public final class GameConfigFactory {
      * @return a GameConfig instance
      */
     public static GameConfig createStandard(final Difficulty difficulty) {
-        // Calls the GameConfigImpl constructor (package-visible)
         return new GameConfigImpl(6, 6, difficulty);
     }
 
