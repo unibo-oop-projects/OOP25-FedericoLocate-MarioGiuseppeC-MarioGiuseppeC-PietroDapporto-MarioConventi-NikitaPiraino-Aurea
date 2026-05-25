@@ -32,7 +32,7 @@ public final class CardSelector {
         ParameterType criticalParam = ParameterType.FINANCES;
         int minDistance = NEUTRAL_DISTANCE;
 
-        for (final Parameter p : parameters) {
+        for (final ParameterView p : parameters) {
             final int dist0 = p.getLevel();
             final int dist100 = 100 - p.getLevel();
             final int currentMinDist = Math.min(dist0, dist100);
@@ -84,14 +84,14 @@ public final class CardSelector {
         return deck.getAllFollowUps().stream().noneMatch(fu -> fu.getChildId().equals(id));
     }
 
-    private boolean isLethalInBothOptions(final Card card, final List<Parameter> parameters) {
+    private boolean isLethalInBothOptions(final Card card, final List<? extends ParameterView> parameters) {
         return simulateLethality(card.getApproval().getEffects(), parameters)
                 && simulateLethality(card.getRefusal().getEffects(), parameters);
     }
 
-    private boolean simulateLethality(final List<Effect> effects, final List<Parameter> parameters) {
+    private boolean simulateLethality(final List<Effect> effects, final List<? extends ParameterView> parameters) {
         for (final Effect e : effects) {
-            for (final Parameter p : parameters) {
+            for (final ParameterView p : parameters) {
                 if (p.getName() == e.getParameter()) {
                     final int futureValue = p.getLevel() + e.getDelta();
                     if (futureValue <= 0 || futureValue >= 100) {
@@ -103,8 +103,9 @@ public final class CardSelector {
         return false;
     }
 
-    private boolean cardHelpsParameter(final Card card, final ParameterType type, final List<Parameter> parameters) {
-        final Parameter criticalP = parameters.stream()
+    private boolean cardHelpsParameter(final Card card, final ParameterType type,
+            final List<? extends ParameterView> parameters) {
+        final ParameterView criticalP = parameters.stream()
                 .filter(p -> p.getName() == type)
                 .findFirst()
                 .orElse(null);
