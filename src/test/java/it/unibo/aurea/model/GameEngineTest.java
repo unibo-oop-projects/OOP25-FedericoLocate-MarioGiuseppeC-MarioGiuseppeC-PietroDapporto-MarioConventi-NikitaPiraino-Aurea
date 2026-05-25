@@ -4,9 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import it.unibo.aurea.model.api.GameEngine;
 import it.unibo.aurea.model.api.GameState;
-import it.unibo.aurea.model.api.Parameter;
+import it.unibo.aurea.model.api.ParameterType;
 
 /**
  * Testing class for the GameEngine implementation.
@@ -41,12 +43,10 @@ class GameEngineTest {
         engine.start();
         assertEquals(GameState.RUNNING, engine.getGameState());
 
-        // We simulate a loss by reducing the value to 0.
-        // This checks if the Engine correctly detects the "alive" status of its parameters.
-        final Parameter finances = engine.getParameters().get(0);
-
-        // Decreasing level to 0 to set the death condition in ParameterImpl.
-        finances.modify(-finances.getLevel());
+        // We simulate a loss by applying an effect that drains a parameter to 0,
+        // going through the public applyEffects() API (parameters are now read-only outside the engine).
+        final ParameterType firstParam = engine.getParameters().get(0).getName();
+        engine.applyEffects(List.of(new EffectImpl(firstParam, -100)));
 
         assertEquals(GameState.LOST, engine.getGameState(), "Game must be LOST when a parameter hits 0");
     }
