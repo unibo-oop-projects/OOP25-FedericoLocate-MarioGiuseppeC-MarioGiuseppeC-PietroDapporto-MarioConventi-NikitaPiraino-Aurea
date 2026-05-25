@@ -2,8 +2,8 @@ package it.unibo.aurea.model;
 
 import it.unibo.aurea.model.api.Card;
 import it.unibo.aurea.model.api.Effect;
-import it.unibo.aurea.model.api.Parameter;
 import it.unibo.aurea.model.api.ParameterType;
+import it.unibo.aurea.model.api.ParameterView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -27,7 +27,7 @@ public final class CardSelector {
      * @param difficultySettings the difficulty settings for scaling weights
      * @return the selected Card
      */
-    public Card selectNextCard(final Deck deck, final List<Parameter> parameters,
+    public Card selectNextCard(final Deck deck, final List<? extends ParameterView> parameters,
             final DifficultySettings difficultySettings) {
         ParameterType criticalParam = ParameterType.FINANCES;
         int minDistance = NEUTRAL_DISTANCE;
