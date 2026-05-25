@@ -15,6 +15,7 @@ import it.unibo.aurea.model.api.ParameterType;
  */
 class GameEngineTest {
 
+    private static final int LIFE_POINTS = 100;
     private GameEngine engine;
 
     /**
@@ -46,7 +47,7 @@ class GameEngineTest {
         // We simulate a loss by applying an effect that drains a parameter to 0,
         // going through the public applyEffects() API (parameters are now read-only outside the engine).
         final ParameterType firstParam = engine.getParameters().get(0).getName();
-        engine.applyEffects(List.of(new EffectImpl(firstParam, -100)));
+        engine.applyEffects(List.of(new EffectImpl(firstParam, -LIFE_POINTS)));
 
         assertEquals(GameState.LOST, engine.getGameState(), "Game must be LOST when a parameter hits 0");
     }
