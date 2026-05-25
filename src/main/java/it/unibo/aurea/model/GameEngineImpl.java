@@ -8,6 +8,7 @@ import it.unibo.aurea.model.api.GameEngine;
 import it.unibo.aurea.model.api.GameState;
 import it.unibo.aurea.model.api.Parameter;
 import it.unibo.aurea.model.api.ParameterType;
+import it.unibo.aurea.model.api.ParameterView;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -110,13 +111,8 @@ public final class GameEngineImpl implements GameEngine {
     }
 
     @Override
-    public List<Parameter> getParameters() {
+    public List<ParameterView> getParameters() {
         return List.copyOf(this.parameters);
-    }
-
-    @Override
-    public List<Parameter> getCopyOfParameters() {
-        return List.copyOf(parameters);
     }
 
     @Override

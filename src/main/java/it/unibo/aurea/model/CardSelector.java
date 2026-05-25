@@ -2,8 +2,8 @@ package it.unibo.aurea.model;
 
 import it.unibo.aurea.model.api.Card;
 import it.unibo.aurea.model.api.Effect;
-import it.unibo.aurea.model.api.Parameter;
 import it.unibo.aurea.model.api.ParameterType;
+import it.unibo.aurea.model.api.ParameterView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -27,12 +27,12 @@ public final class CardSelector {
      * @param difficultySettings the difficulty settings for scaling weights
      * @return the selected Card
      */
-    public Card selectNextCard(final Deck deck, final List<Parameter> parameters,
+    public Card selectNextCard(final Deck deck, final List<? extends ParameterView> parameters,
             final DifficultySettings difficultySettings) {
         ParameterType criticalParam = ParameterType.FINANCES;
         int minDistance = NEUTRAL_DISTANCE;
 
-        for (final Parameter p : parameters) {
+        for (final ParameterView p : parameters) {
             final int dist0 = p.getLevel();
             final int dist100 = 100 - p.getLevel();
             final int currentMinDist = Math.min(dist0, dist100);
@@ -84,14 +84,14 @@ public final class CardSelector {
         return deck.getAllFollowUps().stream().noneMatch(fu -> fu.getChildId().equals(id));
     }
 
-    private boolean isLethalInBothOptions(final Card card, final List<Parameter> parameters) {
+    private boolean isLethalInBothOptions(final Card card, final List<? extends ParameterView> parameters) {
         return simulateLethality(card.getApproval().getEffects(), parameters)
                 && simulateLethality(card.getRefusal().getEffects(), parameters);
     }
 
-    private boolean simulateLethality(final List<Effect> effects, final List<Parameter> parameters) {
+    private boolean simulateLethality(final List<Effect> effects, final List<? extends ParameterView> parameters) {
         for (final Effect e : effects) {
-            for (final Parameter p : parameters) {
+            for (final ParameterView p : parameters) {
                 if (p.getName() == e.getParameter()) {
                     final int futureValue = p.getLevel() + e.getDelta();
                     if (futureValue <= 0 || futureValue >= 100) {
@@ -103,8 +103,9 @@ public final class CardSelector {
         return false;
     }
 
-    private boolean cardHelpsParameter(final Card card, final ParameterType type, final List<Parameter> parameters) {
-        final Parameter criticalP = parameters.stream()
+    private boolean cardHelpsParameter(final Card card, final ParameterType type,
+            final List<? extends ParameterView> parameters) {
+        final ParameterView criticalP = parameters.stream()
                 .filter(p -> p.getName() == type)
                 .findFirst()
                 .orElse(null);
