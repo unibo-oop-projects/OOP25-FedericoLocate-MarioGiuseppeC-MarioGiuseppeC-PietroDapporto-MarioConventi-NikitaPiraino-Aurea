@@ -851,7 +851,7 @@ cards:
 
   - id: mum_legal_coverage
     character: MUM
-    description: "Will my child have legal coverage if he or she is sued?."
+    description: "Will my child have legal coverage if he is sued?."
     refusal:
       text: "We are not responsibile for what he does"
       effects:
@@ -869,7 +869,7 @@ cards:
 
   - id: mum_christmas_presents
     character: MUM
-    description: "with all the money we pay, you should give Christmas presents to our children."
+    description: "With all the money we pay, you should give Christmas presents to our children."
     refusal:
       text: "We don't have all this money"
       effects:
