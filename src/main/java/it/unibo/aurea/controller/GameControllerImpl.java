@@ -16,8 +16,8 @@ import it.unibo.aurea.model.api.Card;
 import it.unibo.aurea.model.api.Effect;
 import it.unibo.aurea.model.api.GameEngine;
 import it.unibo.aurea.model.api.GameState;
-import it.unibo.aurea.model.api.Parameter;
 import it.unibo.aurea.model.api.ParameterType;
+import it.unibo.aurea.model.api.ParameterView;
 import it.unibo.aurea.view.api.GameView;
 
 /**
@@ -29,7 +29,7 @@ public final class GameControllerImpl implements GameController {
     private static final Logger LOGGER = Logger.getLogger(GameControllerImpl.class.getName());
     private final GameView view;
     private final GameEngine model;
-    private final Map<ParameterType, Parameter> parametersMap;
+    private final Map<ParameterType, ParameterView> parametersMap;
     private final PlayerInfo playerInfo;
 
     /**
