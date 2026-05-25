@@ -46,7 +46,7 @@ public final class GameControllerImpl implements GameController {
         this.model = model;
         this.playerInfo = Objects.requireNonNull(playerInfo);
         this.parametersMap = model.getParameters().stream()
-                .collect(Collectors.toMap(Parameter::getName, p -> p));
+                .collect(Collectors.toMap(ParameterView::getName, p -> p));
         this.parametersMap.values().forEach(p -> p.addObserver(this.view::updateSingleParameter));
     }
 
@@ -161,7 +161,7 @@ public final class GameControllerImpl implements GameController {
     private String determineDefeatReason() {
         return parametersMap.values().stream()
                 .filter(p -> !p.isAlive())
-                .map(Parameter::getDeathReason)
+                .map(ParameterView::getDeathReason)
                 .findFirst()
                 .orElse("Unknown Causes");
     }
