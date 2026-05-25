@@ -47,7 +47,7 @@ public final class InfoButtonImpl implements InfoButton {
         popup.setTitle("Tome of Decrees");
         popup.setResizable(false);
 
-        final Label title = new Label("The Royal Decrees");
+        final Label title = new Label("The Rector's Decrees");
         title.getStyleClass().add("rules-title");
 
         final Label body = new Label(rulesText());
@@ -87,27 +87,31 @@ public final class InfoButtonImpl implements InfoButton {
         return """
             Welcome, Magnificent Rector.
 
-            Your task is to lead the University through three years of governance,
-            balancing the Four Pillars of the Realm:
+            Your task is to lead the University through three years 
+            of challenges, balancing the Four Pillars of Governance:
 
-            FINANCES — the gold that sustains every ambition.
-            STUDENTS — those who fill the halls and chant your name.
-            PROFESSORS — the masters whose wisdom builds your legacy.
-            REPUTATION — the voice of the public, swift to praise and to scorn.
+            FINANCES — the resources that sustains every ambition
+            STUDENTS — those who fill the halls and chant your name
+            PROFESSORS — the masters whose wisdom builds your legacy
+            REPUTATION — the public opinion, ready to praise 
+            or condemn you
 
-            EACH SEMESTER you will face decisions, presented as cards bearing
-            the words of those who depend on you. Swipe RIGHT to accept,
-            LEFT to refuse. Each choice will tilt the Pillars.
+            HOW TO PLAY 
+            Each semester you will face decisions, presented as 
+            cards bearing the words of those who depend on you. 
+            Swipe RIGHT to accept, LEFT to refuse. 
+            Each choice will tilt the Pillars.
 
             ENDGAME
-            Your reign ends in glory if you survive the three full years.
-            It ends in tragedy if any of the Four Pillars falls to ruin (0)
-            or overflows in hubris (100).
+            Your mandate ends in glory if you survive the three full 
+            years of governance. It ends in tragedy if any of the Four 
+            Pillars falls to ruin (0) or overflows in hubris (100).
 
             TIPS
-            Watch the white dot above each pillar — it warns you which ones
-            will be touched by your current decision. Hover with your eye
-            to feel the weight of the choice before you make it.
+            Watch the white dot above each pillar — it warns you 
+            which ones will be touched by your current decision. 
+            Hover with your eye to feel the weight of the choice 
+            before you make it.
 
             Your reign begins now.
             """;
