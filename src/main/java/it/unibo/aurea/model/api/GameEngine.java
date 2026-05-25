@@ -30,14 +30,9 @@ public interface GameEngine {
     Card getCurrentCard();
 
     /**
-     * @return list of parameters.
+     * @return read-only view of the current parameters (safe to pass to the View layer).
      */
-    List<Parameter> getParameters();
-
-    /**
-     * @return copy of parameters.
-     */
-    List<Parameter> getCopyOfParameters();
+    List<ParameterView> getParameters();
 
     /**
      * @return game clock.
