@@ -20,6 +20,7 @@
 
 % --- Grafica, link, codice ---------------------------------------------------
 \usepackage{graphicx}
+\usepackage{float}
 \usepackage{hyperref}
 \hypersetup{
     colorlinks=true,
@@ -47,6 +48,8 @@
 
 % --- Indice e capitoli -------------------------------------------------------
 \usepackage{titlesec}
+\usepackage{parskip}
+\setlength{\parskip}{0.4em}
 \usepackage[titles]{tocloft}
 
 % --- Frontespizio ------------------------------------------------------------
@@ -92,59 +95,108 @@ intraprendere e situazioni critiche da risolvere. Il gioco si ispira al gioco
 di strategia a carte \emph{Reigns}: il giocatore impersona il Magnifico per la
 durata di tre anni accademici (sei semestri) e deve arrivare al termine del
 mandato mantenendo l'equilibrio fra i parametri che descrivono lo stato
-dell'Universit\`a.
+dell'Universit\`a: \textbf{Finanze}, \textbf{Studenti}, \textbf{Docenti}
+e \textbf{Reputazione}.
 
-A ogni turno il giocatore riceve una carta che descrive un evento (un'iniziativa
-proposta, una protesta studentesca, un'opportunit\`a di finanziamento, eccetera)
-e deve scegliere fra due alternative. Ciascuna scelta modifica i valori dei
-parametri di gioco. La partita si conclude positivamente se il Rettore arriva
-al termine del proprio mandato senza che alcun parametro raggiunga un valore
-critico; si conclude negativamente nel momento in cui un qualsiasi parametro
+Prima di iniziare, il giocatore sceglie il proprio nome, la facolt\`a di
+appartenenza e il livello di difficolt\`a della partita. A ogni turno riceve
+una carta che descrive un evento (un'iniziativa proposta, una protesta
+studentesca, un'opportunit\`a di finanziamento, eccetera) e deve scegliere
+fra due alternative. Ciascuna scelta modifica i valori dei parametri di gioco.
+La partita si conclude positivamente se il Rettore arriva al termine del
+proprio mandato senza che alcun parametro raggiunga un valore critico;
+si conclude negativamente nel momento in cui un qualsiasi parametro
 raggiunge il livello minimo o massimo.
 
 \paragraph{Requisiti funzionali}
 \begin{itemize}
-    \item Generazione di carte (eventi), ciascuna con un effetto associato alla scelta del giocatore.
-    \item Costruzione di un mazzo che modella la successione di eventi della partita.
-    \item Risposta del giocatore agli eventi tramite una scelta binaria.
-    \item Aggiornamento dei parametri di gioco a seguito della scelta effettuata.
-    \item Gestione delle condizioni di fine partita: vittoria al termine del mandato; sconfitta al raggiungimento dei valori critici di un parametro.
+    \item Generazione di carte (eventi), ciascuna con un effetto associato 
+          alla scelta del giocatore.
+    \item Costruzione di un mazzo che modella la successione di eventi 
+          della partita.
+    \item Risposta del giocatore agli eventi tramite una scelta binaria 
+          (approvazione o rifiuto).
+    \item Aggiornamento dei parametri di gioco a seguito della scelta 
+          effettuata, con intensità variabile in base alla difficoltà 
+          selezionata.
+    \item Gestione delle condizioni di fine partita: vittoria al termine 
+          del mandato; sconfitta al raggiungimento dei valori critici di 
+          un parametro (0 o 100).
+    \item Sistema di difficoltà selezionabile (Facile, Normale, Difficile) 
+          che influenza sia il peso dei danni applicati ai parametri sia 
+          l'algoritmo di selezione delle carte.
+    \item Sistema di carte figlie (\emph{follow-up}): alcune decisioni 
+          programmano la comparsa di una carta correlata dopo un numero 
+          definito di turni.
+    \item Riepilogo inter-semestrale: al termine di ogni semestre viene 
+          mostrata una schermata con i valori correnti dei quattro parametri.
+    \item Popup del consigliere: quando un parametro attraversa una soglia 
+          critica (inferiore al 10\% o superiore al 90\%), appare un avviso 
+          contestuale con un messaggio narrativo.
+    \item Schermata di login: il giocatore inserisce il proprio nome, 
+          la facoltà e la difficoltà prima di iniziare la partita.
+    \item Possibilità di riavviare la partita al termine senza chiudere 
+          l'applicazione.
 \end{itemize}
 
 \paragraph{Requisiti funzionali opzionali}
 \begin{itemize}
-    \item Scoreboard per la visualizzazione dello stato dei parametri.
-    \item Suddivisione della partita in semestri con riepilogo intermedio.
-    \item Modalit\`a ``apocalittica'' con eventi pi\`u fantasiosi.
-    \item Easter egg ambientati nel contesto unibo.
+    \item Visualizzazione proporzionale dell'impatto della carta corrente 
+          tramite indicatori visivi sulle icone dei parametri (pallini 
+          di anteprima durante il trascinamento).
+    \item Modalit\`a ``apocalittica'' con eventi più fantasiosi.
+    \item Easter egg ambientati nel contesto Unibo.
 \end{itemize}
 
 \paragraph{Requisiti non funzionali}
 \begin{itemize}
-    \item L'applicazione deve essere distribuita como singolo file JAR eseguibile su qualunque piattaforma con Java~21.
-    \item L'interfaccia grafica deve essere reattiva e gradevole, con animazioni fluide nelle transizioni di stato.
-    \item Il software deve poter essere avviato senza configurazioni esterne, partendo dal solo JAR.
+    \item L'applicazione deve essere distribuita come singolo file JAR 
+          eseguibile su qualunque piattaforma con Java~21.
+    \item L'interfaccia grafica deve essere reattiva e gradevole, con 
+          animazioni fluide nelle transizioni di stato (ingresso carte, 
+          aggiornamento parametri, overlay di fine partita).
+    \item Il software deve poter essere avviato senza configurazioni 
+          esterne, partendo dal solo JAR.
+    \item Il codice deve rispettare le regole di qualità statica 
+          (Checkstyle, PMD, SpotBugs) verificate automaticamente 
+          a ogni build Gradle.
 \end{itemize}
 
 % -----------------------------------------------------------------------------
 \section{Modello del Dominio}
 % -----------------------------------------------------------------------------
-Le entit\`a principali del dominio sono il \emph{Rettore} (il giocatore), che
-gestisce un insieme di \emph{Parametri} dell'Ateneo (ad esempio, finanze,
-ricerca, soddisfazione studentesca, prestigio). Lo svolgimento della partita
-\`e scandito da una sequenza di \emph{Carte} prelevate da un \emph{Mazzo}: ogni
-carta descrive un evento e propone al giocatore due \emph{Scelte} alternative.
-A ciascuna scelta \`e associato un \emph{Effetto} che modifica i valori di uno
-o pi\`u parametri.
+Le entità principali del dominio sono il \emph{Rettore} (il giocatore),
+che gestisce un insieme di \emph{Parametri} dell'Ateneo. Ogni parametro
+ha un nome, un livello numerico compreso fra 0 e 100, e uno stato
+(attivo o esaurito). I quattro parametri sono: Finanze, Studenti,
+Docenti e Reputazione.
 
-Il \emph{Tempo di gioco} \`e organizzato in turni raggruppati in semestri; un
-mandato completo \`e composto da sei semestri. Lo \emph{Stato di gioco}
-descrive in ogni istante l'andamento della partita: la partita \`e in corso,
-\`e stata vinta (il mandato \`e terminato senza fallimenti), oppure \`e stata
-persa (un parametro ha raggiunto un valore critico).
+Lo svolgimento della partita è scandito da una sequenza di \emph{Carte}
+prelevate da un \emph{Mazzo}. Ogni carta descrive un evento, è associata
+a un \emph{Personaggio} che la presenta, e propone al giocatore due
+\emph{Decisioni} alternative (approvazione o rifiuto). A ciascuna
+decisione è associato un insieme di \emph{Effetti}, ognuno dei quali
+specifica quanto e in quale direzione un parametro viene modificato.
+
+Alcune decisioni attivano un meccanismo di \emph{Conseguenza}: la scelta
+effettuata pianifica la comparsa di una carta figlia dopo un numero
+definito di turni. La relazione tra carta padre, tipo di scelta e carta
+figlia è descritta da un \emph{FollowUp}.
+
+Il \emph{Tempo di gioco} è organizzato in turni raggruppati in
+semestri; un mandato completo è composto da sei semestri di sei
+turni ciascuno. Ad ogni istante, lo \emph{Stato di gioco} descrive
+l'andamento della partita: in corso (\emph{running}), vinta
+(\emph{won}) o persa (\emph{lost}).
+
+Prima di iniziare, il giocatore fornisce la propria
+\emph{Identità} (nome, facoltà e livello di difficoltà).
+La \emph{Difficoltà} influenza il peso degli effetti applicati
+ai parametri e la probabilità con cui vengono selezionate le
+carte di supporto.
 
 % -- inserire qui il diagramma UML del dominio --
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \fbox{\parbox[c][5cm][c]{0.9\linewidth}{\centering \textit{Diagramma UML del modello di dominio (da inserire).}}}
     \caption{Modello del dominio di Aurea Mediocritas: entit\`a, attributi principali e relazioni.}
@@ -152,12 +204,15 @@ persa (un parametro ha raggiunto un valore critico).
 \end{figure}
 
 \paragraph{Aspetti impegnativi}
-Particolare attenzione richieder\`a la modellazione dell'algoritmo che determina
-quale carta presentare al giocatore di turno in turno: la successione delle
-carte non deve essere puramente casuale, ma deve evolvere nel tempo in funzione
-dello stato dell'Ateneo e dello storico di gioco. Anche l'equilibrio fra
-l'impatto delle carte e i valori dei parametri costituisce una sfida di
-bilanciamento non triviale.
+L'aspetto più complesso da modellare è l'algoritmo di selezione delle carte:
+la successione non deve essere puramente casuale, ma deve evolvere in funzione
+dello stato corrente dei parametri, della difficoltà selezionata e delle
+conseguenze programmate dalle decisioni precedenti (follow-up). Un secondo
+aspetto impegnativo riguarda la reattività dell'interfaccia: la View deve
+aggiornarsi automaticamente a ogni variazione dei parametri, senza che il
+Model conosca l'esistenza della View. Infine, la gestione del ciclo di vita
+dell'applicazione (login, partita, fine partita, riavvio) richiede una
+coordinazione precisa fra le componenti senza introdurre dipendenze circolari.
 
 % =============================================================================
 \chapter{Design}
@@ -170,49 +225,61 @@ singolarmente da ciascun membro del gruppo.
 % -----------------------------------------------------------------------------
 \section{Architettura}
 % -----------------------------------------------------------------------------
-L'architettura dell'applicazione segue il pattern \textbf{Model-View-Controller
-(MVC)}, con una netta separazione delle responsabilit\`a fra i tre livelli e
-una sostituibilit\`a in blocco della view senza impatto sul resto del sistema.
+L'architettura dell'applicazione segue il pattern
+\textbf{Model-View-Controller (MVC)}, con una netta separazione delle
+responsabilità fra i tre livelli. Il confine fra le componenti è definito
+esclusivamente da interfacce: nessuno strato conosce l'implementazione
+concreta degli altri, solo il contratto esposto.
 
 \begin{itemize}
-    \item Il \textbf{Model} (package \texttt{it.unibo.aurea.model}) racchiude la
-        logica di gioco e lo stato dell'Ateneo: gli ingressi principali sono
-        l'interfaccia \texttt{GameEngine} (orchestratore della partita) e le
-        sue dipendenze \texttt{GameConfig}, \texttt{GameClock}, \texttt{Deck},
-        \texttt{Card} e \texttt{Parameter}.
+    \item Il \textbf{Model} (package \texttt{it.unibo.aurea.model})
+        racchiude la logica di gioco e lo stato dell'Ateneo.
+        Il punto di ingresso è l'interfaccia \texttt{GameEngine},
+        che orchestra \texttt{GameConfig} (configurazione della partita),
+        \texttt{GameClock} (progressione temporale), \texttt{Deck}
+        (mazzo di carte) e i quattro \texttt{Parameter} (stato
+        dell'Ateneo). Il Model non conosce né la View né il Controller.
+
     \item Il \textbf{Controller} (package \texttt{it.unibo.aurea.controller})
-        coordina il flusso di interazione fra utente e modello: riceve le
-        scelte del giocatore dalla view, le inoltra al modello, recupera lo
-        stato aggiornato e lo passa alla view per la presentazione.
-    \item La \textbf{View} (package \texttt{it.unibo.aurea.view}) \`e realizzata
-        in JavaFX e presenta all'utente lo stato del gioco, le carte, le
-        scelte disponibili e i riepiloghi inter-semestrali. Il punto di
-        ingresso \`e una \texttt{Stage} principale che ospita scene
-        specializzate per le diverse fasi del gioco.
+        coordina il flusso di interazione tramite l'interfaccia
+        \texttt{GameController}. Riceve le scelte del giocatore dalla
+        View (\texttt{makeDecision()}), le inoltra al Model e aggiorna
+        la View con il nuovo stato. Gestisce inoltre la connessione
+        reattiva fra Model e View registrando gli observer sui parametri.
+
+    \item La \textbf{View} (package \texttt{it.unibo.aurea.view})
+        implementa l'interfaccia \texttt{GameView} e presenta
+        all'utente lo stato del gioco. Non accede mai direttamente
+        al Model: riceve aggiornamenti tramite il pattern Observer
+        (notifiche sui parametri) e tramite chiamate esplicite
+        del Controller (\texttt{displayCard()}, \texttt{updateTime()},
+        \texttt{showVictory()}, ecc.).
 \end{itemize}
 
 % -- inserire qui il diagramma UML architetturale --
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \fbox{\parbox[c][5cm][c]{0.9\linewidth}{\centering \textit{Diagramma UML architetturale (MVC, da inserire).}}}
     \caption{Architettura complessiva del sistema: interfacce principali di Model, View e Controller.}
     \label{fig:architecture}
 \end{figure}
 
-La scelta di MVC guarantees che (i)~il modello sia completamente indipendente
-dalla libreria grafica utilizzata, (ii)~la view possa essere sostituita in
-blocco (per esempio passando da JavaFX a Swing) senza modificare modello o
-controller, e (iii)~l'aggiunta di nuove funzionalit\`a possa essere realizzata
-intervenendo soltanto sui componenti effettivamente coinvolti.
+La scelta di MVC garantisce che: (i)~il Model sia completamente indipendente
+dalla libreria grafica utilizzata; (ii)~la View possa essere sostituita in
+blocco --- passando per esempio da JavaFX a un'interfaccia testuale ---
+senza modificare Model o Controller; (iii)~l'aggiunta di nuove funzionalità
+possa essere realizzata intervenendo soltanto sui componenti effettivamente
+coinvolti.
 
 % -----------------------------------------------------------------------------
 \section{Design dettagliato}
 % -----------------------------------------------------------------------------
-Questa sezione contiene il design di dettaglio prodotto individualmente da
-ciascun membro del gruppo. Per ogni aspect trattato vengono presentati: il
-problema da risolvere, la soluzione proposta (con eventuali alternative
-considerate), uno schema UML di supporto e l'eventuale identificazione di
-pattern di progettazione utilizzati.
+Questa sezione approfondisce le principali scelte progettuali adottate da
+ciascun membro del gruppo. Per ogni aspetto trattato vengono presentati:
+il problema da risolvere nel contesto specifico del progetto, la soluzione
+proposta con le motivazioni che l'hanno guidata, le alternative considerate
+e scartate, uno schema UML di supporto e l'identificazione del pattern di
+progettazione applicato, ove presente.
 
 % --- 2.2.1 ---------------------------------------------------------
 \subsection{Pietro Dapporto -- Modello delle carte e contenuti}
@@ -294,10 +361,504 @@ La soluzione si basa principalmente sulla separazione delle responsabilità e su
 del pattern Strategy.]}
 
 % --- 2.2.3 ---------------------------------------------------------
-\subsection{Federico Locatelli -- Sistema di regole ed effetti}
-\emph{[Sezione da redigere: progettazione del package \texttt{model.rules},
-gerarchia degli \texttt{Effect} (immediati, composti, scheduled), motore di
-applicazione delle scelte, eventuale uso dei pattern Composite e Command.]}
+\subsection{Federico Locatelli -- Parametri reattivi, architettura della View e ciclo di vita}
+
+La mia responsabilità copre tre livelli del sistema: la gestione reattiva
+dei parametri nel Model, l'intero layer View con le sue animazioni e
+componenti interattivi, e l'estensione del Controller con nuovi metodi
+di anteprima e accesso allo stato. Di seguito una panoramica dei
+componenti realizzati.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Compito} & \textbf{Interfaccia} & \textbf{Implementazione} \\ \hline
+Parametro (sola lettura, View layer) & \texttt{ParameterView} & \texttt{ParameterImpl} \\ \hline
+Parametro (mutabile, Model layer) & \texttt{Parameter} & \texttt{ParameterImpl} \\ \hline
+Observer dei parametri & \texttt{ParameterObserver} & lambda / method reference \\ \hline
+Tipo parametro con comportamento & --- & \texttt{ParameterType} (enum) \\ \hline
+Identità giocatore & --- & \texttt{PlayerInfo} (record) \\ \hline
+Contratto del Controller & \texttt{GameController} & aggiunti a \texttt{GameControllerImpl} \\ \hline
+View principale & \texttt{GameView} & \texttt{GameViewJavaFXImpl} \\ \hline
+Carta interattiva swipeable & --- & \texttt{CardPanel} \\ \hline
+Icona parametro animata & --- & \texttt{ParameterIconView} \\ \hline
+Schermata di login & --- & \texttt{LoginScene} \\ \hline
+Popup del consigliere & --- & \texttt{CounsellorPopup} \\ \hline
+Overlay di fine partita (in collaborazione) & --- & \texttt{EndgameOverlay} \\ \hline
+Stile visivo dell'applicazione & --- & \texttt{styles.css} \\ \hline
+\end{tabular}
+\caption{Componenti realizzati da Federico Locatelli.}
+\label{tab:locatelli-components}
+\end{table}
+
+\bigskip\noindent\rule{\linewidth}{0.4pt}\bigskip
+
+\bigskip
+\subsubsection{Pattern Observer: parametri reattivi}
+\smallskip
+
+\paragraph{Problema:}
+La View deve aggiornarsi ogni volta che il valore di un parametro cambia,
+senza che il Model conosca l'esistenza della View. Un accoppiamento diretto
+fra le due componenti violerebbe il principio di separazione delle
+responsabilità dell'architettura MVC e renderebbe impossibile sostituire
+la View senza modificare il Model.
+
+\paragraph{Soluzione:}
+È stato adottato il pattern \textbf{Observer}. L'interfaccia
+\texttt{ParameterObserver} è dichiarata \texttt{@FunctionalInterface}:
+definisce un unico metodo \texttt{onParameterChanged(ParameterType, int)}
+che viene invocato ogni volta che il livello del parametro cambia.
+\texttt{ParameterImpl} funge da \emph{observable}: mantiene una lista di
+osservatori registrati e li notifica al termine di ogni \texttt{modify()},
+usando una copia difensiva della lista (\texttt{List.copyOf}) per prevenire
+eccezioni di modifica concorrente.
+
+La registrazione dell'osservatore avviene nel costruttore di
+\texttt{GameControllerImpl}, dove la View viene collegata al Model tramite
+una \emph{method reference}:
+
+\begin{lstlisting}
+parametersMap.values()
+    .forEach(p -> p.addObserver(this.view::updateSingleParameter));
+\end{lstlisting}
+
+In questo modo il Model non conosce la View: conosce solo l'interfaccia
+\texttt{ParameterObserver}, che può essere implementata da qualsiasi
+oggetto o, come in questo caso, da una lambda o method reference.
+
+\paragraph{Alternative considerate:}
+\begin{itemize}
+    \item \emph{Polling}: la View interroga periodicamente il Model per
+        verificare se i valori sono cambiati. Scartato perché introduce
+        latenza, spreco di cicli CPU e accoppiamento temporale.
+    \item \emph{Chiamata diretta View $\to$ Model}: il Controller aggiorna
+        la View dopo ogni decisione. Parzialmente adottato per
+        l'inizializzazione, ma insufficiente per aggiornamenti
+        intermedi (es. effetti concatenati su più parametri).
+\end{itemize}
+
+% -- UML Observer --
+\begin{figure}[H]
+    \centering
+    \fbox{\parbox[c][4cm][c]{0.85\linewidth}{\centering
+        \textit{UML Observer: ParameterImpl (observable),
+        ParameterObserver (interfaccia), GameViewJavaFXImpl (observer
+        via method reference). Da inserire.}}}
+    \caption{Pattern Observer applicato ai parametri di gioco.}
+    \label{fig:observer}
+\end{figure}
+
+\paragraph{Pattern identificato -- Observer:}
+\texttt{ParameterImpl} è l'\emph{observable}; \texttt{ParameterObserver}
+è l'interfaccia dell'\emph{observer}; \texttt{GameViewJavaFXImpl}
+(\texttt{updateSingleParameter}) è l'\emph{observer concreto}, registrato
+tramite method reference dal Controller.
+
+\bigskip\noindent\rule{\linewidth}{0.4pt}\bigskip
+
+\bigskip
+\subsubsection{Interface Segregation: separazione tra lettura e scrittura dei parametri}
+\smallskip
+
+\paragraph{Problema:}
+Il Model espone i parametri sia alla View (che deve solo leggerli per
+aggiornare l'interfaccia) sia al Controller (che deve modificarli
+applicando gli effetti delle carte). Esporre un'unica interfaccia con
+tutti i metodi, incluso \texttt{modify()}, avrebbe consentito alla View
+di alterare direttamente lo stato del gioco, violando i confini
+dell'architettura MVC.
+
+\paragraph{Soluzione:}
+È stato applicato l'\textbf{Interface Segregation Principle}: i metodi
+del parametro sono stati suddivisi in due interfacce distinte con
+responsabilità diverse.
+
+\texttt{ParameterView} espone esclusivamente i metodi di consultazione:
+\texttt{getLevel()}, \texttt{isAlive()}, \texttt{getName()},
+\texttt{getDeathReason()} e \texttt{addObserver()}. Questo è il tipo
+che la View e il Controller utilizzano per leggere lo stato dei parametri
+senza rischiare modifiche accidentali.
+
+\texttt{Parameter} estende \texttt{ParameterView} aggiungendo il solo
+metodo \texttt{modify(int delta)}, che altera il livello del parametro.
+Questo tipo è utilizzato esclusivamente all'interno del Model.
+
+La distinzione è resa esplicita nel Controller, dove la mappa dei
+parametri è tipizzata come \texttt{Map<ParameterType, ParameterView>}:
+il Controller legge i livelli e registra gli observer, ma non chiama
+mai \texttt{modify()} direttamente --- delega questa responsabilità
+al Model tramite \texttt{model.applyEffects()}.
+
+\paragraph{Alternative considerate:}
+\begin{itemize}
+    \item \emph{Interfaccia unica}: esporre tutti i metodi in una sola
+        interfaccia. Più semplice, ma permette alla View di chiamare
+        \texttt{modify()} per errore, introducendo bug difficili da
+        diagnosticare.
+    \item \emph{Copia difensiva al getter}: restituire una copia dei
+        parametri invece di riferimenti diretti. Scartato perché rompe
+        il collegamento con il pattern Observer --- gli observer registrati
+        sulla copia non riceverebbero le notifiche del parametro originale.
+\end{itemize}
+
+% -- UML ISP --
+\begin{figure}[H]
+    \centering
+    \fbox{\parbox[c][4cm][c]{0.85\linewidth}{\centering
+        \textit{UML ISP: ParameterView (sola lettura),
+        Parameter estende ParameterView aggiungendo modify(),
+        ParameterImpl implementa entrambe. Da inserire.}}}
+    \caption{Interface Segregation applicata ai parametri di gioco.}
+    \label{fig:isp}
+\end{figure}
+
+\paragraph{Principio identificato -- Interface Segregation (ISP):}
+\texttt{ParameterView} è l'interfaccia \emph{ristretta} usata da View
+e Controller; \texttt{Parameter} è l'interfaccia \emph{completa} usata
+dal Model; \texttt{ParameterImpl} implementa entrambe.
+
+\bigskip\noindent\rule{\linewidth}{0.4pt}\bigskip
+
+\bigskip
+\subsubsection{Type-Safe Enum con comportamento: ParameterType}
+\smallskip
+
+\paragraph{Problema:}
+I quattro parametri del gioco devono essere identificati in modo
+univoco e presentati all'utente con un nome leggibile. Una soluzione
+ingenua avrebbe usato stringhe letterali (\texttt{"finances"},
+\texttt{"students"}, ecc.) o avrebbe applicato trasformazioni come
+\texttt{name().toLowerCase()} direttamente nel codice della View,
+introducendo dipendenze fragili dal nome interno dell'enum e
+duplicazione della logica di presentazione.
+
+\paragraph{Soluzione:}
+È stato adottato il pattern \textbf{Type-Safe Enum con comportamento}:
+l'enum \texttt{ParameterType} non è un semplice elenco di etichette,
+ma un oggetto che conosce come presentarsi. Ogni costante porta con
+sé un campo \texttt{displayName} inizializzato nel costruttore e
+accessibile tramite il metodo \texttt{getDisplayName()}:
+
+\begin{lstlisting}
+public enum ParameterType {
+    FINANCES("Finances"),
+    STUDENTS("Students"),
+    PROFESSORS("Professors"),
+    REPUTATION("Reputation");
+
+    private final String displayName;
+
+    ParameterType(final String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+}
+\end{lstlisting}
+
+In questo modo la View chiama \texttt{type.getDisplayName()} invece
+di manipolare \texttt{type.name()}: il codice di presentazione è
+disaccoppiato dall'identificatore interno dell'enum. Se in futuro
+si volesse rinominare la costante \texttt{FINANCES} in \texttt{MONEY},
+il nome mostrato all'utente rimarrebbe invariato senza toccare la View.
+
+\paragraph{Alternative considerate:}
+\begin{itemize}
+    \item \emph{Metodo statico di mappatura}: una \texttt{Map} o uno
+        \texttt{switch} separato che traduce l'enum in stringa. Scartato
+        perché distribuisce la logica di presentazione in un punto
+        lontano dalla definizione del tipo.
+    \item \emph{Override di toString()}: restituire il display name
+        da \texttt{toString()}. Scartato perché \texttt{toString()} è
+        un metodo generico con semantica ambigua; un metodo dedicato
+        \texttt{getDisplayName()} rende l'intenzione esplicita.
+\end{itemize}
+
+% -- UML Type-Safe Enum --
+\begin{figure}[H]
+    \centering
+    \fbox{\parbox[c][3cm][c]{0.85\linewidth}{\centering
+        \textit{UML ParameterType: enum con campo displayName
+        e metodo getDisplayName(). Da inserire.}}}
+    \caption{Type-Safe Enum con comportamento applicato a ParameterType.}
+    \label{fig:enum}
+\end{figure}
+
+\paragraph{Pattern identificato -- Type-Safe Enum con comportamento:}
+\texttt{ParameterType} non è solo un'etichetta ma un oggetto con
+logica di presentazione incapsulata. Ogni costante è \emph{self-describing}:
+sa come mostrarsi alla View senza richiedere logica esterna.
+
+\bigskip\noindent\rule{\linewidth}{0.4pt}\bigskip
+
+\bigskip
+\subsubsection{Pattern Strategy: comportamenti iniettati in CardPanel}
+\smallskip
+
+\paragraph{Problema:}
+\texttt{CardPanel} gestisce l'interazione fisica con la carta
+(trascinamento, rotazione, volo), ma deve anche: notificare il
+Controller quando il giocatore prende una decisione, richiedere
+un'anteprima dei parametri colpiti durante il trascinamento, e
+segnalare quando l'anteprima termina. Implementare questi comportamenti
+direttamente in \texttt{CardPanel} avrebbe creato una dipendenza diretta
+verso il Controller, accoppiando il componente visuale alla logica
+di gioco e rendendo impossibile testarlo in isolamento.
+
+\paragraph{Soluzione:}
+È stato adottato il pattern \textbf{Strategy} tramite interfacce
+funzionali Java: i tre comportamenti variabili sono rappresentati
+da campi di tipo \texttt{BiConsumer}, \texttt{Function} e
+\texttt{Runnable}, iniettati dall'esterno tramite metodi setter:
+
+\begin{lstlisting}
+private BiConsumer<Card, Boolean> onDecision;
+private Function<Boolean, Set<ParameterType>> previewProvider;
+private Runnable onPreviewEnd;
+\end{lstlisting}
+
+\texttt{CardPanel} non conosce il Controller: si limita a invocare
+le strategie ricevute nei momenti opportuni. La configurazione
+avviene in \texttt{GameViewJavaFXImpl}, che inietta le implementazioni
+concrete tramite method reference verso il Controller:
+
+\begin{lstlisting}
+cardPanel.setOnDecision((card, approved) ->
+    controller.makeDecision(approved));
+cardPanel.setPreviewProvider(
+    controller::previewDecisionDeltas);
+cardPanel.setOnPreviewEnd(this::resetHighlights);
+\end{lstlisting}
+
+Questo approccio permette di sostituire i comportamenti senza
+modificare \texttt{CardPanel} e di testarlo con implementazioni
+fittizie (stub) senza coinvolgere il Controller reale.
+
+\paragraph{Alternative considerate:}
+\begin{itemize}
+    \item \emph{Dipendenza diretta da GameController}: passare il
+        Controller come parametro al costruttore di \texttt{CardPanel}.
+        Scartato perché lega il componente visuale a una specifica
+        interfaccia del Controller, riducendo la riusabilità.
+    \item \emph{Listener ad hoc con interfacce dedicate}: definire
+        interfacce \texttt{DecisionListener}, \texttt{PreviewListener}
+        ecc. Più verboso senza vantaggi concreti rispetto all'uso
+        diretto delle interfacce funzionali di Java.
+\end{itemize}
+
+% -- UML Strategy --
+\begin{figure}[H]
+    \centering
+    \fbox{\parbox[c][4cm][c]{0.85\linewidth}{\centering
+        \textit{UML Strategy: CardPanel con i tre campi funzionali
+        (BiConsumer, Function, Runnable) iniettati da
+        GameViewJavaFXImpl. Da inserire.}}}
+    \caption{Pattern Strategy applicato ai comportamenti di CardPanel.}
+    \label{fig:strategy}
+\end{figure}
+
+\paragraph{Pattern identificato -- Strategy:}
+\texttt{CardPanel} è il \emph{context}; \texttt{BiConsumer},
+\texttt{Function} e \texttt{Runnable} sono le \emph{strategie};
+le lambda e method reference iniettate da \texttt{GameViewJavaFXImpl}
+sono le \emph{strategie concrete}.
+
+\bigskip\noindent\rule{\linewidth}{0.4pt}\bigskip
+
+\bigskip
+\subsubsection{Inversion of Control: gestione del ciclo di vita}
+\smallskip
+
+\paragraph{Problema:}
+Al termine di una partita il giocatore può scegliere di ricominciare
+da capo. La View, che gestisce la schermata di fine partita, conosce
+il momento in cui il giocatore preme ``Reign Again'', ma non dovrebbe
+sapere \emph{come} riavviare il gioco: farlo significherebbe che la
+View conosce la struttura dell'intera applicazione (Model, Controller,
+login), violando la separazione delle responsabilità MVC.
+
+\paragraph{Soluzione:}
+È stato applicato il principio di \textbf{Inversion of Control} tramite
+callback: la View riceve un oggetto \texttt{Runnable onRestart} nel
+costruttore, senza sapere cosa fa. Quando il giocatore preme il tasto
+di riavvio, la View chiude gli stage aperti e invoca il callback,
+delegando completamente la responsabilità a chi lo ha fornito.
+
+Il proprietario del ciclo di vita è \texttt{Main}, che definisce il
+callback come una method reference verso il proprio metodo
+\texttt{openLogin()}:
+
+\begin{lstlisting}
+final Runnable onRestart = () ->
+    Platform.runLater(this::openLogin);
+final GameView view =
+    new GameViewJavaFXImpl(onRestart);
+\end{lstlisting}
+
+Quando il callback viene eseguito, \texttt{Main} chiude il gioco
+corrente e apre una nuova \texttt{LoginScene}, ricreando l'intero
+stack MVC con i nuovi dati del giocatore. La View non conosce
+nulla di questo flusso: esegue un \texttt{Runnable} e basta.
+
+\paragraph{Alternative considerate:}
+\begin{itemize}
+    \item \emph{Riferimento diretto a Main}: passare l'istanza di
+        \texttt{Main} alla View. Scartato perché crea una dipendenza
+        ciclica e concettualmente errata: la View non dovrebbe
+        conoscere il punto di ingresso dell'applicazione.
+    \item \emph{Riavvio tramite Platform.exit() e riapertura}:
+        chiudere la JVM e riaprire l'applicazione. Scartato perché
+        non è trasparente all'utente e non è un riavvio autentico
+        all'interno della stessa sessione.
+\end{itemize}
+
+% -- UML IoC --
+\begin{figure}[H]
+    \centering
+    \fbox{\parbox[c][4cm][c]{0.85\linewidth}{\centering
+        \textit{UML IoC: Main fornisce Runnable onRestart a
+        GameViewJavaFXImpl; EndgameOverlay lo invoca tramite
+        la View senza conoscere Main. Da inserire.}}}
+    \caption{Inversion of Control per la gestione del riavvio.}
+    \label{fig:ioc}
+\end{figure}
+
+\paragraph{Principio identificato -- Inversion of Control:}
+\texttt{Main} è il \emph{proprietario del ciclo di vita};
+\texttt{GameViewJavaFXImpl} è il \emph{consumatore del callback};
+il \texttt{Runnable} è il \emph{contratto minimo} che disaccoppia
+i due senza che la View conosca Main.
+
+\bigskip\noindent\rule{\linewidth}{0.4pt}\bigskip
+
+\bigskip
+\subsubsection{Value Object: PlayerInfo come record immutabile}
+\smallskip
+
+\paragraph{Problema:}
+I dati inseriti dal giocatore nella schermata di login --- nome del
+Rettore, facoltà e difficoltà --- devono essere raccolti, validati
+e trasportati attraverso il sistema fino al Controller, che li
+utilizza per personalizzare l'esperienza di gioco. Una soluzione
+basata su un oggetto mutabile avrebbe esposto il rischio di
+modifiche accidentali durante il transito, e la validazione
+sarebbe potuta essere dimenticata in qualunque punto del codice.
+
+\paragraph{Soluzione:}
+È stato adottato il pattern \textbf{Value Object} tramite il
+costrutto \texttt{record} di Java~21. \texttt{PlayerInfo} è
+dichiarato come record con tre componenti: \texttt{rectorName},
+\texttt{faculty} e \texttt{difficulty}. Il costruttore compatto
+applica la validazione \emph{fail-fast} su tutti i campi:
+
+\begin{lstlisting}
+public record PlayerInfo(
+        String rectorName,
+        String faculty,
+        Difficulty difficulty) {
+
+    public PlayerInfo {
+        Objects.requireNonNull(rectorName,
+            "rectorName must not be null");
+        Objects.requireNonNull(faculty,
+            "faculty must not be null");
+        Objects.requireNonNull(difficulty,
+            "difficulty must not be null");
+    }
+}
+\end{lstlisting}
+
+Il compilatore genera automaticamente \texttt{equals()},
+\texttt{hashCode()} e \texttt{toString()} coerenti con i valori
+dei campi, e i campi sono implicitamente \texttt{final}: una volta
+creato, un \texttt{PlayerInfo} non può essere modificato. Questo
+garantisce che i dati del giocatore siano consistenti in ogni punto
+del sistema che li utilizza.
+
+\paragraph{Alternative considerate:}
+\begin{itemize}
+    \item \emph{Classe mutabile con getter e setter}: più flessibile
+        ma priva delle garanzie di immutabilità. La validazione
+        dovrebbe essere replicata in ogni setter, aumentando
+        il rischio di inconsistenza.
+    \item \emph{Parametri separati}: passare nome, facoltà e
+        difficoltà come argomenti separati al costruttore del
+        Controller. Scartato perché aumenta l'arità dei metodi
+        e non raggruppa semanticamente i dati correlati.
+\end{itemize}
+
+% -- UML Value Object --
+\begin{figure}[H]
+    \centering
+    \fbox{\parbox[c][3cm][c]{0.85\linewidth}{\centering
+        \textit{UML PlayerInfo: record con tre campi immutabili
+        e costruttore compatto con validazione. Da inserire.}}}
+    \caption{Value Object PlayerInfo come Java record.}
+    \label{fig:playerinfo}
+\end{figure}
+
+\paragraph{Pattern identificato -- Value Object:}
+\texttt{PlayerInfo} è immutabile, si confronta per valore e
+trasporta dati validati. Il costrutto \texttt{record} di Java~21
+fornisce queste garanzie con codice minimo e senza boilerplate.
+
+\bigskip\noindent\rule{\linewidth}{0.4pt}\bigskip
+
+\bigskip
+\subsubsection{Ulteriori scelte di design}
+\smallskip
+Oltre ai pattern principali descritti nelle sezioni precedenti,
+alcune scelte progettuali minori meritano una menzione per il loro
+impatto sulla qualità e manutenibilità del codice.
+
+\bigskip
+\paragraph{Factory Method in GameViewJavaFXImpl:}
+\smallskip
+La costruzione dei componenti visivi della View è delegata a
+metodi privati dedicati: \texttt{buildTopSection()},
+\texttt{buildCenterSection()}, \texttt{buildBottomSection()},
+\texttt{buildCloseButton()}. Ogni metodo è responsabile di
+costruire e restituire un nodo JavaFX autocontenuto. Questo
+approccio riduce la complessità del metodo principale
+\texttt{buildAndShowStage()} e permette di modificare un
+componente senza impattare gli altri.
+
+\bigskip
+\paragraph{Utility Class: CounsellorPopup:}
+\smallskip
+\texttt{CounsellorPopup} è progettata come \emph{utility class}:
+costruttore privato, nessun campo di istanza, unico metodo
+pubblico statico \texttt{show(String message)}. La scelta è
+motivata dalla natura \emph{stateless} del popup: ogni
+invocazione costruisce un nuovo stage modale, lo mostra e
+lo chiude senza mantenere stato tra una chiamata e l'altra.
+
+\bigskip
+\paragraph{Fail-Fast e Defensive Copy in ParameterImpl:}
+\smallskip
+Il costruttore di \texttt{ParameterImpl} e il metodo
+\texttt{addObserver()} applicano \texttt{Objects.requireNonNull}
+per rigettare immediatamente input nulli, evitando errori
+latenti difficili da diagnosticare. Il metodo
+\texttt{notifyObservers()} itera su una copia difensiva
+della lista degli osservatori (\texttt{List.copyOf}), rendendo
+il sistema robusto rispetto a modifiche concorrenti della lista
+durante la notifica.
+
+\bigskip
+\paragraph{Gestione del threading in JavaFX:}
+\smallskip
+Tutti i metodi della View che modificano nodi della scena
+grafica (\texttt{displayCard()}, \texttt{updateSingleParameter()},
+\texttt{showVictory()}, ecc.) delegano l'esecuzione al thread
+JavaFX tramite \texttt{Platform.runLater()}. Questo garantisce
+che gli aggiornamenti dell'interfaccia avvengano sempre sul
+thread corretto, prevenendo eccezioni di accesso concorrente
+tipiche delle applicazioni JavaFX multi-thread.
 
 % --- 2.2.4 ---------------------------------------------------------
 \subsection{Nikita Piraino -- Game loop, tempo e condizioni di fine partita}
@@ -347,7 +908,7 @@ Pattern identificato Static Factory Method (creazionale): i metodi \texttt{creat
 
 \textbf{Soluzione:} \texttt{GameEngineImpl} implementa \texttt{GameEngine} ed è la classe centrale del sottosistema model. Coordina tre dipendenze: la configurazione (\texttt{GameConfig}), l'orologio (\texttt{GameClock}) e il mazzo (\texttt{Deck}). Tutti i campi sono final; in particolare \texttt{parameters} è inizializzato con \texttt{List.of(...)}, che restituisce una lista non modificabile: nessun client può aggiungere o rimuovere parametri dopo la costruzione dell'istanza.
 
-Il costruttore applica la Dependency Injection ricevendo \texttt{GameConfig} e \texttt{Deck} como argomenti, e crea internamente il \texttt{GameClockImpl}:
+Il costruttore applica la Dependency Injection ricevendo \texttt{GameConfig} e \texttt{Deck} come argomenti, e crea internamente il \texttt{GameClockImpl}:
 \begin{lstlisting}
 public GameEngineImpl(final GameConfig config, final Deck deck) {
     this.config = config;
@@ -608,7 +1169,7 @@ In quest'ultimo capitolo si tirano le somme del lavoro svolto e si delineano eve
 \subsection{Pietro Dapporto}
 Il mio ruolo all'interno del gruppo ha riguardato soprattutto la struttura di base del gioco e la modellazione delle carte. Per questo motivo, in alcune parti del mio contributo non è stato necessario utilizzare costrutti Java particolarmente complessi: l'obiettivo principale era costruire una struttura chiara, coerente e facilmente estendibile.
 
-La parte più creativa del lavoro, di cui sono particolarmente soddisfatto, è stata la creazione delle carte di gioco. Dal punto di vista implementativo, questa attività non ha richiesto tecnicismi avanzati, ma ha comportato un lavoro importante di progettazione del contenuto: definire las situazioni proposte al giocatore, le possibili risposte e i pesi associati agli effetti sui parametri del gioco. Ritengo inoltre di aver adottato soluzioni strutturali discrete, soprattutto per quanto riguarda la separazione tra i dati delle carte in file di configurazione esterni e la logica principale dell'applicazione.
+La parte più creativa del lavoro, di cui sono particolarmente soddisfatto, è stata la creazione delle carte di gioco. Dal punto di vista implementativo, questa attività non ha richiesto tecnicismi avanzati, ma ha comportato un lavoro importante di progettazione del contenuto: definire le situazioni proposte al giocatore, le possibili risposte e i pesi associati agli effetti sui parametri del gioco. Ritengo inoltre di aver adottato soluzioni strutturali discrete, soprattutto per quanto riguarda la separazione tra i dati delle carte in file di configurazione esterni e la logica principale dell'applicazione.
 
 Considero positivo il fatto di aver progressivamente migliorato l'architettura del sistema, passando da soluzioni inizialmente più semplici ma meno scalabili a una struttura più modulare e mantenibile. 
 
@@ -649,7 +1210,7 @@ La gestione dell'accesso in scrittura ai parametri da parte di attori diversi (c
 % =============================================================================
 
 % =============================================================================
-\chapter{Guia utente}
+\chapter{Guida utente}
 % =============================================================================
 \emph{[Da redigere: istruzioni d'uso essenziali per consentire ai docenti di avviare ed esplorare le funzionalit\`a primarie dell'applicazione, eventualmente corredate di screenshot. In particolare: come avviare il JAR, come iniziare una partita, come effettuare una scelta su una carta, come interpretare la barra dei parametri, come consultare il riepilogo di fine semestre, come riconoscere la fine partita.]}
 
