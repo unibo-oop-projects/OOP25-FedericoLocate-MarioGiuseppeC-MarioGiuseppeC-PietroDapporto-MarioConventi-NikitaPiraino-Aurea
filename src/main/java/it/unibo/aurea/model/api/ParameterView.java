@@ -23,7 +23,8 @@ public interface ParameterView {
     /**
      * Registers an observer that is notified whenever the level changes.
      *
-     * @param observer the observer to add
+     * @param observer the observer to add; must not be null
+     * @throws NullPointerException if observer is null
      */
     void addObserver(ParameterObserver observer);
 

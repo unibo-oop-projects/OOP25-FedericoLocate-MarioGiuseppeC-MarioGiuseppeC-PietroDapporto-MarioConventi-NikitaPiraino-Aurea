@@ -1,5 +1,6 @@
 package it.unibo.aurea.view.api;
 
+import it.unibo.aurea.controller.api.GameController;
 import it.unibo.aurea.model.api.Card;
 import it.unibo.aurea.model.api.ParameterType;
 
@@ -37,7 +38,7 @@ public interface GameView {
     void showVictory();
 
     /**
-     * this method handles the graphic of the Game over situation.
+     * Handles the graphical transition for a defeat (parameter out of bounds).
      */
     void showDefeat();
 
@@ -46,7 +47,7 @@ public interface GameView {
      * 
      * @param controller the GameController.
      */
-    void setController(it.unibo.aurea.controller.api.GameController controller);
+    void setController(GameController controller);
 
     /**
      * Updates the time counter on the UI.

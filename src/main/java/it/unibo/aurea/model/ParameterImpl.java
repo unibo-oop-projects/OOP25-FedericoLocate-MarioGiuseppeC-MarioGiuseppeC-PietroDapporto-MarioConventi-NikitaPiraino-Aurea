@@ -40,7 +40,7 @@ public final class ParameterImpl implements Parameter {
     @Override
     public void addObserver(final ParameterObserver observer) {
         Objects.requireNonNull(observer, "Observer must not be null");
-        if (!this.observers.contains(observer)) {
+        if (!this.observers.contains(observer)) { // duplicate observers are silently ignored
             this.observers.add(observer);
         }
     }
@@ -87,7 +87,7 @@ public final class ParameterImpl implements Parameter {
 
     @Override
     public boolean isAlive() {
-       return this.alive;
+        return this.alive;
     }
 
     @Override

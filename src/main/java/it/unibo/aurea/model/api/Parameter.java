@@ -8,8 +8,7 @@ public interface Parameter extends ParameterView {
     /**
      * Raises or decreases the level of this parameter.
      *
-     * @param delta the amount to add/subtract based on the sign.
+     * @param delta positive values increase the level, negative values decrease it.
      */
     void modify(int delta);
 }
-

@@ -44,8 +44,6 @@ public final class CardPanel extends StackPane {
 
     private static final int CARD_W = 260;
     private static final int CARD_H = 340;
-    private static final int CHAR_W = CARD_W;
-    private static final int CHAR_H = CARD_H;
     private static final int CORNER_RADIUS = 12;
 
     private static final int LABEL_MAX_WIDTH = 200;
@@ -100,7 +98,7 @@ public final class CardPanel extends StackPane {
      */
     public CardPanel() {
         this.characterSlot = new StackPane();
-        this.characterSlot.setPrefSize(CHAR_W, CHAR_H);
+        this.characterSlot.setPrefSize(CARD_W, CARD_H);
 
         this.tintOverlay = new Region();
         this.tintOverlay.setMouseTransparent(true);
@@ -361,9 +359,9 @@ public final class CardPanel extends StackPane {
                 return;
             }
             final ImageView img = new ImageView(new Image(is));
-            img.setFitWidth(CHAR_W);
-            img.setFitHeight(CHAR_H);
-            final Rectangle frame = new Rectangle(CHAR_W, CHAR_H);
+            img.setFitWidth(CARD_W);
+            img.setFitHeight(CARD_H);
+            final Rectangle frame = new Rectangle(CARD_W, CARD_H);
             frame.setArcWidth(CORNER_RADIUS * 2.0);
             frame.setArcHeight(CORNER_RADIUS * 2.0);
             img.setClip(frame);

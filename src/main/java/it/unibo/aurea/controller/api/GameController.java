@@ -56,7 +56,8 @@ public interface GameController {
     PlayerInfo getPlayerInfo();
 
     /**
-     * Quits the application.
+     * Terminates the application gracefully,
+     * closing all open windows and releasing resources.
      */
     void quitGame();
 }

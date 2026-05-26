@@ -162,8 +162,6 @@ public final class GameViewJavaFXImpl implements GameView {
 
         final HBox parametersGroup = new HBox(TOP_BAR_SPACING);
         parametersGroup.setAlignment(Pos.CENTER);
-        //getChildren is a javaFX method used to return a list where we can add components. 
-        //we don't set the position because javaFX does it autonomously by the layout settings.
         parametersGroup.getChildren().addAll(
             parameterIcons.get(ParameterType.FINANCES),
             parameterIcons.get(ParameterType.STUDENTS),
@@ -384,7 +382,7 @@ public final class GameViewJavaFXImpl implements GameView {
                     + " · Semester " + toRoman(prevVisualSemester);
                 semesterReport.show(prevLabel, buildFinalRecap());
             }
-                    });
+        });
     }
 
     private String toRoman(final int number) {
@@ -398,11 +396,11 @@ public final class GameViewJavaFXImpl implements GameView {
         if (c != null) {
             final PlayerInfo info = c.getPlayerInfo();
             Platform.runLater(() -> {
-            if (this.playerLabel != null) {
-                this.playerLabel.setText(info.rectorName() + " · " + info.faculty());
-            } else {
-                LOGGER.warning("playerLabel was null when setController fired");
-            }
+                if (this.playerLabel != null) {
+                    this.playerLabel.setText(info.rectorName() + " · " + info.faculty());
+                } else {
+                    LOGGER.warning("playerLabel was null when setController fired");
+                }
             });
         }
     }
