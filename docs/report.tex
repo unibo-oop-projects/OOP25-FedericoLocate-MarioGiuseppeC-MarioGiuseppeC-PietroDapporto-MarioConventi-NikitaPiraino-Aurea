@@ -925,7 +925,7 @@ return deck.getAllCards().stream()
     .findFirst()
     .orElseGet(() -> deck.getAllCards().get(0));
 \end{lstlisting}
-Il terminale \texttt{orElseGet} esegue il fallback solo se lo stream è vuoto (tutte le carte sono state utilizzate), restituendo la prima carta como comportamento di default.
+Il terminale \texttt{orElseGet} esegue il fallback solo se lo stream è vuoto (tutte le carte sono state utilizzate), restituendo la prima carta come comportamento di default.
 
 Alcune alternative sono:
 \begin{itemize}
@@ -1030,10 +1030,9 @@ sorgenti. I test non richiedono alcuna interazione utente e sono eseguiti
 automaticamente dal task \texttt{gradle build}.
 
 I componenti sottoposti a test automatizzato comprendono il sottosistema
-model in tutte le sue parti: configurazione, orologio, motore di gioco,
-mazzo di carte, regole di applicazione degli effetti e algoritmo di
-selezione. Per ciascun membro del gruppo, le strategie adottate sono
-descritte in maggior dettaglio nella sezione di note di sviluppo individuale.
+model (configurazione, orologio, motore di gioco, mazzo di carte),
+il layer controller (comunicazione MVC e metodi di anteprima) e
+le astrazioni del model layer (parametri, observer, tipi).
 
 \paragraph{Nikita Piraino -- strategia di testing per transizioni di stato}
 La strategia adottata \`e il \emph{State Transition Testing}: ogni test
@@ -1103,8 +1102,62 @@ Sono stati sottoposti a test i seguenti aspetti:
     \item \texttt{shouldCharacterImageExist()}: verifica che ogni personaggio all'interno delle carte abbia il riferimento ad un'immagine da mostrare durante il gioco.
 \end{itemize}
 
-\paragraph{Mario Conventi, Federico Locatelli}
-\emph{[Sezioni di testing individuali da redigere.]}
+\paragraph{Federico Locatelli -- strategia di testing per Model, Controller e Observer}
+
+La strategia adottata è la combinazione di \emph{State Transition Testing}
+e \emph{Boundary Testing}: ogni test verifica il comportamento del sistema
+ai confini del dominio (livelli 0 e 100 dei parametri) e nelle transizioni
+di stato (vivo $\to$ morto, notifica $\to$ silenziosa dopo la morte).
+L'annotazione \texttt{@BeforeEach} garantisce l'isolamento fra test,
+ricreando ogni volta un'istanza fresca del sistema sotto test.
+Le classi di test coprono cinque aree, per un totale di 44 test automatici:
+
+\subparagraph{\texttt{ParameterImplTest} -- 18 test:}
+Verifica il comportamento di \texttt{ParameterImpl} in tutti gli scenari
+rilevanti: livello iniziale a 50, incremento e decremento del livello,
+clamping agli estremi (0 e 100), transizione alive $\to$ dead, guard
+clause che ignora \texttt{modify()} dopo la morte, correttezza di
+\texttt{getDeathReason()} ai due estremi, fail-fast su observer nullo,
+notifica dell'observer con tipo e livello corretti, assenza di
+notifiche dopo la morte del parametro, e correttezza ai boundary esatti
+(delta di esattamente 50 e $-$50).
+
+\subparagraph{\texttt{ParameterTypeTest} -- 7 test:}
+Verifica il pattern \emph{Type-Safe Enum con comportamento}:
+tutti e quattro i valori espongono un \texttt{displayName} non nullo
+e non vuoto; i nomi attesi (\texttt{"Finances"}, \texttt{"Students"},
+\texttt{"Professors"}, \texttt{"Reputation"}) corrispondono ai valori
+restituiti da \texttt{getDisplayName()}; il numero totale di costanti
+è esattamente quattro.
+
+\subparagraph{\texttt{ParameterObserverTest} -- 3 test:}
+Verifica che \texttt{ParameterObserver} sia una vera
+\texttt{@FunctionalInterface}: può essere istanziata come lambda,
+riceve il tipo corretto (\texttt{ParameterType}) e il livello corretto
+al momento della notifica.
+
+\subparagraph{\texttt{PlayerInfoTest} -- 7 test:}
+Verifica il pattern \emph{Value Object}: i getter restituiscono i valori
+passati alla costruzione; il costruttore compatto rigetta immediatamente
+\texttt{null} su ciascuno dei tre campi (fail-fast); due record costruiti
+con gli stessi valori risultano uguali per \texttt{equals()}; due record
+con valori diversi non lo sono; \texttt{toString()} contiene i valori
+significativi.
+
+\subparagraph{\texttt{GameControllerImplTest} -- 9 test:}
+Test di integrazione che verifica la comunicazione MVC senza lanciare
+JavaFX. Una \texttt{FakeView} (implementazione \emph{spy} di
+\texttt{GameView}) registra le chiamate ricevute dal Controller e
+permette di asserire il comportamento osservabile. I test coprono:
+avvio del gioco e prima visualizzazione della carta, aggiornamento della
+View dopo una decisione, notifica dell'Observer sui parametri,
+robustezza a sequenze rapide di decisioni, correttezza di
+\texttt{getPlayerInfo()}, range valido dei livelli restituiti da
+\texttt{getCurrentParametersLevels()}, valori non nulli di
+\texttt{previewDecisionDeltas()} in entrambe le direzioni, e assenza
+di eccezioni prima di \texttt{startGame()}.
+
+\paragraph{Mario Conventi} 
 
 % -----------------------------------------------------------------------------
 \section{Note di sviluppo}
