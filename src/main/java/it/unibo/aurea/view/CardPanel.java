@@ -263,6 +263,7 @@ public final class CardPanel extends StackPane {
     }
 
     private void flyOut(final boolean approved) {
+        AudioManager.playSwipe();
         final Card decided = currentCard;
         currentCard = null;
 

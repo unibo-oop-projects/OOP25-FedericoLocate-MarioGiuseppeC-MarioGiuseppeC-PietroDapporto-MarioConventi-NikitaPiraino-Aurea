@@ -8,6 +8,7 @@ import it.unibo.aurea.model.GameConfigFactory;
 import it.unibo.aurea.model.GameEngineImpl;
 import it.unibo.aurea.model.api.GameConfig;
 import it.unibo.aurea.model.api.GameEngine;
+import it.unibo.aurea.view.AudioManager;
 import it.unibo.aurea.view.GameViewJavaFXImpl;
 import it.unibo.aurea.view.LoginScene;
 import it.unibo.aurea.view.api.GameView;
@@ -36,6 +37,7 @@ public final class Main extends Application {
      * Extracted so it can be referenced as a method reference (Runnable).
      */
     private void openLogin() {
+        AudioManager.startBackground();
         final LoginScene login = new LoginScene(this::startGame);
         login.show();
     }
