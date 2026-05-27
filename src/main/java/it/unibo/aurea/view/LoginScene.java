@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import it.unibo.aurea.controller.api.PlayerInfo;
+import it.unibo.aurea.model.api.Difficulty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -23,8 +24,8 @@ import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -112,16 +113,11 @@ public final class LoginScene {
                 return;
             }
 
-            // Convertiamo il testo della UI nel rispettivo valore dell'Enum Difficulty
-            final String selectedDiff = diffBox.getValue();
-            final it.unibo.aurea.model.api.Difficulty difficulty;
-            if ("Hard".equals(selectedDiff)) {
-                difficulty = it.unibo.aurea.model.api.Difficulty.HARD;
-            } else if ("Medium".equals(selectedDiff)) {
-                difficulty = it.unibo.aurea.model.api.Difficulty.NORMAL;
-            } else {
-                difficulty = it.unibo.aurea.model.api.Difficulty.EASY;
-            }
+            final Difficulty difficulty = switch (diffBox.getValue()) {
+                case "Hard" -> Difficulty.HARD;
+                case "Medium" -> Difficulty.NORMAL;
+                default -> Difficulty.EASY;
+            };
 
             stage.close();
             onLoginComplete.accept(new PlayerInfo(name, fac, difficulty));

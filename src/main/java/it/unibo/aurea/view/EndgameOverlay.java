@@ -1,6 +1,7 @@
 package it.unibo.aurea.view;
 
 import java.util.Map;
+import java.util.Objects;
 
 import it.unibo.aurea.model.api.ParameterType;
 import it.unibo.aurea.view.api.Report;
@@ -32,7 +33,7 @@ public final class EndgameOverlay {
      * @param onRestart callback invoked when the player chooses to play again
      */
     public EndgameOverlay(final Runnable onRestart) {
-        this.onRestart = onRestart;
+        this.onRestart = Objects.requireNonNull(onRestart, "onRestart must not be null");
     }
 
     /**

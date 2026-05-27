@@ -133,6 +133,11 @@ public final class GameControllerImpl implements GameController {
         return this.playerInfo;
     }
 
+    /**
+     * Synchronizes the View with the current state of the Model.
+     * Displays the next card if the game is running, or triggers
+     * the end-game flow otherwise.
+     */
     private void updateUI() {
         final GameState state = model.getGameState();
         if (state == GameState.RUNNING) {
@@ -143,6 +148,11 @@ public final class GameControllerImpl implements GameController {
         }
     }
 
+    /**
+     * Routes the end-game state to the appropriate View method.
+     *
+     * @param state the terminal game state (WON or LOST)
+     */
     private void handleGameEnd(final GameState state) {
         switch (state) {
             case WON -> {
@@ -158,6 +168,11 @@ public final class GameControllerImpl implements GameController {
         }
     }
 
+    /**
+     * Inspects the parameters to find the one that caused the defeat.
+     *
+     * @return a human-readable defeat reason, or "Unknown Causes" as fallback
+     */
     private String determineDefeatReason() {
         return parametersMap.values().stream()
                 .filter(p -> !p.isAlive())
