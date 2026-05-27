@@ -1182,7 +1182,69 @@ di eccezioni prima di \texttt{startGame()}.
 
 % --- 3.2.3 ---------------------------------------------------------
 \subsection{Federico Locatelli}
-\emph{[Sezione da redigere: feature avanzate del linguaggio Java utilizzate, ciascuna con permalink GitHub al punto del codice.]}
+Di seguito le feature avanzate del linguaggio e dell'ecosistema Java
+utilizzate nella mia parte di progetto, ciascuna corredata del permalink
+GitHub al punto del codice in cui è impiegata.
+
+\begin{itemize}
+    \item \textbf{\texttt{@FunctionalInterface}} -- \texttt{ParameterObserver}
+        è dichiarata come interfaccia funzionale: può essere istanziata
+        come lambda o method reference senza classi anonime. \\
+        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/model/api/ParameterObserver.java#L8-L16}
+
+    \item \textbf{Method reference come observer} -- la View viene collegata
+        al Model tramite \texttt{this.view::updateSingleParameter}, passata
+        come \texttt{ParameterObserver} senza lambda esplicita. \\
+        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/controller/GameControllerImpl.java#L48-L50}
+
+    \item \textbf{\texttt{BiConsumer} e \texttt{Function} come Strategy} --
+        i tre comportamenti variabili di \texttt{CardPanel} sono rappresentati
+        da interfacce funzionali iniettate dall'esterno, disaccoppiando il
+        componente visuale dal Controller. \\
+        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/view/CardPanel.java#L7-L8}
+
+    \item \textbf{\texttt{TextFormatter} con lambda} -- i campi di testo
+        del login limitano la lunghezza dell'input tramite un predicato
+        lambda passato al \texttt{TextFormatter} di JavaFX. \\
+        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/view/LoginScene.java#L85-L93}
+
+    \item \textbf{Switch expression Java~21} -- la selezione della difficoltà
+        converte la stringa della \texttt{ChoiceBox} nell'enum
+        \texttt{Difficulty} tramite switch expression con arrow syntax. \\
+        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/view/LoginScene.java#L116}
+
+    \item \textbf{JavaFX \texttt{Timeline} / \texttt{KeyFrame} / \texttt{KeyValue}} --
+        l'animazione di riempimento dell'icona parametro interpola
+        fluidamente il livello tramite \texttt{Interpolator.EASE\_BOTH}. \\
+        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/view/ParameterIconView.java#L150-L152}
+
+    \item \textbf{JavaFX \texttt{BlendMode.SCREEN}} -- le icone dei parametri
+        usano \texttt{BlendMode.SCREEN} per sovrapporre il layer attivo
+        a quello dimmed senza mascherare il canale alpha dell'immagine. \\
+        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/view/ParameterIconView.java#L87-L90}
+
+    \item \textbf{Java \texttt{record} con costruttore compatto} --
+        \texttt{PlayerInfo} è dichiarato come record immutabile; il
+        costruttore compatto applica la validazione fail-fast su tutti
+        e tre i campi. \\
+        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/controller/api/PlayerInfo.java#L14}
+
+    \item \textbf{\texttt{Platform.runLater}} -- tutti i metodi della View
+        che modificano nodi della scena delegano l'esecuzione al thread
+        JavaFX, prevenendo eccezioni di accesso concorrente. \\
+        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/view/GameViewJavaFXImpl.java#L322-L333}
+
+    \item \textbf{\texttt{SVGPath} per grafica vettoriale} -- l'icona di
+        chiusura è costruita tramite \texttt{SVGPath} con path data
+        inline, scalabile a qualsiasi risoluzione senza immagini esterne. \\
+        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/view/GameViewJavaFXImpl.java#L193}
+\end{itemize}
+
+\paragraph{Codice di terze parti}
+Nessuna porzione di codice della mia parte di progetto è stata tratta
+da fonti esterne. Le librerie utilizzate, oltre a Java~21 e JUnit~5,
+sono JavaFX per l'intero layer View e SpotBugs per l'annotazione
+\texttt{@SuppressFBWarnings} nel Controller.
 
 % --- 3.2.4 ---------------------------------------------------------
 \subsection{Nikita Piraino}
