@@ -1218,6 +1218,13 @@ GitHub al punto del codice in cui è impiegata.
         fluidamente il livello tramite \texttt{Interpolator.EASE\_BOTH}. \\
         \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/view/ParameterIconView.java#L150-L152}
 
+    \item \textbf{JavaFX \texttt{ParallelTransition}} -- l'animazione di
+        ingresso della carta compone in parallelo una
+        \texttt{TranslateTransition} (scivolamento verticale) e una
+        \texttt{FadeTransition} (dissolvenza), ottenendo un effetto
+        fluido con una sola chiamata a \texttt{play()}. \\
+        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/view/CardPanel.java#L341}
+
     \item \textbf{JavaFX \texttt{BlendMode.SCREEN}} -- le icone dei parametri
         usano \texttt{BlendMode.SCREEN} per sovrapporre il layer attivo
         a quello dimmed senza mascherare il canale alpha dell'immagine. \\
@@ -1298,7 +1305,37 @@ Un altro limite riguarda il livello di astrazione introdotto. In alcuni punti la
 
 % --- Federico ---------------------------------------------------
 \subsection{Federico Locatelli}
-\emph{[Autovalutazione individuale da redigere.]}
+
+\paragraph{Contributi principali:}
+Il mio contributo ha coperto tre livelli del sistema: la progettazione
+delle astrazioni reattive del Model (\texttt{ParameterView},
+\texttt{ParameterObserver}, \texttt{ParameterImpl}), l'intero layer
+View con i suoi componenti animati, e l'estensione del Controller
+con i metodi di anteprima. Ho infine curato il testing automatizzato.
+
+\paragraph{Aspetti di cui sono soddisfatto:}
+La scelta di rendere \texttt{ParameterObserver} una
+\texttt{@FunctionalInterface} e di collegarla tramite method reference
+nel Controller si è rivelata elegante e ha reso il codice molto
+leggibile. Il pattern Strategy in \texttt{CardPanel} ha permesso
+di mantenere il componente visuale completamente disaccoppiato dalla
+logica di gioco. Sono soddisfatto anche della coerenza visiva
+dell'interfaccia: il file \texttt{styles.css} unifica il tema
+medievale, ma con ricordi a tema scolastico, in tutti i componenti senza ripetizioni.
+
+\paragraph{Aspetti migliorabili e lavori futuri:}
+La gestione del threading è distribuita: ogni metodo della View
+chiama \texttt{Platform.runLater()} individualmente. In una versione
+più matura si potrebbe centralizzare questa responsabilità in un
+wrapper dedicato, riducendo la verbosità. Il foglio di stile
+\texttt{styles.css}, pur funzionante, è cresciuto in modo organico
+e beneficerebbe di una suddivisione in moduli tematici.
+
+Fra i lavori futuri più interessanti: aggiungere effetti sonori
+contestuali alle decisioni, introdurre animazioni sui valori numerici
+dei parametri durante l'aggiornamento, e completare l'integrazione
+della difficoltà nella View con feedback visivo dedicato per la
+modalità \emph{Hard}.
 
 % --- Nikita -----------------------------------------------------
 \subsection{Nikita Piraino}
@@ -1350,6 +1387,9 @@ In questo capitolo ciascuno studente elenca gli esercizi di laboratorio svolti, 
 \emph{[Permalink delle consegne di laboratorio di Mario Conventi.]}
 
 \section*{federico.locatelli3@studio.unibo.it}
-\emph{[Permalink delle consegne di laboratorio di Federico Locatelli.]}
+\begin{itemize}
+    \item Lab 8: \url{https://virtuale.unibo.it/mod/forum/discuss.php?d=207921#p286195}
+    \item Lab 9: \url{https://virtuale.unibo.it/mod/forum/discuss.php?d=208718#p287053}
+\end{itemize}
 
 \end{document}
