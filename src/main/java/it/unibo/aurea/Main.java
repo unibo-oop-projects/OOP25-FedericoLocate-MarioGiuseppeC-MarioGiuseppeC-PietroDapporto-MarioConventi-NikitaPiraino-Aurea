@@ -4,6 +4,7 @@ import it.unibo.aurea.controller.GameControllerImpl;
 import it.unibo.aurea.controller.api.GameController;
 import it.unibo.aurea.controller.api.PlayerInfo;
 import it.unibo.aurea.model.Deck;
+import it.unibo.aurea.model.GameClockImpl;
 import it.unibo.aurea.model.GameConfigFactory;
 import it.unibo.aurea.model.GameEngineImpl;
 import it.unibo.aurea.model.api.GameConfig;
@@ -50,7 +51,7 @@ public final class Main extends Application {
         try {
             final GameConfig config = GameConfigFactory.createStandard(playerInfo.difficulty());
             final Deck deck = new Deck();
-            final GameEngine engine = new GameEngineImpl(config, deck);
+            final GameEngine engine = new GameEngineImpl(config, new GameClockImpl(config), deck);
 
             final Runnable onRestart = () -> Platform.runLater(this::openLogin);
 

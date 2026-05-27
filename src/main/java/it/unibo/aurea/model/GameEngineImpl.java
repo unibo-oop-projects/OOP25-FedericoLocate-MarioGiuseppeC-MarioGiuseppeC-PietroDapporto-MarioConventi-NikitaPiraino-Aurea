@@ -33,10 +33,11 @@ public final class GameEngineImpl implements GameEngine {
     /**
      * @param config the configuration
      * @param deck   the deck
+     * @param gameClock the time manager fo the game.
      */
-    public GameEngineImpl(final GameConfig config, final Deck deck) {
+    public GameEngineImpl(final GameConfig config, final GameClock gameClock, final Deck deck) {
         this.config = config;
-        this.gameClock = new GameClockImpl(config);
+        this.gameClock = gameClock;
         this.deck = Objects.requireNonNull(deck, "Deck cannot be null");
 
         // Initialization of specialized components
