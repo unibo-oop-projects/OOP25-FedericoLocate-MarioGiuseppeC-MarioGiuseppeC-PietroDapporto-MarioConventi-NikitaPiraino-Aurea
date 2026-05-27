@@ -309,16 +309,16 @@ La creazione manuale di un numero elevato di carte direttamente nel codice avreb
 Il problema principale era quindi permettere l'aggiunta e la modifica delle carte in modo semplice e mantenibile, senza dover intervenire ogni volta sulla logica Java del model.
 
 \textbf{Soluzione} \\
-In una prima fase sono state considerate diverse soluzioni basate sulla costruzione diretta degli oggetti nel codice, ad esempio tramite il costruttore di \texttt{CardImpl}, tramite factory method o attraverso il pattern Builder. 
+In una prima fase sono state considerate diverse soluzioni basate sulla costruzione diretta degli oggetti nel codice, ad esempio tramite il costruttore di \texttt{CardImpl}, tramite factory method o attraverso il pattern Builder (che in parte comunque è stato mantenuto). 
 Queste soluzioni avrebbero però mantenuto la definizione delle carte troppo vicina al codice Java, rendendo meno immediata la lettura del contenuto di gioco e più costosa l'aggiunta di nuove carte.
 
 Per questo motivo si è scelto di separare i dati dalla logica applicativa, spostando le informazioni delle carte in un file esterno in formato YAML. 
 Il file contiene la descrizione dichiarativa delle carte, delle decisioni disponibili e degli effetti prodotti sui parametri del gioco. 
-In questo modo il model non dipende dal modo in cui le carte sono scritte nel file, ma riceve oggetti già costruiti e coerenti con le primi astrazioni.
 
 Il caricamento delle carte avviene all'interno della classe \texttt{Deck}, tramite metodi dedicati. 
 Il file YAML viene deserializzato in una struttura intermedia rappresentata da \texttt{CardsFile}, che contiene una collezione di \texttt{CardDTO}: ciascuna contiene le decisioni \texttt{DecisionDTO} che a loro volta contengono i relativi \texttt{EffectDTO}. 
 Durante questa fase, i dati letti dal file vengono convertiti dagli oggetti DTO agli oggetti effettivi del dominio, come \texttt{Card}, \texttt{Decision} ed \texttt{Effect}. 
+In questo modo il model riceve oggetti già costruiti e coerenti con la logica del gioco.
 
 Questa scelta migliora la mantenibilità perché nuove carte possono essere aggiunte o modificate intervenendo principalmente sul file di configurazione. 
 La soluzione introduce però anche un livello di astrazione aggiuntivo: potenzialmente sarebbe possibile convertire le informazioni del file YAML in modelli di carta differenti, ma nel progetto attuale tutte le carte vengono ricondotte allo stesso modello interno. 
@@ -326,8 +326,9 @@ La soluzione introduce però anche un livello di astrazione aggiuntivo: potenzia
 \textbf{UML} \\
 
 \textbf{Pattern utilizzati} \\
-In questa parte non è stato applicato un design pattern classico. 
-Tuttavia per gestire il passaggio tra il file YAML e gli oggetti del model è stato utilizzato il concetto di DTO (\emph{Data Transfer Object}). 
+In questa parte è stato applicato il pattern Builder all'interno del metodo \texttt{toCard} nella classe \texttt{Deck}. In particolare questo metodo che si occupa di convertire ogni carta da \texttt{CardDTO} a \texttt{Card}. 
+Il pattern in questo caso rende più chiara la creazione delle nuove carte con i relativi dati.
+Inoltre per gestire il passaggio tra il file YAML e gli oggetti del model è stato utilizzato il concetto di DTO (\emph{Data Transfer Object}). 
 Un DTO è un oggetto usato per trasferire dati tra due parti del sistema senza contenere logica di dominio significativa. 
 In questo ambito agiscono quindi come classi ponte tra la rappresentazione esterna delle carte, definita nel file YAML, e la rappresentazione interna usata dal model. 
 
@@ -1090,7 +1091,8 @@ coperto \`e minimo per design: verificare i valori esatti (6~e~6) renderebbe
 il test fragile rispetto a future variazioni della configurazione standard.
 
 \paragraph{Pietro Dapporto -- testing caricamento elementi YAML} 
-I test riguardano principalmente il sistema di carte e il caricamento dei dati da file YAML. Vista la brevità ho raggruppato in un'unica classe più test.
+I test riguardano principalmente il sistema di carte e il caricamento dei dati da file YAML. 
+Vista la brevità ho raggruppato in un'unica classe (\texttt{CardLoaderTest}) più test.
 
 Sono stati sottoposti a test i seguenti aspetti:
 \begin{itemize}
@@ -1175,6 +1177,11 @@ di eccezioni prima di \texttt{startGame()}.
     \item \textbf{Stream API e method reference} - usati anche nei test automatizzati (\texttt{CardLoaderTest}) \\
     \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/dd18617aeefb0d0e4c01236c24cc8c7b8c0a804d/src/main/java/it/unibo/aurea/model/Deck.java#L58-L78}
 \end{itemize}
+
+\paragraph{Codice di terze parti}
+Nessuna porzione di codice della mia parte di progetto è stata tratta
+da fonti esterne. La libreria utilizzata, oltre a Java~21 e JUnit~5,
+è Jackson YAML per la conversione delle carte in oggetti del model.
 
 % --- 3.2.2 ---------------------------------------------------------
 \subsection{Mario Conventi}
@@ -1289,15 +1296,18 @@ In quest'ultimo capitolo si tirano le somme del lavoro svolto e si delineano eve
 
 % --- Pietro -----------------------------------------------------
 \subsection{Pietro Dapporto}
+\paragraph{Contributi principali:}
 Il mio ruolo all'interno del gruppo ha riguardato soprattutto la struttura di base del gioco e la modellazione delle carte. Per questo motivo, in alcune parti del mio contributo non è stato necessario utilizzare costrutti Java particolarmente complessi: l'obiettivo principale era costruire una struttura chiara, coerente e facilmente estendibile.
 
+\paragraph{Aspetti di cui sono soddisfatto:}
 La parte più creativa del lavoro, di cui sono particolarmente soddisfatto, è stata la creazione delle carte di gioco. Dal punto di vista implementativo, questa attività non ha richiesto tecnicismi avanzati, ma ha comportato un lavoro importante di progettazione del contenuto: definire le situazioni proposte al giocatore, le possibili risposte e i pesi associati agli effetti sui parametri del gioco. Ritengo inoltre di aver adottato soluzioni strutturali discrete, soprattutto per quanto riguarda la separazione tra i dati delle carte in file di configurazione esterni e la logica principale dell'applicazione.
 
 Considero positivo il fatto di aver progressivamente migliorato l'architettura del sistema, passando da soluzioni inizialmente più semplici ma meno scalabili a una struttura più modulare e mantenibile. 
 
+\paragraph{Aspetti migliorabili e lavori futuri}
 Per quanto riguarda i punti deboli, il file YAML contenente le carte è diventato piuttosto esteso. Con l'aggiunta di altre carte la gestione di un unico file può diventare meno comoda. Ho valutato la possibilità di suddividerlo in più file, ma ho ritenuto che, almeno in questa fase del progetto, mantenere un unico file fosse più semplice da gestire e riducesse il rischio di frammentare eccessivamente le informazioni.
 
-Un altro limite riguarda il livello di astrazione introdotto. In alcuni punti la struttura del codice è stata pensata per supportare possibili estensioni future, come modelli diversi di carte o di effetti, che però non sono state effettivamente sviluppate nel progetto finale. Lo stesso vale per l'utilizzo dei DTO, che separano bene la rappresentazione esterna dei dati dal model, ma introducono anche un passaggio intermedio aggiuntivo. Nel complesso, quindi, ritengo che la struttura realizzata sia abbastanza flessibile e adatta a evoluzioni future, anche se alcune di queste possibilità non sono state sfruttate pienamente nella versione attuale del progetto.
+Un altro limite riguarda il livello di astrazione introdotto. In alcuni punti la struttura del codice è stata pensata per supportare possibili estensioni future, come modelli diversi di carte o di effetti, che però non sono state effettivamente sviluppate nel progetto finale. Lo stesso vale per l'utilizzo dei DTO, che separano bene la rappresentazione esterna dei dati dal model, ma introducono anche un passaggio intermedio aggiuntivo.
 
 % --- Mario ------------------------------------------------------
 \subsection{Mario Conventi}
