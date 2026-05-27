@@ -66,11 +66,6 @@ public final class GameEngineImpl implements GameEngine {
     }
 
     @Override
-    public void start() {
-        // Init if needed
-    }
-
-    @Override
     public Card getCurrentCard() {
         if (this.currentCardToPlay == null || this.currentCardToPlay.isUsed()) {
             this.currentCardToPlay = extractNextCard();

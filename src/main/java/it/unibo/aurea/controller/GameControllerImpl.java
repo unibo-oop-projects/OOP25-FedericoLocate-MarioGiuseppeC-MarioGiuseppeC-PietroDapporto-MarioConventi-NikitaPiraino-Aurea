@@ -53,7 +53,6 @@ public final class GameControllerImpl implements GameController {
     @Override
     public void startGame() {
         LOGGER.info("Starting a new game session...");
-        model.start();
         this.parametersMap.values().forEach(p -> view.updateSingleParameter(p.getName(), p.getLevel()));
         updateUI();
     }

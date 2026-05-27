@@ -8,11 +8,6 @@ import java.util.List;
 public interface GameEngine {
 
     /**
-     * Starts the game.
-     */
-    void start();
-
-    /**
      * Checks if time is finished.
      *
      * @return true if time is over.

@@ -34,7 +34,6 @@ class GameEngineTest {
     @Test
     void testGameInitialization() {
         assertEquals(GameState.RUNNING, engine.getGameState(), "Game must start in RUNNING state");
-        engine.start();
         assertEquals(GameState.RUNNING, engine.getGameState(), "Game must remain RUNNING after starting");
     }
 
@@ -43,7 +42,6 @@ class GameEngineTest {
      */
     @Test
     void testGameLostOnParameterDeath() {
-        engine.start();
         assertEquals(GameState.RUNNING, engine.getGameState());
 
         // We simulate a loss by applying an effect that drains a parameter to 0,
@@ -59,7 +57,6 @@ class GameEngineTest {
      */
     @Test
     void testGameWonOnTimeFinished() {
-        engine.start();
         assertEquals(GameState.RUNNING, engine.getGameState());
 
         // We simulate a win by advancing the clock until time is finished.
