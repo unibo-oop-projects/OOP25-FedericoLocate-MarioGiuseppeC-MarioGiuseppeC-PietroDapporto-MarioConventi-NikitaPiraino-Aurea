@@ -40,7 +40,6 @@ public final class GameEngineImpl implements GameEngine {
         this.gameClock = Objects.requireNonNull(gameClock, "GameClock cannot be null");
         this.deck = Objects.requireNonNull(deck, "Deck cannot be null");
 
-
         // Initialization of specialized components
         this.difficultySettings = new DifficultySettings(config.getDifficulty());
         this.followUpQueue = new FollowUpQueue();
