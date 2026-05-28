@@ -3,6 +3,8 @@ package it.unibo.aurea.model;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import it.unibo.aurea.model.api.GameClock;
@@ -30,7 +32,7 @@ final class GameClockTest {
 
         assertEquals(initialTurn, 0, "The initial turn should be 0");
         assertEquals(initialSemester, 0, "The initial semester should be 0");
-        assertEquals(clock.isTimeFinished(), false, "Initially isTimeFinished must be false");
+        assertFalse(clock.isTimeFinished(), "Initially isTimeFinished must be false");
     }
 
     @Test
@@ -66,5 +68,7 @@ final class GameClockTest {
         }
 
         assertTrue(clock.isTimeFinished(), "The clock must report time is finished after all semesters are played");
+        assertThrows(IllegalStateException.class, clock::nextTurn,
+        "nextTurn() must throw IllegalStateException when game is already finished");
     }
 }
