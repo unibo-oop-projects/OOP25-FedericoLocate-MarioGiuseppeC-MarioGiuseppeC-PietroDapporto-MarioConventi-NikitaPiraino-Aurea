@@ -58,7 +58,7 @@ public final class CardSelector {
             }
         }
 
-        // Security-Fullback
+        // Security-Failback
         if (playableCards.isEmpty()) {
             return deck.getAllCards().stream()
                     .filter(c -> !c.isUsed())
