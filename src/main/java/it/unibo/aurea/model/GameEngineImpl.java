@@ -20,6 +20,7 @@ import java.util.Optional;
 public final class GameEngineImpl implements GameEngine {
 
     private final Deck deck;
+
     private final GameConfig config;
     private final GameClock gameClock;
     private final List<Parameter> parameters;
@@ -96,11 +97,13 @@ public final class GameEngineImpl implements GameEngine {
     @Override
     public void applyEffects(final List<Effect> effects) {
         // Iterates through the effects and updates the corresponding parameters using
-        // modify()
+        // modify(), scaling each delta by the difficulty multiplier.
+        final double multiplier = this.difficultySettings.getDeltaMultiplier();
         for (final Effect effect : effects) {
             for (final Parameter p : parameters) {
                 if (p.getName() == effect.getParameter()) {
-                    p.modify(effect.getDelta());
+                    final int scaledDelta = (int) Math.round(effect.getDelta() * multiplier);
+                    p.modify(scaledDelta);
                 }
             }
         }
@@ -129,5 +132,43 @@ public final class GameEngineImpl implements GameEngine {
     @Override
     public GameClock getGameClock() {
         return this.gameClock;
+    }
+
+    @Override
+    public void makeDecision(final boolean isApproval) {
+        if (getGameState() != GameState.RUNNING) {
+            return;
+        }
+        final Card currentCard = getCurrentCard();
+        if (currentCard == null) {
+            return;
+        }
+
+        final Decision decision = isApproval ? currentCard.getApproval() : currentCard.getRefusal();
+        if (decision != null && decision.getEffects() != null) {
+            applyEffects(decision.getEffects());
+        }
+
+        registerChoiceConsequences(currentCard.getId(), isApproval);
+        currentCard.changeUsage();
+        this.gameClock.nextTurn();
+
+        final StringBuilder paramStr = new StringBuilder();
+        for (final Parameter p : this.parameters) {
+            paramStr.append(p.getName().getDisplayName())
+                    .append(": ")
+                    .append(p.getLevel())
+                    .append("/100 | ");
+        }
+        if (paramStr.length() > 3) {
+            paramStr.setLength(paramStr.length() - 3);
+        }
+
+        // Using System.out for explicit cmd logging as requested by the user
+        System.out.println("\n--- GAME STATUS UPDATE ---"); // NOPMD - Explicitly requested by user
+        System.out.println("Card Name:   " + currentCard.getId()); // NOPMD - Explicitly requested by user
+        System.out.println("Choice:      " + (isApproval ? "APPROVAL" : "REFUSAL")); // NOPMD - Explicitly requested by user
+        System.out.println("Parameters:  " + paramStr); // NOPMD - Explicitly requested by user
+        System.out.println("---------------------------\n"); // NOPMD - Explicitly requested by user
     }
 }

@@ -14,14 +14,13 @@ public class Decision {
 
     /**
      * Constructor of an element decision.
-     * Uses varargs to allow any number of effects (0, 1, 2, or more).
      *
      * @param answer the {@code String} of the answer
-     * @param effects a variable number of {@code Effect}
+     * @param effects a {@code List} of {@code Effect}
      */
-    public Decision(final String answer, final Effect... effects) {
+    public Decision(final String answer, final List<Effect> effects) {
         this.answer = answer;
-        this.effects = List.of(effects);
+        this.effects = List.copyOf(effects);
     }
 
     /**

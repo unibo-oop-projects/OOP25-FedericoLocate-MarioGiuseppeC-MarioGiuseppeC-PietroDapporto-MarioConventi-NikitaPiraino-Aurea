@@ -10,6 +10,8 @@ out/
 *.log
 !gradle/wrapper/gradle-wrapper.jar
 # LaTeX auxiliary files
+*.pdf
+*.latexmkrc
 *.aux
 *.log
 *.toc
@@ -19,3 +21,4 @@ out/
 *.synctex.gz
 *.blg
 *.bbl
+*.latexmkrc

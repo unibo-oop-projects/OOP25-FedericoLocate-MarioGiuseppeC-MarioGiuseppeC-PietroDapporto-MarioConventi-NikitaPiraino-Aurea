@@ -72,3 +72,7 @@ tasks.withType<Test> {
 application {
     mainClass.set("it.unibo.aurea.Main")
 }
+
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
+}
