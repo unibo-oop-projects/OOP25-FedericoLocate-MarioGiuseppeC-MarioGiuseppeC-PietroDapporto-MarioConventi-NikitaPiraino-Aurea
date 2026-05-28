@@ -21,7 +21,7 @@ public final class GameClockImpl implements GameClock {
      * @param gameConfiguration sets some setting of the game, like number of cards, semesters...
      */
     public GameClockImpl(final GameConfig gameConfiguration) {
-        this.gameConfiguration = Objects.requireNonNull(gameConfiguration);
+        this.gameConfiguration = Objects.requireNonNull(gameConfiguration, "GameConfig cannot be null");
     }
 
     @Override
