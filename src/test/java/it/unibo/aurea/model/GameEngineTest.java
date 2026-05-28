@@ -82,14 +82,14 @@ class GameEngineTest {
      * Tests that makeDecision properly applies effects, marks cards as used, and advances clock.
      */
     @Test
-    void testMakeDecision() {
+    void testMakeDecisionWithApproval() {
         final it.unibo.aurea.model.api.Card cardBefore = engine.getCurrentCard();
         assertNotNull(cardBefore, "A card must be active at the start");
 
         final int turnBefore = engine.getGameClock().getCurrentTurn();
         final int semesterBefore = engine.getGameClock().getCurrentSemester();
 
-        // Make decision
+        // Make decision with APPROVAL
         engine.makeDecision(true);
 
         // Clock must have advanced
@@ -99,6 +99,26 @@ class GameEngineTest {
 
         // The card played must be marked as used
         assertTrue(cardBefore.isUsed(), "The played card must be marked as used");
+    }
+
+    @Test
+    void testMakeDecisionWithRefusal() {
+        final it.unibo.aurea.model.api.Card cardBefore = engine.getCurrentCard();
+        assertNotNull(cardBefore, "A card must be active at the start");
+
+        final int turnBefore = engine.getGameClock().getCurrentTurn();
+        final int semesterBefore = engine.getGameClock().getCurrentSemester();
+
+        // Make decision with REFUSAL
+        engine.makeDecision(false);
+
+        // Clock must have advanced
+        final int turnAfter = engine.getGameClock().getCurrentTurn();
+        assertTrue(turnAfter > turnBefore || engine.getGameClock().getCurrentSemester() > semesterBefore,
+            "The game clock must advance after a refusal decision");
+
+        // The card played must be marked as used
+        assertTrue(cardBefore.isUsed(), "The played card must be marked as used after refusal");
     }
 
     @Test
