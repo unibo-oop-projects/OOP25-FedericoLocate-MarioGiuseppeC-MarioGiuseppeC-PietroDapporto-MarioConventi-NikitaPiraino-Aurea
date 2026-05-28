@@ -38,6 +38,7 @@ javafx {
 dependencies {
     // Suppressions for SpotBugs
     compileOnly("com.github.spotbugs:spotbugs-annotations:4.9.8")
+    testCompileOnly("com.github.spotbugs:spotbugs-annotations:4.9.8")
 
     // Example library: Guava. Add what you need (and use the latest version where appropriate).
     // implementation("com.google.guava:guava:28.1-jre")
@@ -51,6 +52,16 @@ dependencies {
     // Needed for the use of the .yaml file
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.0")
 
+    // Mockito
+    testImplementation("org.mockito:mockito-core:5.11.0")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.11.0")
+    
+    // TestFX 
+    testImplementation("org.testfx:testfx-core:4.0.18")
+    testImplementation("org.testfx:testfx-junit5:4.0.18")
+    
+    // Hamcrest
+    testImplementation("org.hamcrest:hamcrest:2.2")
 }
 
 tasks.withType<Test> {
