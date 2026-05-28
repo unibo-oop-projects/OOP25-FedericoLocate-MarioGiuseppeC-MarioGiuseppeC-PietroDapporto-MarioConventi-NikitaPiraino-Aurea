@@ -8,8 +8,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
 import it.unibo.aurea.model.api.GameConfig;
 import it.unibo.aurea.model.api.GameEngine;
 import it.unibo.aurea.model.api.GameState;
@@ -27,6 +25,7 @@ class GameEngineTest {
     private static final String TXT_APPROVE = "Approve";
     private static final String TXT_REFUSE = "Refuse";
     private static final String CARD_X_ID = "card_x";
+    private static final int LIFE_POINTS = 200;
 
     private GameEngine engine;
 
@@ -84,7 +83,6 @@ class GameEngineTest {
      */
     @Test
     void testMakeDecision() {
-        engine.start();
         final it.unibo.aurea.model.api.Card cardBefore = engine.getCurrentCard();
         assertNotNull(cardBefore, "A card must be active at the start");
 
@@ -130,12 +128,12 @@ class GameEngineTest {
             new FollowUpImpl(PARENT_IMMEDIATE, CHILD_IMMEDIATE, it.unibo.aurea.model.api.OutcomeType.APPROVAL, immediateDelay)
         ));
 
+        final GameConfig config = GameConfigFactory.createStandard(it.unibo.aurea.model.api.Difficulty.EASY);
         final GameEngine testEngine = new GameEngineImpl(
-            GameConfigImpl.createStandard(it.unibo.aurea.model.api.Difficulty.EASY),
+            config,
+            new GameClockImpl(config),
             testDeck
         );
-
-        testEngine.start();
 
         // 1. Draw parent
         final it.unibo.aurea.model.api.Card firstCard = testEngine.getCurrentCard();
@@ -186,12 +184,12 @@ class GameEngineTest {
             new FollowUpImpl("dummy_parent", CARD_X_ID, it.unibo.aurea.model.api.OutcomeType.APPROVAL, dummyDelay)
         ));
 
+        final GameConfig config2 = GameConfigFactory.createStandard(it.unibo.aurea.model.api.Difficulty.EASY);
         final GameEngine testEngine = new GameEngineImpl(
-            GameConfigImpl.createStandard(it.unibo.aurea.model.api.Difficulty.EASY),
+            config2,
+            new GameClockImpl(config2),
             testDeck
         );
-
-        testEngine.start();
 
         // 1. Draw parent
         final it.unibo.aurea.model.api.Card firstCard = testEngine.getCurrentCard();

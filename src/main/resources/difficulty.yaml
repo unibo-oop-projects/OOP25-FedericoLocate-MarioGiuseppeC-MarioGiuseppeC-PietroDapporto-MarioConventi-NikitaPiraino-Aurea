@@ -2,10 +2,15 @@
 # weightDivisor controls the adaptive boost strength in CardSelector.
 # Higher value = weaker boost = closer to pure random selection.
 # Lower value = stronger boost = more help in critical situations.
+# deltaMultiplier scales the magnitude of all card effects applied to parameters.
+# Values: EASY = 0.7 (softer impacts), NORMAL = 1.0 (baseline), HARD = 1.3 (harsher impacts).
 difficulty:
   - level: EASY
     weightDivisor: 25.0
+    deltaMultiplier: 0.7
   - level: NORMAL
     weightDivisor: 50.0
+    deltaMultiplier: 1.0
   - level: HARD
     weightDivisor: 500.0
+    deltaMultiplier: 1.3

@@ -11,6 +11,7 @@ out/
 !gradle/wrapper/gradle-wrapper.jar
 # LaTeX auxiliary files
 *.pdf
+*.latexmkrc
 *.aux
 *.log
 *.toc
