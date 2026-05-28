@@ -152,18 +152,15 @@ raggiunge il livello minimo o massimo.
 % -----------------------------------------------------------------------------
 \section{Modello del Dominio}
 % -----------------------------------------------------------------------------
-Le entità principali del dominio sono il \emph{Rettore} (il giocatore),
-che gestisce un insieme di \emph{Parametri} dell'Ateneo. Ogni parametro
-ha un nome, un livello numerico compreso fra 0 e 100, e uno stato
-(attivo o esaurito). I quattro parametri sono: Finanze, Studenti,
-Docenti e Reputazione.
-
 Lo svolgimento della partita è scandito da una sequenza di \emph{Carte}
 prelevate da un \emph{Mazzo}. Ogni carta descrive un evento, è associata
 a un \emph{Personaggio} che la presenta, e propone al giocatore due
 \emph{Decisioni} alternative (approvazione o rifiuto). A ciascuna
 decisione è associato un insieme di \emph{Effetti}, ognuno dei quali
-specifica quanto e in quale direzione un parametro viene modificato.
+specifica quanto e in quale direzione un parametro viene modificato. Ogni parametro
+ha un nome, un livello numerico compreso fra 0 e 100, e uno stato
+(attivo o esaurito). I quattro parametri sono: Finanze, Studenti,
+Docenti e Reputazione.
 
 Alcune decisioni attivano un meccanismo di \emph{Conseguenza}: Le scelte
 prese, hanno conseguenza sulle situazioni che il rettore dovrà gestire 
