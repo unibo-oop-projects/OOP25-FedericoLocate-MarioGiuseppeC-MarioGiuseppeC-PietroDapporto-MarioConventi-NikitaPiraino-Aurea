@@ -22,6 +22,7 @@ public final class DifficultySettings {
     private static final String CONFIG_FILE = "difficulty.yaml";
 
     private final double weightDivisor;
+    private final double deltaMultiplier;
 
     /**
      * Loads difficulty parameters from the YAML configuration file and selects
@@ -49,12 +50,14 @@ public final class DifficultySettings {
                     "Failed to load " + CONFIG_FILE + ": " + e.getMessage(), e);
         }
 
-        this.weightDivisor = settingsFile.difficulty().stream()
+        final DifficultySettingsDTO matched = settingsFile.difficulty().stream()
                 .filter(dto -> dto.level() == difficulty)
-                .map(DifficultySettingsDTO::weightDivisor)
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException(
                         "No difficulty entry found for level: " + difficulty));
+
+        this.weightDivisor = matched.weightDivisor();
+        this.deltaMultiplier = matched.deltaMultiplier();
     }
 
     /**
@@ -62,5 +65,13 @@ public final class DifficultySettings {
      */
     public double getWeightDivisor() {
         return this.weightDivisor;
+    }
+
+    /**
+     * @return the multiplier applied to every card-effect delta before it is applied
+     *         to a parameter (0.7 = EASY, 1.0 = NORMAL, 1.3 = HARD)
+     */
+    public double getDeltaMultiplier() {
+        return this.deltaMultiplier;
     }
 }

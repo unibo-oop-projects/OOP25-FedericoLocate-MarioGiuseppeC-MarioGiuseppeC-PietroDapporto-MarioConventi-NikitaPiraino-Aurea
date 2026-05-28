@@ -20,6 +20,7 @@ import java.util.Optional;
 public final class GameEngineImpl implements GameEngine {
 
     private final Deck deck;
+
     private final GameConfig config;
     private final GameClock gameClock;
     private final List<Parameter> parameters;
@@ -96,11 +97,13 @@ public final class GameEngineImpl implements GameEngine {
     @Override
     public void applyEffects(final List<Effect> effects) {
         // Iterates through the effects and updates the corresponding parameters using
-        // modify()
+        // modify(), scaling each delta by the difficulty multiplier.
+        final double multiplier = this.difficultySettings.getDeltaMultiplier();
         for (final Effect effect : effects) {
             for (final Parameter p : parameters) {
                 if (p.getName() == effect.getParameter()) {
-                    p.modify(effect.getDelta());
+                    final int scaledDelta = (int) Math.round(effect.getDelta() * multiplier);
+                    p.modify(scaledDelta);
                 }
             }
         }
