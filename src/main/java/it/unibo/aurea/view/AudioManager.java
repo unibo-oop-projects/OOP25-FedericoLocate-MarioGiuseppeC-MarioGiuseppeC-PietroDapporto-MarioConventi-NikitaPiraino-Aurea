@@ -18,7 +18,7 @@ import javafx.scene.media.MediaPlayer;
 public final class AudioManager {
 
     private static final Logger LOGGER = Logger.getLogger(AudioManager.class.getName());
-    private static final double BACKGROUND_VOLUME = 0.18;
+    private static final double BACKGROUND_VOLUME = 0.10;
     private static final double SWIPE_VOLUME = 1.0;
     private static final double POPUP_VOLUME = 1.0;
     private static final double ENDGAME_VOLUME = 0.85;
