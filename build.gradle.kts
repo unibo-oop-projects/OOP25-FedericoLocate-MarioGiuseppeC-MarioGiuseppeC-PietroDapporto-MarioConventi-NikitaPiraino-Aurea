@@ -32,7 +32,7 @@ java {
 // Configuration auto of JavaFX
 javafx {
     version = "23.0.2"
-    modules = listOf("javafx.base", "javafx.controls", "javafx.graphics")
+    modules = listOf("javafx.base", "javafx.controls", "javafx.graphics", "javafx.media")
 }
 
 dependencies {
@@ -60,4 +60,8 @@ tasks.withType<Test> {
 
 application {
     mainClass.set("it.unibo.aurea.Main")
+}
+
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
 }

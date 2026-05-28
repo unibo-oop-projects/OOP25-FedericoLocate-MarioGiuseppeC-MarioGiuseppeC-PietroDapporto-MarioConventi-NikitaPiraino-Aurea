@@ -17,6 +17,7 @@
 \usepackage{lmodern}
 \usepackage[a4paper, margin=2.5cm]{geometry} 
 \usepackage{microtype} 
+\usepackage{amsmath}
 
 % --- Grafica, link, codice ---------------------------------------------------
 \usepackage{graphicx}
@@ -349,17 +350,159 @@ Quando il giocatore prende una decisione su una carta, il sistema verifica se es
 In caso positivo, la carta figlia viene programmata per comparire dopo il numero di turni indicato. 
 
 \textbf{UML} \\
+<<<<<<< HEAD
 
+=======
+>>>>>>> feature-relazione-mario
 \textbf{Pattern utilizzati} \\
 In questa parte non è stato applicato un design pattern classico in senso stretto. 
 La soluzione si basa principalmente sulla separazione delle responsabilità e sulla rappresentazione esplicita delle relazioni tra carte tramite configurazione esterna.
 
-% --- 2.2.2 ---------------------------------------------------------
-\subsection{Mario Conventi -- Algoritmo di selezione delle carte}
-\emph{[Sezione da redigere: progettazione del package \texttt{model.selection},
-\texttt{CardSelector} e implementazioni (\texttt{WeightedRandomSelector},
-\texttt{ProgressiveSelector}), gestione di cooldown e storico, identificazione
-del pattern Strategy.]}
+% =============================================================================
+% 2.2.2 Mario Conventi -- Motore di gioco, algoritmi adattivi e gestione conseguenze
+% =============================================================================
+\subsection{Mario Conventi -- Motore di gioco, algoritmi adattivi e gestione conseguenze}
+
+La mia responsabilità principale all'interno del progetto riguarda la progettazione e lo sviluppo del nucleo computazionale del \emph{Model}: l'orchestratore delle regole di business \texttt{GameEngineImpl} e le sue componenti specializzate ad alta coesione. Il design si focalizza su tre pilastri algoritmici volti a trasformare un sistema a stati deterministico in un motore di gioco adattivo e configurabile.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Compito} & \textbf{Interfaccia} & \textbf{Implementazione} \\ \hline
+Motore di gioco (orchestratore) & \texttt{GameEngine} & \texttt{GameEngineImpl} \\ \hline
+Selezione pesata adattiva delle carte & --- & \texttt{CardSelector} \\ \hline
+Impostazioni di bilanciamento per difficoltà & --- & \texttt{DifficultySettings} \\ \hline
+Coda delle carte figlie con ritardo & --- & \texttt{FollowUpQueue} \\ \hline
+Contratto evento asincrono & \texttt{FollowUp} & \texttt{FollowUpImpl} \\ \hline
+Test del motore con mazzo deterministico & --- & \texttt{GameEngineTest} (+ \texttt{TestDeck}) \\ \hline
+\end{tabular}
+\caption{Componenti realizzati da Mario Conventi.}
+\label{tab:conventi-components}
+\end{table}
+
+\bigskip\noindent\rule{\linewidth}{0.4pt}\bigskip
+
+% --- PILASTRO I -------------------------------------------------------------
+\subsubsection{Pilastro I -- Algoritmo di estrazione a priorità rigida}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\linewidth]{img/pilastro1_estrazione.png}
+    \caption{Diagramma di sequenza UML (Pilastro I): flusso di estrazione a priorità rigida. Evidenzia le tre fasi sequenziali non intercambiabili del metodo \texttt{extractNextCard()}.}
+    \label{fig:pilastro1}
+\end{figure}
+
+\textbf{Problema:} La progressione del flusso narrativo e delle meccaniche di gioco richiede l'estrazione continua di eventi dal mazzo. Tuttavia, la successione delle carte non può essere piatta: le carte generate come conseguenze storiche di decisioni passate (\emph{carte figlie}), una volta esaurito il loro tempo di incubazione, devono imporsi sul flusso standard del gioco con precedenza assoluta. Occorre garantire un punto di controllo centralizzato e sequenziale che eviti condizioni di errore logico o il salto accidentale di eventi forzati.
+
+\textbf{Soluzione:} Il problema è stato risolto incapsulando la gerarchia di precedenza all'interno del metodo privato \texttt{extractNextCard()} in \texttt{GameEngineImpl}. L'algoritmo codifica una politica a priorità rigida non negoziabile strutturata in tre fasi sequenziali:
+
+\begin{lstlisting}
+private Card extractNextCard() {
+    // Fase 1: Verifica della presenza di eventi forzati scaduti
+    final Optional<Card> forcedCard = this.followUpQueue.pollForcedCard(this.deck);
+    if (forcedCard.isPresent()) {
+        return forcedCard.get();
+    }
+    // Fase 2: Solo se non c'e' carta forzata: incremento del contatore turni
+    this.followUpQueue.updateTurns();
+    
+    // Fase 3: Selezione standard adattiva dal mazzo
+    return this.cardSelector.selectNextCard(this.deck, this.parameters, this.difficultySettings);
+}
+\end{lstlisting}
+
+L'ordine di esecuzione delle tre fasi non è casuale: il decremento dei contatori (\texttt{updateTurns()}) avviene rigorosamente \emph{dopo} il controllo delle scadenze e \emph{prima} della selezione ordinaria. Questo previene un diffuso errore di sfasamento (\emph{off-by-one}): se una carta figlia ha un tempo di ritardo pari a zero, essa viene erogata al turno successivo e non nello stesso istante della decisione. 
+
+Alcune alternative considerate sono:
+\begin{itemize}
+    \item \emph{Aggiornamento dei turni all'inizio del metodo}: avrebbe anticipato la maturazione dei ritardi, facendo apparire le carte con un turno di anticipo rispetto alla semantica dichiarata nella configurazione.
+    \item \emph{Gestione condizionale piatta}: avrebbe frammentato lo stato logico, esponendo il sistema a inconsistenze in caso di modifiche future.
+\end{itemize}
+
+\textbf{Eventuali pattern:} nessuno in senso stretto oltre alla strutturazione a priorità deterministica.
+
+\bigskip\noindent\rule{\linewidth}{0.4pt}\bigskip
+
+% --- PILASTRO II ------------------------------------------------------------
+\subsubsection{Pilastro II -- Algoritmo di selezione pesata adattiva}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\linewidth]{img/pilastro2_strategy.png}
+    \caption{Diagramma delle classi UML (Pilastro II): pattern Strategy applicato alla selezione pesata. \texttt{CardSelector} incapsula l'algoritmo adattivo, modulato dal \emph{Parameter Object} \texttt{DifficultySettings}.}
+    \label{fig:pilastro2}
+\end{figure}
+
+\textbf{Problema:} Un sistema basato sulla pura estrazione casuale rischia di rendere l'esperienza utente frustrante o ingiusta. Se un giocatore si trova in una situazione di grave crisi su un parametro, il motore deve calibrare la distribuzione delle carte per offrire opportunità di riequilibrio. Al contempo, si deve evitare un determinismo assoluto che eliminerebbe la rigiocabilità.
+
+\textbf{Soluzione:} È stato progettato un algoritmo di \textbf{selezione casuale pesata} (\emph{weighted random selection}) nella componente \texttt{CardSelector}, che opera in quattro fasi logiche.
+
+\textbf{Fase 1 -- Identificazione del parametro critico:} si individua il parametro con distanza minima dall'estremo (0 o 100), calcolata come $\min(\text{livello},\, 100 - \text{livello})$.
+
+\textbf{Fase 2 -- Filtro di sicurezza letale:} si escludono le carte già usate, quelle figlie e le carte letali in entrambe le opzioni (\texttt{isLethalInBothOptions}), prevenendo scenari di morte certa inevitabile.
+
+\textbf{Fase 3 -- Assegnazione dei pesi con boost adattivo:} ogni carta parte da un peso base (\texttt{DEFAULT\_WEIGHT = 10.0}); se aiuta il parametro critico, riceve un incremento dinamico:
+\begin{lstlisting}
+weight *= 1.0 + (NEUTRAL_DISTANCE - minDistance) / difficultySettings.getWeightDivisor();
+\end{lstlisting}
+La modalità \emph{Hard} imposta \texttt{weightDivisor = 500.0}, sopprimendo il boost e avvicinando la selezione alla casualità pura.
+
+\textbf{Fase 4 -- Campionamento proporzionale (roulette wheel):} si genera un numero casuale in $[0,\,\text{totalWeight})$ e si scorre la lista cumulando i pesi fino a superare la soglia.
+
+Alcune alternative considerate sono:
+\begin{itemize}
+    \item \emph{Selezione puramente casuale}: nessun bilanciamento adattivo; l'esperienza di gioco risulterebbe ingiusta nelle situazioni di crisi.
+    \item \emph{Selezione deterministica}: la carta di aiuto verrebbe sempre estratta; il gioco perderebbe variabilità e rigiocabilità.
+\end{itemize}
+
+Pattern identificato Strategy e DTO (comportamentale e strutturale): \texttt{CardSelector} è una strategia di selezione intercambiabile: \texttt{GameEngineImpl} la usa tramite composizione e potrebbe sostituirla senza modificare il proprio codice. \texttt{DifficultySettings} agisce da \emph{Parameter Object} che incapsula i parametri di configurazione, preservando l'estendibilità (OCP). Per evitare l'uso di costanti hardcoded, i parametri come \texttt{weightDivisor} vengono caricati dinamicamente da un file di configurazione esterno (\texttt{difficulty.yaml}) tramite oggetti di trasferimento dati (\texttt{DifficultySettingsDTO} e \texttt{DifficultySettingsFile}), separando nettamente il bilanciamento del gioco dalla logica algoritmica.
+
+\bigskip\noindent\rule{\linewidth}{0.4pt}\bigskip
+
+% --- PILASTRO III -----------------------------------------------------------
+\subsubsection{Pilastro III -- Gestione delle conseguenze e delle carte figlie}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.90\linewidth]{img/pilastro3_followup.png}
+    \caption{Diagramma delle classi UML (Pilastro III): infrastruttura di gestione dei FollowUp. Mostra la composizione \texttt{FollowUpQueue}~$\diamond$~\texttt{ActiveFollowUp} (0..*) e la realizzazione \texttt{FollowUpImpl}~$\dashrightarrow$~\texttt{FollowUp}.}
+    \label{fig:pilastro3}
+\end{figure}
+
+\textbf{Problema:} Le decisioni del Rettore possono innescare eventi asincroni complessi, programmando la comparsa di una carta figlia (\emph{Follow-Up}) distanziata nel tempo da un numero di turni specifico (\texttt{delayTurn}). Il sistema deve supportare la registrazione atomica delle conseguenze, la maturazione passiva del tempo a ogni turno e l'estrazione prioritaria (Pilastro~I), preservando l'immutabilità del mazzo originario.
+
+\textbf{Soluzione:} La gestione è stata centralizzata in \texttt{FollowUpQueue}, che incapsula una struttura dinamica basata sulla classe interna statica privata \texttt{ActiveFollowUp}. L'infrastruttura coordina due operazioni fondamentali.
+
+\textbf{Registrazione (\texttt{registerConsequences}):} al momento della scelta binaria, la coda filtra tramite stream i contratti associati alla carta e all'esito (\emph{APPROVAL} o \emph{REFUSAL}) e li accoda con il loro \texttt{delayTurn} come tempo di attesa iniziale:
+\begin{lstlisting}
+deck.getAllFollowUps().stream()
+    .filter(fu -> fu.getParentId().equals(parentId))
+    .filter(fu -> fu.getTrigger() == actualOutcome)
+    .forEach(fu -> eventQueue.add(new ActiveFollowUp(fu, fu.getDelayTurn())));
+\end{lstlisting}
+
+\textbf{Polling sicuro (\texttt{pollForcedCard}):} scansiona la coda per individuare gli eventi scaduti (\texttt{remainingTurns <= 0}) e li rimuove. Per prevenire \texttt{ConcurrentModificationException}, la rimozione durante la scansione avviene tramite \textbf{Iterator esplicito}:
+\begin{lstlisting}
+final Iterator<ActiveFollowUp> iterator = eventQueue.iterator();
+while (iterator.hasNext()) {
+    final ActiveFollowUp activeEvent = iterator.next();
+    if (activeEvent.getRemainingTurns() <= 0) {
+        iterator.remove();
+        // ricerca della carta figlia nel pool tramite stream...
+    }
+}
+\end{lstlisting}
+
+Alcune alternative considerate sono:
+\begin{itemize}
+    \item \emph{\texttt{Queue<>} di Java}: non consente l'iterazione con rimozione selettiva basata su condizione interna.
+    \item \emph{Ciclo \texttt{for-each} con lista separata di rimozioni}: più verboso e soggetto a errori; l'Iterator esplicito è la soluzione idiomatica Java per questo caso.
+\end{itemize}
+
+Pattern identificato Iterator esplicito (comportamentale): L'uso di un \texttt{Iterator} strutturato, invece del costrutto \texttt{for-each}, garantisce la totale correttezza in presenza di rimozioni durante la scansione, azzerando il rischio di eccezioni a runtime. Combinato con il \textbf{Test Double / Fake} (\texttt{TestDeck}), consente test unitari atomici e riproducibili al 100\%.
+
+\bigskip\noindent\rule{\linewidth}{0.4pt}\bigskip
 
 % --- 2.2.3 ---------------------------------------------------------
 \subsection{Federico Locatelli -- Parametri reattivi, architettura della View e ciclo di vita}

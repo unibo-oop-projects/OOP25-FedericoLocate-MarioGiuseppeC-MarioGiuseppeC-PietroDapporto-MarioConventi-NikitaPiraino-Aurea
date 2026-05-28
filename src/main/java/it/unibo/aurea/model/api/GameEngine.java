@@ -54,5 +54,14 @@ public interface GameEngine {
      * @param effects the list of effects to apply
      */
     void applyEffects(List<Effect> effects);
+
+    /**
+     * Processes the player's choice (approval or refusal) for the current card.
+     * Applies the decision effects, registers consequences for follow-up cards,
+     * marks the card as used, and advances the game clock.
+     *
+     * @param isApproval true if approved, false if refused
+     */
+    void makeDecision(boolean isApproval);
 }
 

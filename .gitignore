@@ -10,6 +10,7 @@ out/
 *.log
 !gradle/wrapper/gradle-wrapper.jar
 # LaTeX auxiliary files
+*.pdf
 *.aux
 *.log
 *.toc

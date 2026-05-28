@@ -2,7 +2,6 @@ package it.unibo.aurea.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import it.unibo.aurea.model.api.Card;
 import it.unibo.aurea.model.api.CharacterType;
@@ -29,8 +28,8 @@ public class CardImpl implements Card {
         this.id = builder.id;
         this.character = builder.character;
         this.description = builder.description;
-        this.refusal = new Decision(builder.textRefusal, builder.refEffect1, builder.refEffect2);
-        this.approval = new Decision(builder.textApproval, builder.appEffect1, builder.appEffect2);
+        this.refusal = new Decision(builder.textRefusal, builder.refEffects);
+        this.approval = new Decision(builder.textApproval, builder.appEffects);
         this.usage = false;
     }
 
@@ -111,11 +110,9 @@ public class CardImpl implements Card {
         private CharacterType character;
         private String description;
         private String textRefusal;
-        private Effect refEffect1;
-        private Effect refEffect2;
+        private final List<Effect> refEffects = new ArrayList<>();
         private String textApproval;
-        private Effect appEffect1;
-        private Effect appEffect2;
+        private final List<Effect> appEffects = new ArrayList<>();
 
         /**
          * Sets the univocal id for this istance of card.
@@ -169,11 +166,7 @@ public class CardImpl implements Card {
          * @return this builder
          */
         public Builder effectRefusal(final ParameterType param, final int delta) {
-            if (Objects.isNull(refEffect1)) {
-                this.refEffect1 = new EffectImpl(param, delta);
-            } else {
-                this.refEffect2 = new EffectImpl(param, delta);
-            }
+            this.refEffects.add(new EffectImpl(param, delta));
             return this;
         }
 
@@ -196,11 +189,7 @@ public class CardImpl implements Card {
          * @return this builder
          */
         public Builder effectApproval(final ParameterType param, final int delta) {
-            if (Objects.isNull(appEffect1)) {
-                this.appEffect1 = new EffectImpl(param, delta);
-            } else {
-                this.appEffect2 = new EffectImpl(param, delta);
-            }
+            this.appEffects.add(new EffectImpl(param, delta));
             return this;
         }
 
