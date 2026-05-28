@@ -1,5 +1,6 @@
 package it.unibo.aurea.model;
 
+import java.util.Objects;
 import it.unibo.aurea.model.api.Difficulty;
 import it.unibo.aurea.model.api.GameConfig;
 
@@ -23,6 +24,7 @@ public final class GameConfigFactory {
      * @return a GameConfig instance
      */
     public static GameConfig createStandard(final Difficulty difficulty) {
+        Objects.requireNonNull(difficulty, "Difficulty cannot be null");
         return new GameConfigImpl(STANDARD_CARDS_PER_SEMESTER, STANDARD_SEMESTERS_PER_GAME, difficulty);
     }
 
@@ -34,6 +36,7 @@ public final class GameConfigFactory {
      * @return a GameConfig instance
      */
     public static GameConfig createShort(final Difficulty difficulty) {
+        Objects.requireNonNull(difficulty, "Difficulty cannot be null");
         return new GameConfigImpl(MINIMAL_NUMBER_CARDS, MINIMAL_NUMBER_SEMESTER, difficulty);
     }
 }
