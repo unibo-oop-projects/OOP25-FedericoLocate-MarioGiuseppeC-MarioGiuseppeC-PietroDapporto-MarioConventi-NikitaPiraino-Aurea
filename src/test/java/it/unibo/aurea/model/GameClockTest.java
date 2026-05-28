@@ -24,6 +24,16 @@ final class GameClockTest {
     }
 
     @Test
+    void testStartingPoint() {
+        final int initialTurn = clock.getCurrentTurn();
+        final int initialSemester = clock.getCurrentSemester();
+
+        assertEquals(initialTurn, 0, "The initial turn should be 0");
+        assertEquals(initialSemester, 0, "The initial semester should be 0");
+        assertEquals(clock.isTimeFinished(), false, "Initially isTimeFinished must be false");
+    }
+
+    @Test
     void testSingleTurnProgression() {
         final int initialTurn = clock.getCurrentTurn();
         final int initialSemester = clock.getCurrentSemester();
