@@ -20,6 +20,7 @@
 
 % --- Grafica, link, codice ---------------------------------------------------
 \usepackage{graphicx}
+\graphicspath{{img/}}
 \usepackage{float}
 \usepackage{hyperref}
 \hypersetup{
@@ -871,17 +872,16 @@ La parte di progetto di mia responsabilità copre la logica di stato della parti
 \hline
 \textbf{compito} & \textbf{nome interfaccia} & \textbf{nome implementazione} \\ \hline
 Configurazione partita & GameConfig & GameConfigImpl \\ \hline
-Gestore turni & GameClock & GameClockImpl \\ \hline
-Orchestratore logica, gioco & GameEngine & GameEnginelmpl \\ \hline
-Pagina iniziale & VERIFICARE & VERIFICARE \\ \hline
-Report sullo stato dei parametri & Report & ReportImpl \\ \hline
-Pagina vittoria o sconfitta & VERIFICARE & VERIFICARE \\ \hline
+Orchestratore logica di gioco & GameEngine & GameEngineImpl \\ \hline
+Macchina a stati della partita & GameEngine & GameEngineImpl \\ \hline
+Separazione accessi parametri & ParameterView & ParameterImpl \\ \hline
+Riepilogo parametri partita & Report & ReportImpl \\ \hline
 \end{tabular}
 \end{table}
 
 \subsubsection{Pattern Static Factory Method in GameConfigFactory}
 
-\noindent\noindent\textbf{Problema} Sono previste più versioni di configurazione del gioco: una standard (6 carte per semestre, 6 semestri), una ridotta (2 carte, 2 semestri) pensata per facilitare i test intermedi e di fine partita. C'è anche il desiderio di implementare future versioni alternative di partite come ad esempio la modalità ``apocalisse''.
+\noindent\noindent\textbf{Problema} Sono previste più versioni di configurazione del gioco: una standard (6 carte per semestre, 6 semestri), una ridotta (2 carte, 2 semestri) pensata per facilitare i test intermedi e di fine partita. C'è anche il desiderio di implementare future versioni alternative di partite come ad esempio la modalità ``apocalisse  ''.
 Occorre quindi controllare l'istanziamento della configurazione, vincolando gli utilizzatori a versioni standardizzate di partita, facilmente selezionabili tramite metodi pubblici e statici.
 
 \noindent\noindent\textbf{Soluzione} Il pattern Static Factory Method è articolato in due classi distinte:
@@ -900,8 +900,14 @@ Alcune alternative:
 \item Abstract Factory: avrebbe garantito information hiding, ma sarebbe risultato troppo verboso per varianti la cui differenza è solo di qualche variabile numerica o future aggiunte di difficoltà.
 \end{itemize}
 
-\textbf{Pattern identificato} Static Factory Method (creazionale): i metodi \texttt{createStandard()} e \texttt{createShort()} sono le factory; \texttt{GameConfig} è il tipo prodotto; \texttt{GameConfigFactory} è il punto di accesso pubblico.
+\begin{figure}[H]
+    \centering
+    \fbox{\includegraphics[width=0.8\textwidth]{UML-Piraino-Factory.png}}
+    \caption{Pattern Static Factory Method in GameConfigFactory}
+    \label{fig:factory}
+\end{figure}
 
+\textbf{Pattern identificato} Static Factory Method (creazionale): i metodi \texttt{createStandard()} e \texttt{createShort()} sono le factory; \texttt{GameConfig} è il tipo prodotto; \texttt{GameConfigFactory} è il punto di accesso pubblico.
 
 
 \subsubsection{Orchestrazione del modello in GameEnginelmpl}
@@ -913,14 +919,22 @@ Alcune alternative:
 
 Il costruttore applica la Dependency Injection ricevendo \texttt{GameConfig}, \texttt{GameClock} e \texttt{Deck} come argomenti:
 
-\begin{verbatim}
+\begin{lstlisting}
 public GameEngineImpl(final GameConfig config, final GameClock gameClock, final Deck deck) {
     this.config = Objects.requireNonNull(config, "GameConfig cannot be null");
     this.gameClock = Objects.requireNonNull(gameClock, "GameClock cannot be null");
     this.deck = Objects.requireNonNull(deck, "Deck cannot be null");
-\end{verbatim}
+}
+\end{lstlisting}
 
 La chiamata a \texttt{Objects.requireNonNull} applica il principio fail-fast: se il client passa null, una NullPointerException viene sollevata immediatamente nel costruttore con un messaggio esplicativo, evitando errori latenti che si manifesterebbero solo durante l'esecuzione.
+
+\begin{figure}[H]
+    \centering
+    \fbox{\includegraphics[width=0.8\textwidth]{UML-Piraino-Orchestrazione.png}}
+    \caption{Orchestrazione del modello in GameEngineImpl}
+    \label{fig:orchestrazione}
+\end{figure}
 
 un alternativa:
 \begin{itemize}
@@ -934,7 +948,7 @@ si gestiscono parallelamente pi`u partite).
 
 \noindent\textbf{Soluzione:} Il metodo \texttt{getGameState()} nella classe \texttt{GameEnginelmpl} avvia una processo di identificazione dello stato, che poi restituirà uno dei valori dell'enumerazione GameState: RUNNING, WON, LOST.
 
-\begin{verbatim}
+\begin{lstlisting}
 public GameState getGameState() {
     if (!areAllParametersAlive()) {
         return GameState.LOST;
@@ -944,11 +958,18 @@ public GameState getGameState() {
     }
     return GameState.RUNNING;
 }
-\end{verbatim}
+\end{lstlisting}
 
 L'ordine dei controlli è semanticamente obbligatorio: il controllo LOST (morte di un parametro) precede WON (tempo esaurito) perché nell'ultimo turno di gioco entrambe le condizioni possono essere simultaneamente vere; in tal caso la morte di un parametro deve prevalere sulla vittoria per tempo.
 
 Lo stato viene calcolato ad ogni chiamata: l'approccio è stateless, elimina il rischio di stato inconsistente tra le transizioni e non richiede aggiornamenti espliciti dopo ogni operazione.
+
+\begin{figure}[H]
+    \centering
+    \fbox{\includegraphics[width=0.8\textwidth]{UML-Piraino-GameState.png}}
+    \caption{State Machine in GameEngineImpl}
+    \label{fig:gamestate}
+\end{figure}
 
 \noindent Alcune alternative sono:
 \begin{itemize}
@@ -956,7 +977,7 @@ Lo stato viene calcolato ad ogni chiamata: l'approccio è stateless, elimina il 
     \item nelle condizioni non richiamare delle funzioni ma mettere il loro contenuto direttamente nella metodo \texttt{GetGameState()}: supporta meno per necessità future i principi Don't Repeat Yourself e Single Responsability.
 \end{itemize}
 
-\subsubsection  {Separazione accessi Parameter e ParameterView}
+\subsubsection{Separazione accessi Parameter e ParameterView}
 
 \noindent\textbf{Problema} Esistono determinati oggetti che necessitano dell'accesso diretto agli oggetti parametri in lettura.
 
@@ -966,6 +987,13 @@ Lo stato viene calcolato ad ogni chiamata: l'approccio è stateless, elimina il 
 \item Interfaccia di sola lettura. \texttt{ParameterView} dichiara esclusivamente i metodi di interrogazione del parametro, rappresentando una vista immutabile sicura da esporre all'esterno del Model.
 \item Interfaccia mutabile. \texttt{Parameter} estende \texttt{ParameterView} aggiungendo il solo metodo di modifica.
 \end{enumerate}
+
+\begin{figure}[H]
+    \centering
+    \fbox{\includegraphics[width=0.8\textwidth]{UML-Piraino-ParameterView.png}}
+    \caption{Separazione di Parameter e ParameterView}
+    \label{fig:parameterview}
+\end{figure}
 
 Alcune alternative sono:
 \begin{itemize}
@@ -980,6 +1008,13 @@ Alcune alternative sono:
 \textbf{Problema:} Alla fine di ogni semestre e alla fine della partita si vuole presentare un report al giocatore nel quale sono presenti i valori di ogni parametro e delle frasi di storytelling.
 
 \noindent\textbf{Soluzione:} \texttt{ReportImpl} è un componente della View e implementa l'interfaccia \texttt{Report}. È progettato per essere riutilizzato sia come schermata di riepilogo inter-semestrale sia come schermata di fine partita, senza creare istanze multiple.
+
+\begin{figure}[H]
+    \centering
+    \fbox{\includegraphics[width=0.8\textwidth]{UML-Piraino-ReportGUI.png}}
+    \caption{Design di ReportImpl come componente riutilizzabile}
+    \label{fig:report}
+\end{figure}
 
 \noindent Alcune alternative sono:
 \begin{itemize}

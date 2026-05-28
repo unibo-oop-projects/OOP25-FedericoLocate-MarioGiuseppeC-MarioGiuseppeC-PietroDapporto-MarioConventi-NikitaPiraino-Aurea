@@ -19,3 +19,4 @@ out/
 *.synctex.gz
 *.blg
 *.bbl
+*.latexmkrc
