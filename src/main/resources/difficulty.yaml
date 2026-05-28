@@ -1,0 +1,11 @@
+# Difficulty balancing configuration.
+# weightDivisor controls the adaptive boost strength in CardSelector.
+# Higher value = weaker boost = closer to pure random selection.
+# Lower value = stronger boost = more help in critical situations.
+difficulty:
+  - level: EASY
+    weightDivisor: 25.0
+  - level: NORMAL
+    weightDivisor: 50.0
+  - level: HARD
+    weightDivisor: 500.0
