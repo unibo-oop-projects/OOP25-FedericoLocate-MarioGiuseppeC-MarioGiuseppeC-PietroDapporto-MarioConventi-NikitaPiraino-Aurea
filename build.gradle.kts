@@ -32,7 +32,7 @@ java {
 // Configuration auto of JavaFX
 javafx {
     version = "23.0.2"
-    modules = listOf("javafx.base", "javafx.controls", "javafx.graphics")
+    modules = listOf("javafx.base", "javafx.controls", "javafx.graphics", "javafx.media")
 }
 
 dependencies {

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import it.unibo.aurea.model.api.GameConfig;
 import it.unibo.aurea.model.api.GameEngine;
 import it.unibo.aurea.model.api.GameState;
 import it.unibo.aurea.model.api.ParameterType;
@@ -23,7 +24,8 @@ class GameEngineTest {
      */
     @BeforeEach
     void setUp() {
-        this.engine = new GameEngineImpl(GameConfigFactory.createStandard(it.unibo.aurea.model.api.Difficulty.EASY), new Deck());
+        final GameConfig config = GameConfigFactory.createStandard(it.unibo.aurea.model.api.Difficulty.EASY);
+        this.engine = new GameEngineImpl(config, new GameClockImpl(config), new Deck());
     }
 
     /**
@@ -32,7 +34,6 @@ class GameEngineTest {
     @Test
     void testGameInitialization() {
         assertEquals(GameState.RUNNING, engine.getGameState(), "Game must start in RUNNING state");
-        engine.start();
         assertEquals(GameState.RUNNING, engine.getGameState(), "Game must remain RUNNING after starting");
     }
 
@@ -41,7 +42,6 @@ class GameEngineTest {
      */
     @Test
     void testGameLostOnParameterDeath() {
-        engine.start();
         assertEquals(GameState.RUNNING, engine.getGameState());
 
         // We simulate a loss by applying an effect that drains a parameter to 0,
@@ -57,7 +57,6 @@ class GameEngineTest {
      */
     @Test
     void testGameWonOnTimeFinished() {
-        engine.start();
         assertEquals(GameState.RUNNING, engine.getGameState());
 
         // We simulate a win by advancing the clock until time is finished.

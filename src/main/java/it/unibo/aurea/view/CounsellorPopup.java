@@ -48,6 +48,7 @@ public final class CounsellorPopup {
      * @param message the advice text to display
      */
     public static void show(final String message) {
+        AudioManager.playPopUp();
         final Stage popUp = new Stage();
         popUp.initStyle(StageStyle.UTILITY);
         popUp.initModality(Modality.APPLICATION_MODAL);

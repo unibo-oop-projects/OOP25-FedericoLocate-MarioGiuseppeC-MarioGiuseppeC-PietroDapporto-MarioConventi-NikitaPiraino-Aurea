@@ -4,10 +4,12 @@ import it.unibo.aurea.controller.GameControllerImpl;
 import it.unibo.aurea.controller.api.GameController;
 import it.unibo.aurea.controller.api.PlayerInfo;
 import it.unibo.aurea.model.Deck;
+import it.unibo.aurea.model.GameClockImpl;
 import it.unibo.aurea.model.GameConfigFactory;
 import it.unibo.aurea.model.GameEngineImpl;
 import it.unibo.aurea.model.api.GameConfig;
 import it.unibo.aurea.model.api.GameEngine;
+import it.unibo.aurea.view.AudioManager;
 import it.unibo.aurea.view.GameViewJavaFXImpl;
 import it.unibo.aurea.view.LoginScene;
 import it.unibo.aurea.view.api.GameView;
@@ -36,6 +38,7 @@ public final class Main extends Application {
      * Extracted so it can be referenced as a method reference (Runnable).
      */
     private void openLogin() {
+        AudioManager.startBackground();
         final LoginScene login = new LoginScene(this::startGame);
         login.show();
     }
@@ -50,7 +53,7 @@ public final class Main extends Application {
         try {
             final GameConfig config = GameConfigFactory.createStandard(playerInfo.difficulty());
             final Deck deck = new Deck();
-            final GameEngine engine = new GameEngineImpl(config, deck);
+            final GameEngine engine = new GameEngineImpl(config, new GameClockImpl(config), deck);
 
             final Runnable onRestart = () -> Platform.runLater(this::openLogin);
 

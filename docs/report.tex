@@ -862,7 +862,7 @@ thread corretto, prevenendo eccezioni di accesso concorrente
 tipiche delle applicazioni JavaFX multi-thread.
 
 % --- 2.2.4 ---------------------------------------------------------
-\subsection{Nikita Piraino -- Game loop, tempo e condizioni di fine partita}
+\subsection{ Nikita Piraino -- Game loop, tempo e condizioni di fine partita}
 
 La parte di progetto di mia responsabilità copre la logica di stato della partita e il ciclo temporale del gioco:
 
@@ -870,76 +870,72 @@ La parte di progetto di mia responsabilità copre la logica di stato della parti
 \centering
 \begin{tabular}{|l|l|l|}
 \hline
-\textbf{Compito} & \textbf{Nome interfaccia} & \textbf{Nome implementazione} \\ \hline
+\textbf{compito} & \textbf{nome interfaccia} & \textbf{nome implementazione} \\ \hline
 Configurazione partita & GameConfig & GameConfigImpl \\ \hline
 Gestore turni & GameClock & GameClockImpl \\ \hline
-Orchestratore logica gioco & GameEngine & GameEngineImpl \\ \hline
+Orchestratore logica, gioco & GameEngine & GameEnginelmpl \\ \hline
 Pagina iniziale & VERIFICARE & VERIFICARE \\ \hline
 Report sullo stato dei parametri & Report & ReportImpl \\ \hline
 Pagina vittoria o sconfitta & VERIFICARE & VERIFICARE \\ \hline
 \end{tabular}
 \end{table}
 
-\subsubsection{Pattern Static Factory Method in GameConfigImpl}
+\subsubsection{Pattern Static Factory Method in GameConfigFactory}
 
-\textbf{Problema:} Sono previste più versioni di configurazione del gioco: una standard (6 carte per semestre, 6 semestri), una ridotta (2 carte, 2 semestri) pensata per facilitare i test intermedi e di fine partita. C'è anche il desiderio di implementare future versioni alternative di partite come ad esempio la modalità ``apocalisse''. Occorre quindi controllare l'istanziazione della configurazione, vincolando gli utilizzatori a versioni standardizzate di partita, facilmente sceglibili tramite i metodi pubblici e statici della classe.
+\noindent\noindent\textbf{Problema} Sono previste più versioni di configurazione del gioco: una standard (6 carte per semestre, 6 semestri), una ridotta (2 carte, 2 semestri) pensata per facilitare i test intermedi e di fine partita. C'è anche il desiderio di implementare future versioni alternative di partite come ad esempio la modalità ``apocalisse''.
+Occorre quindi controllare l'istanziamento della configurazione, vincolando gli utilizzatori a versioni standardizzate di partita, facilmente selezionabili tramite metodi pubblici e statici.
 
-\textbf{Soluzione:} La classe \texttt{GameConfigImpl} adotta il pattern Static Factory Method articolato in tre elementi sinergici:
+\noindent\noindent\textbf{Soluzione} Il pattern Static Factory Method è articolato in due classi distinte:
 
+\begin{enumerate}
+\item Costruttore package-private. Il costruttore \texttt{GameConfigImpl} è dichiarato con visibilità package-private: impedisce l'istanziazione diretta da parte di client esterni al package e concentra il controllo della validità dei parametri in un unico punto.
+\item Classe factory dedicata. Le costanti di configurazione e i factory method sono spostati in \texttt{GameConfigFactory}, classe \texttt{final} con costruttore privato.
+
+\item Factory method pubblici e statici. \texttt{createStandard(Difficulty)} produce la configurazione normale, \texttt{createShort(Difficulty)} la ridotta per testing; ogni ulteriore configurazione può essere aggiunta come nuovo metodo in \texttt{GameConfigFactory} senza modificare nessun altro codice se non la chiamata del metodo.
+\end{enumerate}
+
+Alcune alternative:
 \begin{itemize}
-    \item Costruttore privato. Il costruttore \texttt{GameConfigImpl(int cardsPerSemester, int semestersPerGame)} è dichiarato private: impedisce l'istanziazione diretta da parte dei client e concentra il controllo della validità dei parametri in un unico punto.
-    
-    \item Costanti di configurazione private. I valori numerici delle due modalità sono incapsulati in quattro costanti statiche private di tipo \texttt{int}:
-\begin{lstlisting}
-private static final int STANDARD_CARDS_PER_SEMESTER = 6;
-private static final int STANDARD_SEMESTERS_PER_GAME = 6;
-private static final int MINIMAL_NUMBER_SEMESTER = 2;
-private static final int MINIMAL_NUMBER_CARDS = 2;
-\end{lstlisting}
-    L'uso di \texttt{static final} garantisce l'unicità del valore in memoria e ne impedisce la modifica a runtime; l'ordinamento rispetta la regola Checkstyle Declaration Order (costanti statiche prima dei campi di istanza).
-
-    \item Factory method pubblici e statici. \texttt{createStandard()} produce la configurazione normale, \texttt{createShort()} la ridotta per testing. Il tipo di ritorno dichiarato è l'interfaccia \texttt{GameConfig} (non l'implementazione concreta): i client dipendono dall'astrazione, conformemente al Dependency Inversion Principle. Ciò rende possibile introdurre nuove configurazioni (per esempio una ``Modalità Apocalisse'') senza modificare i client. La classe è dichiarata final: la sottoclasse è impedita e l'invariante di immutabilità di ogni istanza creata viene rafforzato.
+\item Factory method nella stessa classe (\texttt{GameConfigImpl}): versione precedentemente adottata, nella quale i factory method e le costanti risiedevano direttamente nell'implementazione. Garantiva anch'essa information hiding, ma accoppiava responsabilità di creazione e di rappresentazione della configurazione nella stessa classe, risultando meno flessibile nell'eventualità di aggiungere configurazioni senza toccare l'implementazione.
+\item Interfaccia come unico punto di accesso: sarebbe stato possibile garantire un information hiding totale evitando l'importazione di un'implementazione come \texttt{GameConfigImpl}; questo però avrebbe richiesto di rendere pubblico il costruttore dell'implementazione (Java non supporta la visibilità di costruttori tra i package /model e /model/api) e di spostare costanti e logica nell'interfaccia stessa, soluzione ritenuta poco elegante dal punto di vista architetturale e semantico.
+\item Abstract Factory: avrebbe garantito information hiding, ma sarebbe risultato troppo verboso per varianti la cui differenza è solo di qualche variabile numerica o future aggiunte di difficoltà.
 \end{itemize}
 
-Pattern identificato Static Factory Method (creazionale): i metodi \texttt{createStandard()} e \texttt{createShort()} sono le factory; \texttt{GameConfig} è il tipo prodotto; \texttt{GameConfigImpl} è l'implementazione concreta resa inaccessibile direttamente dal client.
+\textbf{Pattern identificato} Static Factory Method (creazionale): i metodi \texttt{createStandard()} e \texttt{createShort()} sono le factory; \texttt{GameConfig} è il tipo prodotto; \texttt{GameConfigFactory} è il punto di accesso pubblico.
 
-\subsubsection{Orchestrazione del modello in GameEngineImpl}
 
-\textbf{Problema:} La logica di partita richiede di coordinare più oggetti collaboranti: configurazione, orologio, mazzo, parametri. Occorre un punto di ingresso unico per il controller, garantendo immutabilità strutturale del modello dopo la costruzione e fail-fast sulle dipendenze nulle.
 
-\textbf{Soluzione:} \texttt{GameEngineImpl} implementa \texttt{GameEngine} ed è la classe centrale del sottosistema model. Coordina tre dipendenze: la configurazione (\texttt{GameConfig}), l'orologio (\texttt{GameClock}) e il mazzo (\texttt{Deck}). Tutti i campi sono final; in particolare \texttt{parameters} è inizializzato con \texttt{List.of(...)}, che restituisce una lista non modificabile: nessun client può aggiungere o rimuovere parametri dopo la costruzione dell'istanza.
+\subsubsection{Orchestrazione del modello in GameEnginelmpl}
 
-Il costruttore applica la Dependency Injection ricevendo \texttt{GameConfig} e \texttt{Deck} come argomenti, e crea internamente il \texttt{GameClockImpl}:
-\begin{lstlisting}
-public GameEngineImpl(final GameConfig config, final Deck deck) {
-    this.config = config;
-    this.gameClock = new GameClockImpl(config);
+\noindent\textbf{Problema} La logica di partita richiede di coordinare più oggetti collaboranti: configurazione, orologio, mazzo, parametri. Occorre un punto di ingresso unico per il controller, garantendo immutabilità strutturale del modello dopo la costruzione e fail-fast sulle dipendenze nulle.
+
+
+\noindent\textbf{Soluzione} \texttt{GameEnginelmpl} implementa \texttt{GameEngine} ed è la classe centrale del sottosistema model. Coordina tre dipendenze: la configurazione (\texttt{GameConfig}), l'orologio (\texttt{GameClock}) e il mazzo (\texttt{Deck}).
+
+Il costruttore applica la Dependency Injection ricevendo \texttt{GameConfig}, \texttt{GameClock} e \texttt{Deck} come argomenti:
+
+\begin{verbatim}
+public GameEngineImpl(final GameConfig config, final GameClock gameClock, final Deck deck) {
+    this.config = Objects.requireNonNull(config, "GameConfig cannot be null");
+    this.gameClock = Objects.requireNonNull(gameClock, "GameClock cannot be null");
     this.deck = Objects.requireNonNull(deck, "Deck cannot be null");
-}
-\end{lstlisting}
+\end{verbatim}
+
 La chiamata a \texttt{Objects.requireNonNull} applica il principio fail-fast: se il client passa null, una NullPointerException viene sollevata immediatamente nel costruttore con un messaggio esplicativo, evitando errori latenti che si manifesterebbero solo durante l'esecuzione.
 
-Il metodo \texttt{getCurrentCard()} è stato refattorizzato per utilizzare lo Stream API al posto di un accesso diretto per indice, individuando la prima carta non ancora utilizzata nel mazzo:
-\begin{lstlisting}
-return deck.getAllCards().stream()
-    .filter(card -> !card.isUsed())
-    .findFirst()
-    .orElseGet(() -> deck.getAllCards().get(0));
-\end{lstlisting}
-Il terminale \texttt{orElseGet} esegue il fallback solo se lo stream è vuoto (tutte le carte sono state utilizzate), restituendo la prima carta come comportamento di default.
-
-Alcune alternative sono:
+un alternativa:
 \begin{itemize}
-    \item Accesso per indice: non scelto perché richiede un controllo esplicito sulla lista vuota e rende esplicita nel codice l'intenzione del metodo.
+    \item utilizzare singleton pattern: in caso di gioco offline garantisce che ci sia un solo motore di un videogioco, però considerando il riuso del codice non sarebbe utilizzabile per costruire un server per partite online (dove, presumibilmente,
+si gestiscono parallelamente pi`u partite).
 \end{itemize}
-\textbf{Eventuali pattern:} nessuno in senso stretto oltre alla Dependency Injection.
 
 \subsubsection{State Machine in getGameState()}
 
 \textbf{Problema:} Lo stato di una partita può essere in corso, vinta o persa; queste tre alternative sono mutuamente esclusive e dipendono dallo stato corrente dei parametri e dell'orologio. La consultazione dello stato è frequente (a ogni interazione del controller con il modello), per cui un campo di stato esplicito introdurrebbe rischi di disallineamento fra i dati interni e la valutazione restituita.
 
-\textbf{Soluzione:} Il metodo \texttt{getGameState()} nella classe \texttt{GameEngineImpl} avvia un processo di identificazione dello stato, che poi restituirà uno dei valori dell'enumerazione GameState: RUNNING, WON, LOST.
-\begin{lstlisting}
+\noindent\textbf{Soluzione:} Il metodo \texttt{getGameState()} nella classe \texttt{GameEnginelmpl} avvia una processo di identificazione dello stato, che poi restituirà uno dei valori dell'enumerazione GameState: RUNNING, WON, LOST.
+
+\begin{verbatim}
 public GameState getGameState() {
     if (!areAllParametersAlive()) {
         return GameState.LOST;
@@ -949,72 +945,47 @@ public GameState getGameState() {
     }
     return GameState.RUNNING;
 }
-\end{lstlisting}
+\end{verbatim}
+
 L'ordine dei controlli è semanticamente obbligatorio: il controllo LOST (morte di un parametro) precede WON (tempo esaurito) perché nell'ultimo turno di gioco entrambe le condizioni possono essere simultaneamente vere; in tal caso la morte di un parametro deve prevalere sulla vittoria per tempo.
 
 Lo stato viene calcolato ad ogni chiamata: l'approccio è stateless, elimina il rischio di stato inconsistente tra le transizioni e non richiede aggiornamenti espliciti dopo ogni operazione.
 
-Alcune alternative sono:
+\noindent Alcune alternative sono:
 \begin{itemize}
-    \item Restituire una stringa al posto degli elementi dell'enum: non idoneo con gli standard di programmazione moderni.
-    \item Nelle condizioni non richiamare delle funzioni ma mettere il loro contenuto direttamente nel metodo \texttt{getGameState()}: supporta meno per necessità future i principi DRY e SRP.
+    \item restituire una stringa al posto degli elementi dell'enum: non idoneo con gli standard di programmazione           moderni
+    \item nelle condizioni non richiamare delle funzioni ma mettere il loro contenuto direttamente nella metodo \texttt{GetGameState()}: supporta meno per necessità future i principi Don't Repeat Yourself e Single Responsability.
 \end{itemize}
 
-\subsubsection{Stream API e areAllParametersAlive()}
+\subsubsection  {Separazione accessi Parameter e ParameterView}
 
-\textbf{Problema:} La condizione di sconfitta richiede di verificare che tutti i parametri siano vivi. La verifica deve essere efficiente (idealmente interrompendo l'analisi al primo parametro non valido) e leggibile.
+\noindent\textbf{Problema} Esistono determinati oggetti che necessitano dell'accesso diretto agli oggetti parametri in lettura.
 
-\textbf{Soluzione:} Il metodo privato \texttt{areAllParametersAlive()} nella classe \texttt{GameEngineImpl} incapsula la verifica:
-\begin{lstlisting}
-private boolean areAllParametersAlive() {
-    return parameters.stream().allMatch(Parameter::isAlive);
-}
-\end{lstlisting}
-Il terminale \texttt{allMatch} applica il predicato \texttt{isAlive()} a ogni elemento tramite method reference. Restituisce true solo se il predicato è soddisfatto da tutti gli elementi, e interrompe l'elaborazione al primo elemento che lo viola (Fail Fast Principle).
+\noindent\textbf{Soluzione} La soluzione adottata separa la lettura dalla scrittura attraverso due interfacce distinte, ripettando pure l'Interface Segregation Principle:
 
-Alcune alternative sono:
-\begin{itemize}
-    \item Utilizzare un ciclo for imperativo: avrebbe potuto adottare il fail-fast, ma sarebbe stato più verboso.
-    \item Usare lo stream senza \texttt{allMatch}: non avrebbe adottato la logica di corto circuito del fail-fast.
-\end{itemize}
-
-\subsubsection{Progressione temporale in GameClockImpl}
-
-\textbf{Problema:} La progressione del tempo deve trasportare tre informazioni: turno corrente nel semestre, semestre corrente, terminazione della partita. La logica di avanzamento deve garantire che il flusso turno -> semestre successivo -> fine partita avvenga deterministicamente e che non sia possibile incrementare l'orologio dopo la fine del mandato.
-
-\textbf{Soluzione:} \texttt{GameClockImpl} gestisce il ciclo temporale tramite le variabili di stato \texttt{currentTurn}, \texttt{currentSemester} e \texttt{timeFinished}. Il metodo \texttt{nextTurn()} implementa la logica di avanzamento con una catena if/else if/else che garantisce che esattamente uno dei tre rami venga eseguito per ogni chiamata:
-\begin{lstlisting}
-public void nextTurn() {
-    if (timeFinished) {
-        throw new IllegalStateException("Game already finished");
-    }
-    if (hasNextTurnInSemester()) {
-        currentTurn++;
-    } else if (hasNextSemester()) {
-        currentSemester++;
-        currentTurn = 0;
-    } else {
-        timeFinished = true;
-    }
-}
-\end{lstlisting}
-La condizione iniziale su \texttt{timeFinished} implementa il fail-fast principle per chiamate illegali su un orologio già terminato. I due metodi privati \texttt{hasNextTurnInSemester()} e \texttt{hasNextSemester()} verificano in modo isolato le condizioni di avanzamento, mantenendo bassa la complessità ciclomatica di \texttt{nextTurn()}.
+\begin{enumerate}
+\item Interfaccia di sola lettura. \texttt{ParameterView} dichiara esclusivamente i metodi di interrogazione del parametro, rappresentando una vista immutabile sicura da esporre all'esterno del Model.
+\item Interfaccia mutabile. \texttt{Parameter} estende \texttt{ParameterView} aggiungendo il solo metodo di modifica.
+\end{enumerate}
 
 Alcune alternative sono:
 \begin{itemize}
-    \item Scrivere il codice delle funzioni dentro le condizioni: riduce la flessibilità del codice per futuri aggiornamenti e non supporta pienamente il principio DRY.
+\item Esporre direttamente \texttt{Parameter}: avere un metodo \texttt{getParameters()} che restituiva il tipo mutabile e invece un metodo che \texttt{getCopyOfParameters} che restituiva una copia difensiva e che doveva essere usata da chiunque non avesse bisogno di modificare il valore dei parametri. Risultava più semplice, ma lasciava a chiunque la possibilità di chiamare il metodo di modifica, rendendo l'incapsulamento dello stato puramente convenzionale e non garantito dal compilatore.
+\item restituire una struttura dati contenente i valori dei parametri, sarebbe statauna soluzione semplice, però non avrebbe permesso l'utilizzo di metodi come isAlive e getDeathReason
 \end{itemize}
 
-\subsubsection{Design di ReportImpl come componente JavaFX riutilizzabile}
+
+
+\subsubsection*{Design di ReportImpl come componente JavaFX riutilizzabile}
 
 \textbf{Problema:} Alla fine di ogni semestre e alla fine della partita si vuole presentare un report al giocatore nel quale sono presenti i valori di ogni parametro e delle frasi di storytelling.
 
-\textbf{Soluzione:} \texttt{ReportImpl} è un componente della View e implementa l'interfaccia \texttt{Report}. È progettato per essere riutilizzato sia come schermata di riepilogo inter-semestrale sia come schermata di fine partita, senza creare istanze multiple.
+\noindent\textbf{Soluzione:} \texttt{ReportImpl} è un componente della View e implementa l'interfaccia \texttt{Report}. È progettato per essere riutilizzato sia come schermata di riepilogo inter-semestrale sia come schermata di fine partita, senza creare istanze multiple.
 
-Alcune alternative sono:
+\noindent Alcune alternative sono:
 \begin{itemize}
     \item Pattern Strategy: Definire un'interfaccia comune per il report e realizzare implementazioni separate per le diverse tipologie di riepilogo. Questa alternativa non è stata scelta poiché le differenze grafiche e logiche tra i report sono attualmente minime, e l'introduzione del pattern avrebbe comportato solo una maggiore complessità del codice.
-    \item Creare elementi al livello sopra: invece di cancellare con \texttt{.children().clear()} si aggiunge un nuovo report sopra. Permetterebbe di creare delle animazioni in cui si mostra la modifica dei parametri, però richiederebbe molto più utilizzo di memoria.
+    \item creare elementi al livello sopra: invece di cancellare con .children().clear() si aggiunge un nuovo report sopra. Permetterebbe di creare delle animazioni in cui si mostra la modifica dei parametri, però richiederebbe molto più utilizzo di memoria.
 \end{itemize}
 
 

@@ -408,6 +408,7 @@ public final class GameViewJavaFXImpl implements GameView {
     @Override
     public void showVictory() {
         Platform.runLater(() -> {
+            AudioManager.playVictory();
             this.cardPanel.clear();
             this.endgameOverlay.reveal(
                 this.semesterReport,
@@ -422,6 +423,7 @@ public final class GameViewJavaFXImpl implements GameView {
     @Override
     public void showDefeat() {
         Platform.runLater(() -> {
+            AudioManager.playDefeat();
             this.cardPanel.clear();
             this.endgameOverlay.reveal(
                 this.semesterReport,
@@ -436,6 +438,7 @@ public final class GameViewJavaFXImpl implements GameView {
     @Override
     public void showGameOver(final String reason) {
         Platform.runLater(() -> {
+            AudioManager.playDefeat();
             this.cardPanel.clear();
             this.endgameOverlay.reveal(
                 this.semesterReport,
