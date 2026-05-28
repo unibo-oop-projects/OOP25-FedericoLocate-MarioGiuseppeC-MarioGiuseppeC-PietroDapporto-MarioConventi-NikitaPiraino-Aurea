@@ -75,7 +75,6 @@ public final class InfoButtonImpl implements InfoButton {
             GameViewJavaFXImpl.getRulesPopupHeight()
         );
         final var ss = getClass().getResource("/styles.css");
-        //final var ss = InfoButtonImpl.class.getResource("/styles.css");
         if (ss != null) {
             scene.getStylesheets().add(ss.toExternalForm());
         }

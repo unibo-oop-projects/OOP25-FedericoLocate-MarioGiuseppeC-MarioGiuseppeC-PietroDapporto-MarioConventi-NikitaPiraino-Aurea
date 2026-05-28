@@ -94,7 +94,7 @@ public final class LoginScene {
             change.getControlNewText().length() <= MAX_FACULTY_LENGTH ? change : null
         ));
 
-        // Creiamo la ChoiceBox qui in modo che sia visibile all'azione del bottone
+        // The choicebox is created here to make it visible after the button action
         final ChoiceBox<String> diffBox = new ChoiceBox<>();
         final HBox diffRow = buildDifficultyRow(diffBox);
 

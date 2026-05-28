@@ -19,8 +19,7 @@ final class GameClockTest {
 
     @BeforeEach
     void configuration() {
-        config = GameConfigFactory.createStandard(it.unibo.aurea.model.api.Difficulty.EASY); //TO DO check if is better
-        //to have it like a field or a a local variable
+        config = GameConfigFactory.createStandard(it.unibo.aurea.model.api.Difficulty.EASY);
         clock = new GameClockImpl(config);
     }
 
