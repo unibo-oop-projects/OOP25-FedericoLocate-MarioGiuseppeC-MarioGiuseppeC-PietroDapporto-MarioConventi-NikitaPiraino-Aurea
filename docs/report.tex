@@ -1261,28 +1261,32 @@ sono JavaFX per l'intero layer View e SpotBugs per l'annotazione
 
 % --- 3.2.4 ---------------------------------------------------------
 \subsection{Nikita Piraino}
-Di seguito le feature avanzate del linguaggio e dell'ecosistema Java utilizzate nella mia parte di progetto, ciascuna corredata del permalink GitHub al punto del codice in cui \`e impiegata.
+Di seguito le feature avanzate del linguaggio e dell'ecosistema Java utilizzate
+nella mia parte di progetto, ciascuna corredata del permalink GitHub al punto
+del codice in cui \`e impiegata.
 \begin{itemize}
-    \item \textbf{Stream API} -- \texttt{allMatch} con method reference (\texttt{Parameter::isAlive}). \\
-        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/model/GameEngineImpl.java#L90}
-    \item \textbf{Stream API} -- \texttt{filter}, \texttt{findFirst}, \texttt{orElseGet} per la selezione della carta non ancora utilizzata. \\
-        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/model/GameEngineImpl.java#L55}
-    \item \textbf{Immutable collections} -- \texttt{List.of()} per la lista non modificabile dei parametri. \\
-        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/model/GameEngineImpl.java#L22}
-    \item \textbf{Static Factory Method} -- \texttt{createStandard()} e \texttt{createShort()} con tipo di ritorno l'interfaccia \texttt{GameConfig}. \\
-        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/model/GameConfigImpl.java#L35}
-    \item \textbf{\texttt{Objects.requireNonNull}} -- fail-fast sui parametri del costruttore di \texttt{GameEngineImpl}. \\
-        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/model/GameEngineImpl.java#L40}
-    \item \textbf{JavaFX Animation API} -- \texttt{FadeTransition} per l'ingresso fluido dell'overlay \texttt{ReportImpl}. \\
-        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/view/ReportImpl.java#L78}
-    \item \textbf{Ereditariet\`a da componente JavaFX} -- \texttt{extends VBox} per integrare \texttt{ReportImpl} nella scena. \\
-        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/view/ReportImpl.java#L22}
-    \item \textbf{Enum \texttt{GameState}} come tipo di ritorno della State Machine. \\
-        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/model/GameEngineImpl.java#L76}
+    \item \textbf{Utilizzo di generici bounded}\\
+    Permalink1: \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/73489c086c7d02bec683ad10117f1d45959b317f/src/main/java/it/unibo/aurea/model/CardSelector.java#L30} \\
+    permalink2: \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/73489c086c7d02bec683ad10117f1d45959b317f/src/main/java/it/unibo/aurea/model/CardSelector.java#L87} \\
+    permalink3: \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/73489c086c7d02bec683ad10117f1d45959b317f/src/main/java/it/unibo/aurea/model/CardSelector.java#L92} \\
+    permalink4: \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/73489c086c7d02bec683ad10117f1d45959b317f/src/main/java/it/unibo/aurea/model/CardSelector.java#L107}
+    \item \textbf{Lambda expressions} \\
+    Permalink1: \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/73489c086c7d02bec683ad10117f1d45959b317f/src/main/java/it/unibo/aurea/view/ReportImpl.java#L64} \\
+    Permalink2: \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/73489c086c7d02bec683ad10117f1d45959b317f/src/main/java/it/unibo/aurea/view/InfoButtonImpl.java#L39} \\
+    Permalink3: \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/73489c086c7d02bec683ad10117f1d45959b317f/src/main/java/it/unibo/aurea/view/InfoButtonImpl.java#L64}  \\
+    \item \textbf{Stream} \\
+    Permalink1: \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/73489c086c7d02bec683ad10117f1d45959b317f/src/main/java/it/unibo/aurea/model/GameEngineImpl.java#L126} \\
+    \item \textbf{Libreria di terze parti - JavaFX} \\
+    i seguenti permalink punntano a delle righe qualsiasi, perchè le seguenti classi sono state realizzate interamente da me. Alcuni metodi sono stati copiati da codice che Federico Locatelli(compagno) 
+    aveva scritto in altre classi sostituite da quelle seguenti.
+    permalink1: \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/73489c086c7d02bec683ad10117f1d45959b317f/src/main/java/it/unibo/aurea/view/EndgameOverlay.java#L48} \\
+    permalink2: \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/73489c086c7d02bec683ad10117f1d45959b317f/src/main/java/it/unibo/aurea/view/ReportImpl.java#L19} \\
+    permalink2: \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/73489c086c7d02bec683ad10117f1d45959b317f/src/main/java/it/unibo/aurea/view/InfoButtonImpl.java#L20}
 \end{itemize}
 
 \paragraph{Codice di terze parti}
-Nessuna porzione di codice della mia parte di progetto \`e stata tratta da fonti esterne. L'unica libreria utilizzata, oltre a Java~21 e JUnit~5, \`e JavaFX per il componente \texttt{ReportImpl}.
+Nessuna porzione di codice della mia parte di progetto \`e stata tratta da
+fonti esterne.
 
 % =============================================================================
 \chapter{Commenti finali}
@@ -1345,18 +1349,13 @@ modalità \emph{Hard}.
 
 % --- Nikita -----------------------------------------------------
 \subsection{Nikita Piraino}
-\paragraph{Contributi principali}
-Ho progettato e implementato il sottosistema model del gioco, responsabile della logica di stato e del ciclo temporale: \texttt{GameConfigImpl} con il pattern Static Factory (inclusa la configurazione ridotta \texttt{createShort()} per i test), \texttt{GameClockImpl} con la gestione turno/semestre/fine partita, e \texttt{GameEngineImpl} come orchestratore centrale con la State Machine a tre stati.
+Sono un ragazzo a cui piace molto l'azione di "unire i puntini" e il ruolo che ho scelto mi ha permesso di mettere ulteriormente in pratica le conoscenze necessarie per farlo bene. Ho avuto la possibilità di ripassare quasi ogni aspetto della materia studiata. \\
 
-Come contributo aggiuntivo al layer view ho sviluppato \texttt{ReportImpl}, il componente JavaFX che gestisce la visualizzazione dei riepiloghi inter-semestrali e della schermata di fine partita, progettato per essere riutilizzato senza creare istanze multiple.
+Sono \textbf{soddisfatto} del lavoro che ho svolto perchè nella scrittura dei miei codici ho identificato velocemente una sequenza da seguire per evitare di  fare  modifiche "scomode" in futuro. Quando ho toccato  codici per la maggiorparte scritti dai miei compagni non mi sono trovato in difficoltà nel comprenderne il funzionamento(ignorando ovviamente le lacune riguardanti la non conoscenza iniziale delle liberie). \\
+Un aspetto per cui mi è stato molto utile lavorare a questo progetto è stato quello della documentazione: mi piace come attività, mi sono reso conto di quanto scriverla mi fornisse spunti per migliorare il codice; quindi \textbf{mi pento} di averla fatta per la maggior parte  verso la fine in quanto mi ha portato a voler rivedere alcune scelte e quindi riscriverla. La mia responsabilità principale era creare del codice che fosse chiaro, estendibile per nuove modifiche, adatto per le necessità di ogni mio compagno e futuro sviluppatore, quindi non ho avuto la necessità di creare costrutti particolarmente articolati dal punto di vista di \textit{feature avanzate di linguaggio}.\\
 
-\paragraph{Aspetti tecnici rilevanti}
-L'uso dello Stream~API in \texttt{areAllParametersAlive()} e in \texttt{getCurrentCard()} rappresenta una scelta consapevole di leggibilit\`a e correttezza rispetto all'approccio imperativo. La lista \texttt{parameters} dichiarata con \texttt{List.of()} garantisce l'immutabilit\`a strutturale del gioco dopo la costruzione dell'istanza. La separazione fra \texttt{getParameters()} (accesso diretto) e \texttt{getCopyOfParameters()} (copia difensiva) consente al controller di ottenere il riferimento necessario per le modifiche, lasciando aperta la possibilit\`a di esporre il modello in sola lettura in futuro.
+Sempre legato all'unire i puntini sento di \textbf{essere stato} molto un connettore all'interno del gruppo, chiedevo aggiornamenti, organizzavo le riunioni che facevamo per sintonizzarci e se scoprivo qualcosa di interessante lo condividevo anche agli altri.
 
-\paragraph{Aspetti migliorabili e lavori futuri}
-Il metodo \texttt{start()} \`e attualmente privo di logica (il commento nel sorgente indica che la selezione della carta \`e stata spostata in \texttt{getCurrentCard()}). In una versione pi\`u matura, \texttt{start()} potrebbe inizializzare lo stato del mazzo o validare le precondizioni prima dell'inizio della partita.
-
-La gestione dell'accesso in scrittura ai parametri da parte di attori diversi (controller, view) \`e ancora aperta: \texttt{getParameters()} espone la lista originale, il che consentirebbe alla view di modificare direttamente i parametri senza passare dal controller. Una soluzione futura potrebbe essere esporre solo \texttt{getCopyOfParameters()} all'esterno e introdurre un metodo \texttt{applyEffect()} nel \texttt{GameEngine} per incanalare tutte le modifiche attraverso il modello.
 
 % -----------------------------------------------------------------------------
 \section{Difficolt\`a incontrate e commenti per i docenti}
