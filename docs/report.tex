@@ -238,7 +238,7 @@ concreta degli altri, solo il contratto esposto.
 % -- inserire qui il diagramma UML architetturale --
 \begin{figure}[H]
     \centering
-    \fbox{\includegraphics[width=0.8\textwidth]{UML_architettura_MVC.png}}
+    \fbox{\includegraphics[width=0.9\textwidth]{architettura_mvc.png}}
     \caption{Architettura complessiva del sistema: interfacce principali di Model, View e Controller.}
     \label{fig:architecture}
 \end{figure}
@@ -1184,12 +1184,12 @@ con test posti in \texttt{src/test/java} e package paralleli a quelli dei
 sorgenti. I test non richiedono alcuna interazione utente e sono eseguiti
 automaticamente dal task \texttt{gradle build}.
 
-I componenti sottoposti a test automatizzato comprendono il sottosistema
-model (configurazione, orologio, motore di gioco, mazzo di carte),
-il layer controller (comunicazione MVC e metodi di anteprima) e
-le astrazioni del model layer (parametri, observer, tipi).
+I test automatici sono stati organizzati per area funzionale, in modo da coprire
+le principali responsabilità dell'applicazione: la logica di avanzamento della
+partita, il caricamento delle carte da configurazione esterna e l'interazione tra
+Model, Controller e View.
 
-\paragraph{Nikita Piraino -- strategia di testing per transizioni di stato}
+\paragraph{Testing delle transizioni di stato del Model}
 La strategia adottata \`e il \emph{State Transition Testing}: ogni test
 verifica che il sistema si trovi nello stato corretto prima e dopo
 un'operazione che ne altera il comportamento. L'annotazione
@@ -1244,7 +1244,7 @@ valori strettamente positivi per la configurazione standard. Il contratto
 coperto \`e minimo per design: verificare i valori esatti (6~e~6) renderebbe
 il test fragile rispetto a future variazioni della configurazione standard.
 
-\paragraph{Pietro Dapporto -- testing caricamento elementi YAML} 
+\paragraph{Testing del caricamento delle carte da file YAML} 
 I test riguardano principalmente il sistema di carte e il caricamento dei dati da file YAML. Vista la brevità ho raggruppato in un'unica classe più test.
 
 Sono stati sottoposti a test i seguenti aspetti:
@@ -1257,7 +1257,7 @@ Sono stati sottoposti a test i seguenti aspetti:
     \item \texttt{shouldCharacterImageExist()}: verifica che ogni personaggio all'interno delle carte abbia il riferimento ad un'immagine da mostrare durante il gioco.
 \end{itemize}
 
-\paragraph{Federico Locatelli -- strategia di testing per Model, Controller e Observer}
+\paragraph{Testing di parametri, Controller e Observer}
 
 La strategia adottata è la combinazione di \emph{State Transition Testing}
 e \emph{Boundary Testing}: ogni test verifica il comportamento del sistema
@@ -1311,8 +1311,6 @@ robustezza a sequenze rapide di decisioni, correttezza di
 \texttt{getCurrentParametersLevels()}, valori non nulli di
 \texttt{previewDecisionDeltas()} in entrambe le direzioni, e assenza
 di eccezioni prima di \texttt{startGame()}.
-
-\paragraph{Mario Conventi} 
 
 % -----------------------------------------------------------------------------
 \section{Note di sviluppo}
@@ -1529,21 +1527,7 @@ Un aspetto per cui mi è stato molto utile lavorare a questo progetto è stato q
 
 Sempre legato all'unire i puntini sento di \textbf{essere stato} molto un connettore all'interno del gruppo, chiedevo aggiornamenti, organizzavo le riunioni che facevamo per sintonizzarci e se scoprivo qualcosa di interessante lo condividevo anche agli altri.
 
-
-% -----------------------------------------------------------------------------
-\section{Difficolt\`a incontrate e commenti per i docenti}
-% -----------------------------------------------------------------------------
-\emph{[Sezione opzionale: eventuali difficolt\`a incontrate dal gruppo nel corso o nello svolgimento del progetto, e commenti utili al miglioramento del corso. Il contenuto della sezione non impatter\`a il voto finale.]}
-
-% =============================================================================
 \appendix
-% =============================================================================
-
-% =============================================================================
-\chapter{Guida utente}
-% =============================================================================
-\emph{[Da redigere: istruzioni d'uso essenziali per consentire ai docenti di avviare ed esplorare le funzionalit\`a primarie dell'applicazione, eventualmente corredate di screenshot. In particolare: come avviare il JAR, come iniziare una partita, come effettuare una scelta su una carta, come interpretare la barra dei parametri, come consultare il riepilogo di fine semestre, come riconoscere la fine partita.]}
-
 % =============================================================================
 \chapter{Esercitazioni di laboratorio}
 % =============================================================================
