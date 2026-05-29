@@ -261,6 +261,21 @@ progettazione applicato, ove presente.
 
 % --- 2.2.1 ---------------------------------------------------------
 \subsection{Pietro Dapporto -- Modello delle carte e contenuti}
+La mia responsabilità nel progetto riguarda la creazione e gestione delle carte.
+Di seguito si riassumono i principali problemi incontrati con un accenno agli elementi creati
+per risolverli.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{compito} & \textbf{nome interfaccia} & \textbf{nome implementazione} \\ \hline
+Modello delle carte e contenuti & Card, Effect & CardImpl, EffectImpl, Decision \\ \hline
+Scalare la creazione delle carte & - & Deck, CardsFile \\ \hline
+Gestione carte figlie & FollowUp & FollowUpImpl \\ \hline
+\end{tabular}
+\end{table}
+
 \subsubsection{Problema: modellazione delle carte di gioco}
 
 Nel gioco ogni carta rappresenta una proposta sottoposta al giocatore da un determinato personaggio. Si deve modellare una carta che non sia un semplice insieme di dati, ma che permetta di rappresentare in modo chiaro le due possibili decisioni del giocatore e le relative conseguenze sui parametri della partita. 
@@ -275,6 +290,12 @@ In questo modo la carta non deve conoscere direttamente la logica di aggiornamen
 Infine, il flag \texttt{usage} permette di distinguere le carte già utilizzate da quelle ancora disponibili, evitando che la stessa carta venga riproposta più volte durante la partita.
 
 \textbf{UML} \\
+\begin{figure}[H]
+    \centering
+    \fbox{\includegraphics[width=0.8\textwidth]{problema_modellazione_carte.png}}
+    \caption{Diagramma UML della carta e i suoi elementi}
+    \label{fig:problema_modello_carte}
+\end{figure}
 
 \textbf{Pattern utilizzati} \\
 In questa parte non è stato applicato un design pattern comportamentale in senso stretto. 
@@ -302,6 +323,12 @@ Questa scelta migliora la mantenibilità perché nuove carte possono essere aggi
 La soluzione introduce però anche un livello di astrazione aggiuntivo: potenzialmente sarebbe possibile convertire le informazioni del file YAML in modelli di carta differenti, ma nel progetto attuale tutte le carte vengono ricondotte allo stesso modello interno. 
 
 \textbf{UML} \\
+\begin{figure}[H]
+    \centering
+    \fbox{\includegraphics[width=0.8\textwidth]{problema_scalabilità_carte.png}}
+    \caption{Diagramma UML della creazione delle carte}
+    \label{fig:problema_creazione_carte}
+\end{figure}
 
 \textbf{Pattern utilizzati} \\
 In questa parte non è stato applicato un design pattern classico. 
@@ -326,10 +353,13 @@ Quando il giocatore prende una decisione su una carta, il sistema verifica se es
 In caso positivo, la carta figlia viene programmata per comparire dopo il numero di turni indicato. 
 
 \textbf{UML} \\
-<<<<<<< HEAD
+\begin{figure}[H]
+    \centering
+    \fbox{\includegraphics[width=0.8\textwidth]{problema_carte_figlie.png}}
+    \caption{Diagramma UML del concetto di FollowUp}
+    \label{fig:problema_arte_figlie}
+\end{figure}
 
-=======
->>>>>>> feature-relazione-mario
 \textbf{Pattern utilizzati} \\
 In questa parte non è stato applicato un design pattern classico in senso stretto. 
 La soluzione si basa principalmente sulla separazione delle responsabilità e sulla rappresentazione esplicita delle relazioni tra carte tramite configurazione esterna.
@@ -1420,15 +1450,37 @@ In quest'ultimo capitolo si tirano le somme del lavoro svolto e si delineano eve
 
 % --- Pietro -----------------------------------------------------
 \subsection{Pietro Dapporto}
-Il mio ruolo all'interno del gruppo ha riguardato soprattutto la struttura di base del gioco e la modellazione delle carte. Per questo motivo, in alcune parti del mio contributo non è stato necessario utilizzare costrutti Java particolarmente complessi: l'obiettivo principale era costruire una struttura chiara, coerente e facilmente estendibile.
+\paragraph{Contributi principali:}
+Il mio ruolo all'interno del gruppo ha riguardato soprattutto la struttura di base del gioco 
+e la modellazione delle carte. Per questo motivo, in alcune parti del mio contributo non è 
+stato necessario utilizzare costrutti Java particolarmente complessi: l'obiettivo principale 
+era costruire una struttura chiara, coerente e facilmente estendibile.
 
-La parte più creativa del lavoro, di cui sono particolarmente soddisfatto, è stata la creazione delle carte di gioco. Dal punto di vista implementativo, questa attività non ha richiesto tecnicismi avanzati, ma ha comportato un lavoro importante di progettazione del contenuto: definire le situazioni proposte al giocatore, le possibili risposte e i pesi associati agli effetti sui parametri del gioco. Ritengo inoltre di aver adottato soluzioni strutturali discrete, soprattutto per quanto riguarda la separazione tra i dati delle carte in file di configurazione esterni e la logica principale dell'applicazione.
+\paragraph{Aspetti di cui sono soddisfatto:}
+La parte più creativa del lavoro, di cui sono particolarmente soddisfatto, è stata la 
+creazione delle carte di gioco. Dal punto di vista implementativo, questa attività non ha 
+richiesto tecnicismi avanzati, ma ha comportato un lavoro importante di progettazione del 
+contenuto: definire le situazioni proposte al giocatore, le possibili risposte e i pesi 
+associati agli effetti sui parametri del gioco. Ritengo inoltre di aver adottato soluzioni 
+strutturali discrete, soprattutto per quanto riguarda la separazione tra i dati delle carte 
+in file di configurazione esterni e la logica principale dell'applicazione.
 
-Considero positivo il fatto di aver progressivamente migliorato l'architettura del sistema, passando da soluzioni inizialmente più semplici ma meno scalabili a una struttura più modulare e mantenibile. 
+Considero positivo il fatto di aver progressivamente migliorato l'architettura del sistema, 
+passando da soluzioni inizialmente più semplici ma meno scalabili a una struttura più modulare 
+e mantenibile. 
 
-Per quanto riguarda i punti deboli, il file YAML contenente le carte è diventato piuttosto esteso. Con l'aggiunta di altre carte la gestione di un unico file può diventare meno comoda. Ho valutato la possibilità di suddividerlo in più file, ma ho ritenuto che, almeno in questa fase del progetto, mantenere un unico file fosse più semplice da gestire e riducesse il rischio di frammentare eccessivamente le informazioni.
+\paragraph{Aspetti migliorabili e lavori futuri:}
+Per quanto riguarda i punti deboli, il file YAML contenente le carte è diventato piuttosto 
+esteso. Con l'aggiunta di altre carte la gestione di un unico file può diventare meno comoda. 
+Ho valutato la possibilità di suddividerlo in più file, ma ho ritenuto che, almeno in questa 
+fase del progetto, mantenere un unico file fosse più semplice da gestire e riducesse il 
+rischio di frammentare eccessivamente le informazioni.
 
-Un altro limite riguarda il livello di astrazione introdotto. In alcuni punti la struttura del codice è stata pensata per supportare possibili estensioni future, come modelli diversi di carte o di effetti, che però non sono state effettivamente sviluppate nel progetto finale. Lo stesso vale per l'utilizzo dei DTO, che separano bene la rappresentazione esterna dei dati dal model, ma introducono anche un passaggio intermedio aggiuntivo. Nel complesso, quindi, ritengo che la struttura realizzata sia abbastanza flessibile e adatta a evoluzioni future, anche se alcune di queste possibilità non sono state sfruttate pienamente nella versione attuale del progetto.
+Un altro limite riguarda il livello di astrazione introdotto. In alcuni punti la struttura 
+del codice è stata pensata per supportare possibili estensioni future, come modelli diversi 
+di carte o di effetti, che però non sono state effettivamente sviluppate nel progetto finale. 
+Lo stesso vale per l'utilizzo dei DTO, che separano bene la rappresentazione esterna dei dati 
+dal model, ma introducono anche un passaggio intermedio aggiuntivo.
 
 % --- Mario ------------------------------------------------------
 \subsection{Mario Conventi}
