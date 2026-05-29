@@ -204,44 +204,50 @@ esclusivamente da interfacce: nessuno strato conosce l'implementazione
 concreta degli altri, solo il contratto esposto.
 
 \begin{itemize}
-    \item Il \textbf{Model} (package \texttt{it.unibo.aurea.model})
-        racchiude la logica di gioco e lo stato dell'Ateneo.
-        Il punto di ingresso è l'interfaccia \texttt{GameEngine},
-        che orchestra \texttt{GameConfig} (configurazione della partita),
-        \texttt{GameClock} (progressione temporale), \texttt{Deck}
-        (mazzo di carte) e i quattro \texttt{Parameter} (stato
-        dell'Ateneo). Il Model non conosce né la View né il Controller.
+    \item Il \textbf{Model}, contenuto nel package \texttt{it.unibo.aurea.model}, 
+        rappresenta lo stato della partita e la logica di gioco. Il suo principale 
+        punto di ingresso è l'interfaccia \texttt{GameEngine}, che espone le operazioni 
+        necessarie per avanzare nella partita, ottenere la carta corrente, applicare gli 
+        effetti delle decisioni e consultare lo stato dei parametri dell'Ateneo. Attorno 
+        a \texttt{GameEngine} collaborano componenti come \texttt{GameConfig}, per la 
+        configurazione della partita, \texttt{GameClock}, per la progressione temporale, 
+        \texttt{Deck}, per la gestione delle carte, e \texttt{Parameter}, per rappresentare 
+        i quattro indicatori principali del gioco. Il Model non dipende dalla View concreta 
+        né dal Controller: espone il proprio stato tramite interfacce e, per gli aggiornamenti 
+        dei parametri, utilizza un meccanismo di notifica basato su observer.
 
-    \item Il \textbf{Controller} (package \texttt{it.unibo.aurea.controller})
-        coordina il flusso di interazione tramite l'interfaccia
-        \texttt{GameController}. Riceve le scelte del giocatore dalla
-        View (\texttt{makeDecision()}), le inoltra al Model e aggiorna
-        la View con il nuovo stato. Gestisce inoltre la connessione
-        reattiva fra Model e View registrando gli observer sui parametri.
+    \item Il \textbf{Controller}, contenuto nel package \texttt{it.unibo.aurea.controller}, 
+        ha come punto di ingresso l'interfaccia \texttt{GameController}. Esso coordina il flusso 
+        dell'applicazione: avvia la partita tramite \texttt{startGame()}, riceve dalla View le 
+        decisioni del giocatore tramite \texttt{makeDecision(boolean)}, le inoltra al Model 
+        attraverso \texttt{GameEngine}, e recupera le informazioni necessarie per aggiornare 
+        la rappresentazione grafica, ad esempio tramite \texttt{getCurrentParametersLevels()} 
+        e \texttt{previewDecisionDeltas(boolean)}. In questo modo il Controller contiene la 
+        logica di coordinamento, mentre non conserva direttamente lo stato del dominio, che 
+        rimane responsabilità del Model.
 
-    \item La \textbf{View} (package \texttt{it.unibo.aurea.view})
-        implementa l'interfaccia \texttt{GameView} e presenta
-        all'utente lo stato del gioco. Non accede mai direttamente
-        al Model: riceve aggiornamenti tramite il pattern Observer
-        (notifiche sui parametri) e tramite chiamate esplicite
-        del Controller (\texttt{displayCard()}, \texttt{updateTime()},
-        \texttt{showVictory()}, ecc.).
+    \item La \textbf{View}, contenuta nel package \texttt{it.unibo.aurea.view}, ha come punto di 
+        ingresso l'interfaccia \texttt{GameView}. Essa si occupa esclusivamente della presentazione 
+        dello stato del gioco e della raccolta degli input dell'utente. La View non accede direttamente 
+        al Model, ma comunica con il sistema attraverso il \texttt{GameController}. Le operazioni come 
+        \texttt{displayCard()}, \texttt{updateTime()} e l'aggiornamento dei parametri vengono invocate 
+        dal Controller o attivate tramite il meccanismo di observer previsto per i cambiamenti dello 
+        stato di gioco.
 \end{itemize}
 
 % -- inserire qui il diagramma UML architetturale --
 \begin{figure}[H]
     \centering
-    \fbox{\parbox[c][5cm][c]{0.9\linewidth}{\centering \textit{Diagramma UML architetturale (MVC, da inserire).}}}
+    \fbox{\includegraphics[width=0.8\textwidth]{UML_architettura_MVC.png}}
     \caption{Architettura complessiva del sistema: interfacce principali di Model, View e Controller.}
     \label{fig:architecture}
 \end{figure}
 
-La scelta di MVC garantisce che: (i)~il Model sia completamente indipendente
-dalla libreria grafica utilizzata; (ii)~la View possa essere sostituita in
-blocco --- passando per esempio da JavaFX a un'interfaccia testuale ---
-senza modificare Model o Controller; (iii)~l'aggiunta di nuove funzionalità
-possa essere realizzata intervenendo soltanto sui componenti effettivamente
-coinvolti.
+Questa organizzazione consente di sostituire l'implementazione grafica senza modificare il Model. Ad 
+esempio, una diversa interfaccia utente potrebbe implementare \texttt{GameView} e continuare a comunicare 
+con il resto dell'applicazione attraverso \texttt{GameController}. Allo stesso modo, il Model rimarrebbe 
+riutilizzabile anche in un'applicazione diversa che condivida la stessa logica di gioco, poiché non contiene 
+riferimenti a elementi grafici o a classi specifiche della View.
 
 % -----------------------------------------------------------------------------
 \section{Design dettagliato}
