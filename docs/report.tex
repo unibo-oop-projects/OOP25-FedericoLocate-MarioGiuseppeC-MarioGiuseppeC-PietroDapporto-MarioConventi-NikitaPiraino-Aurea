@@ -140,6 +140,10 @@ raggiunge il livello minimo o massimo.
           la facoltà e la difficoltà prima di iniziare la partita.
     \item Possibilità di riavviare la partita al termine senza chiudere 
           l'applicazione.
+    \item Sistema audio: musica di sottofondo continua durante login 
+          e partita, effetti sonori contestuali (scelta sulla carta, 
+          comparsa del consigliere) e suoni dedicati per la vittoria 
+          e la sconfitta.
 \end{itemize}
 
 \paragraph{Requisiti non funzionali}
@@ -320,10 +324,7 @@ Quando il giocatore prende una decisione su una carta, il sistema verifica se es
 In caso positivo, la carta figlia viene programmata per comparire dopo il numero di turni indicato. 
 
 \textbf{UML} \\
-<<<<<<< HEAD
 
-=======
->>>>>>> feature-relazione-mario
 \textbf{Pattern utilizzati} \\
 In questa parte non è stato applicato un design pattern classico in senso stretto. 
 La soluzione si basa principalmente sulla separazione delle responsabilità e sulla rappresentazione esplicita delle relazioni tra carte tramite configurazione esterna.
@@ -500,6 +501,7 @@ Icona parametro animata & --- & \texttt{ParameterIconView} \\ \hline
 Schermata di login & --- & \texttt{LoginScene} \\ \hline
 Popup del consigliere & --- & \texttt{CounsellorPopup} \\ \hline
 Overlay di fine partita (in collaborazione) & --- & \texttt{EndgameOverlay} \\ \hline
+Gestione audio di gioco & --- & \texttt{AudioManager} \\ \hline
 Stile visivo dell'applicazione & --- & \texttt{styles.css} \\ \hline
 \end{tabular}
 \caption{Componenti realizzati da Federico Locatelli.}
@@ -974,6 +976,23 @@ che gli aggiornamenti dell'interfaccia avvengano sempre sul
 thread corretto, prevenendo eccezioni di accesso concorrente
 tipiche delle applicazioni JavaFX multi-thread.
 
+\bigskip
+\paragraph{Sistema audio: AudioManager e gestione del ciclo di vita dei player:}
+\smallskip
+\texttt{AudioManager} è progettata come \emph{utility class}
+(costruttore privato, soli metodi statici) e centralizza tutta la
+logica audio del gioco. Distingue due tipologie di suono: la musica
+di sottofondo, gestita da un \texttt{MediaPlayer} in loop infinito
+messo in pausa durante i suoni speciali e ripreso automaticamente
+tramite \texttt{setOnEndOfMedia()}, e gli effetti brevi come lo swipe
+della carta, affidati ad \texttt{AudioClip} per la bassa latenza.
+Una scelta progettuale non banale riguarda la conservazione dei
+riferimenti ai player di vittoria e sconfitta in un campo statico:
+senza tale riferimento il \emph{garbage collector} di Java
+interromperebbe la riproduzione prima del termine del suono, dato
+che il \texttt{MediaPlayer} locale verrebbe deallocato all'uscita
+dal metodo.
+
 % --- 2.2.4 ---------------------------------------------------------
 \subsection{ Nikita Piraino -- Game loop, tempo e condizioni di fine partita}
 
@@ -1276,6 +1295,17 @@ robustezza a sequenze rapide di decisioni, correttezza di
 \texttt{previewDecisionDeltas()} in entrambe le direzioni, e assenza
 di eccezioni prima di \texttt{startGame()}.
 
+\subparagraph{Test della View con TestFX -- 3 classi:}
+A complemento dei test di logica, la View è stata verificata con
+\textbf{TestFX} e \textbf{Mockito}: \texttt{GameViewJavaFXImplTest}
+(usa un mock del \texttt{GameController} per verificare che
+aggiornamento parametri, tempo e schermate di fine partita non
+generino eccezioni sul thread JavaFX), \texttt{ParameterIconViewTest}
+(verifica la comparsa e scomparsa del pallino di anteprima al variare
+di \texttt{setAffected()}) e \texttt{LoginSceneTest} (verifica login
+valido e validazione dei campi vuoti, interagendo direttamente con
+il grafo della scena tramite \texttt{robot.interact()}).
+
 \paragraph{Mario Conventi} 
 
 % -----------------------------------------------------------------------------
@@ -1364,6 +1394,12 @@ GitHub al punto del codice in cui è impiegata.
         chiusura è costruita tramite \texttt{SVGPath} con path data
         inline, scalabile a qualsiasi risoluzione senza immagini esterne. \\
         \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/view/GameViewJavaFXImpl.java#L193}
+    \item \textbf{JavaFX \texttt{MediaPlayer} e \texttt{AudioClip}} -- 
+        il sistema audio usa \texttt{MediaPlayer} per la musica di 
+        sottofondo in loop e \texttt{AudioClip} per gli effetti brevi 
+        a bassa latenza; \texttt{setOnEndOfMedia} riprende il sottofondo 
+        al termine di un suono speciale. \\
+        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/view/AudioManager.java#L109-L119}
 \end{itemize}
 
 \paragraph{Codice di terze parti}
