@@ -1,6 +1,7 @@
 package it.unibo.aurea.view;
 
 import java.util.Map;
+import java.util.Objects;
 
 import it.unibo.aurea.model.api.ParameterType;
 import it.unibo.aurea.view.api.Report;
@@ -68,6 +69,8 @@ public final class ReportImpl extends VBox implements Report {
 
     @Override
     public void show(final String semesterLabel, final Map<ParameterType, Integer> levels) {
+        Objects.requireNonNull(semesterLabel, "semesterLabel cannot be null");
+        Objects.requireNonNull(levels, "levels cannot be null");
         titleLabel.setText("End of " + semesterLabel);
         subtitleLabel.setText("Here is the state of the Realm at the close of this semester.");
         populateRecap(levels);
@@ -107,27 +110,32 @@ public final class ReportImpl extends VBox implements Report {
 
     @Override
     public void setTitle(final String title) {
+        Objects.requireNonNull(title, "title cannot be null");
         titleLabel.setText(title);
     }
 
     @Override
     public void setSubtitle(final String subtitle) {
+        Objects.requireNonNull(subtitle, "subtitle cannot be null");
         subtitleLabel.setText(subtitle);
     }
 
     @Override
     public void setLevels(final Map<ParameterType, Integer> levels) {
+        Objects.requireNonNull(levels, "levels cannot be null");
         populateRecap(levels);
     }
 
     @Override
     public void setButtonAction(final HBox buttonRow) {
+        Objects.requireNonNull(buttonRow, "buttonRow cannot be null");
         getChildren().remove(getChildren().size() - 1);
         getChildren().add(buttonRow);
     }
 
     @Override
     public void reveal(final String background) {
+        Objects.requireNonNull(background, "background cannot be null");
         setStyle("-fx-background-color: " + background + "; -fx-padding: 80 40 80 40;");
         setVisible(true);
         setMouseTransparent(false);

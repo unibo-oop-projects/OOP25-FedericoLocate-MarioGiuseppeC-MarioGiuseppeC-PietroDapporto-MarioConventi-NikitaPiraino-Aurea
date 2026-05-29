@@ -994,7 +994,7 @@ che il \texttt{MediaPlayer} locale verrebbe deallocato all'uscita
 dal metodo.
 
 % --- 2.2.4 ---------------------------------------------------------
-\subsection{ Nikita Piraino -- Game loop, tempo e condizioni di fine partita}
+\subsection{Nikita Piraino -- Game loop, tempo e condizioni di fine partita}
 
 La parte di progetto di mia responsabilità copre la logica di stato della partita e il ciclo temporale del gioco:
 
@@ -1013,7 +1013,7 @@ Riepilogo parametri partita & Report & ReportImpl \\ \hline
 
 \subsubsection{Pattern Static Factory Method in GameConfigFactory}
 
-\noindent\noindent\textbf{Problema} Sono previste più versioni di configurazione del gioco: una standard (6 carte per semestre, 6 semestri), una ridotta (2 carte, 2 semestri) pensata per facilitare i test intermedi e di fine partita. C'è anche il desiderio di implementare future versioni alternative di partite come ad esempio la modalità ``apocalisse  ''.
+\noindent\textbf{Problema} Sono previste più versioni di configurazione del gioco: una standard (6 carte per semestre, 6 semestri), una ridotta (2 carte, 2 semestri) pensata per facilitare i test intermedi e di fine partita. C'è anche il desiderio di implementare future versioni alternative di partite come ad esempio la modalità ``apocalisse''.
 Occorre quindi controllare l'istanziamento della configurazione, vincolando gli utilizzatori a versioni standardizzate di partita, facilmente selezionabili tramite metodi pubblici e statici.
 
 \noindent\noindent\textbf{Soluzione} Il pattern Static Factory Method è articolato in due classi distinte:
@@ -1042,12 +1042,12 @@ Alcune alternative:
 \textbf{Pattern identificato} Static Factory Method (creazionale): i metodi \texttt{createStandard()} e \texttt{createShort()} sono le factory; \texttt{GameConfig} è il tipo prodotto; \texttt{GameConfigFactory} è il punto di accesso pubblico.
 
 
-\subsubsection{Orchestrazione del modello in GameEnginelmpl}
+\subsubsection{Orchestrazione del modello in GameEngineImpl}
 
 \noindent\textbf{Problema} La logica di partita richiede di coordinare più oggetti collaboranti: configurazione, orologio, mazzo, parametri. Occorre un punto di ingresso unico per il controller, garantendo immutabilità strutturale del modello dopo la costruzione e fail-fast sulle dipendenze nulle.
 
 
-\noindent\textbf{Soluzione} \texttt{GameEnginelmpl} implementa \texttt{GameEngine} ed è la classe centrale del sottosistema model. Coordina tre dipendenze: la configurazione (\texttt{GameConfig}), l'orologio (\texttt{GameClock}) e il mazzo (\texttt{Deck}).
+\noindent\textbf{Soluzione} \texttt{GameEngineImpl} implementa \texttt{GameEngine} ed è la classe centrale del sottosistema model. Coordina tre dipendenze: la configurazione (\texttt{GameConfig}), l'orologio (\texttt{GameClock}) e il mazzo (\texttt{Deck}).
 
 Il costruttore applica la Dependency Injection ricevendo \texttt{GameConfig}, \texttt{GameClock} e \texttt{Deck} come argomenti:
 
@@ -1068,17 +1068,17 @@ La chiamata a \texttt{Objects.requireNonNull} applica il principio fail-fast: se
     \label{fig:orchestrazione}
 \end{figure}
 
-un alternativa:
+un'alternativa:
 \begin{itemize}
     \item utilizzare singleton pattern: in caso di gioco offline garantisce che ci sia un solo motore di un videogioco, però considerando il riuso del codice non sarebbe utilizzabile per costruire un server per partite online (dove, presumibilmente,
-si gestiscono parallelamente pi`u partite).
+si gestiscono parallelamente più partite).
 \end{itemize}
 
 \subsubsection{State Machine in getGameState()}
 
 \textbf{Problema:} Lo stato di una partita può essere in corso, vinta o persa; queste tre alternative sono mutuamente esclusive e dipendono dallo stato corrente dei parametri e dell'orologio. La consultazione dello stato è frequente (a ogni interazione del controller con il modello), per cui un campo di stato esplicito introdurrebbe rischi di disallineamento fra i dati interni e la valutazione restituita.
 
-\noindent\textbf{Soluzione:} Il metodo \texttt{getGameState()} nella classe \texttt{GameEnginelmpl} avvia una processo di identificazione dello stato, che poi restituirà uno dei valori dell'enumerazione GameState: RUNNING, WON, LOST.
+\noindent\textbf{Soluzione:} Il metodo \texttt{getGameState()} nella classe \texttt{GameEngineImpl} avvia una processo di identificazione dello stato, che poi restituirà uno dei valori dell'enumerazione GameState: RUNNING, WON, LOST.
 
 \begin{lstlisting}
 public GameState getGameState() {
@@ -1106,7 +1106,7 @@ Lo stato viene calcolato ad ogni chiamata: l'approccio è stateless, elimina il 
 \noindent Alcune alternative sono:
 \begin{itemize}
     \item restituire una stringa al posto degli elementi dell'enum: non idoneo con gli standard di programmazione           moderni
-    \item nelle condizioni non richiamare delle funzioni ma mettere il loro contenuto direttamente nella metodo \texttt{GetGameState()}: supporta meno per necessità future i principi Don't Repeat Yourself e Single Responsability.
+    \item nelle condizioni non richiamare delle funzioni ma mettere il loro contenuto direttamente nel metodo \texttt{getGameState()}: supporta meno per necessità future i principi Don't Repeat Yourself e Single Responsability.
 \end{itemize}
 
 \subsubsection{Separazione accessi Parameter e ParameterView}
@@ -1135,7 +1135,7 @@ Alcune alternative sono:
 
 
 
-\subsubsection*{Design di ReportImpl come componente JavaFX riutilizzabile}
+\subsubsection{Design di ReportImpl come componente JavaFX riutilizzabile}
 
 \textbf{Problema:} Alla fine di ogni semestre e alla fine della partita si vuole presentare un report al giocatore nel quale sono presenti i valori di ogni parametro e delle frasi di storytelling.
 
@@ -1423,14 +1423,16 @@ del codice in cui \`e impiegata.
     Permalink1: \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/73489c086c7d02bec683ad10117f1d45959b317f/src/main/java/it/unibo/aurea/view/ReportImpl.java#L64} \\
     Permalink2: \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/73489c086c7d02bec683ad10117f1d45959b317f/src/main/java/it/unibo/aurea/view/InfoButtonImpl.java#L39} \\
     Permalink3: \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/73489c086c7d02bec683ad10117f1d45959b317f/src/main/java/it/unibo/aurea/view/InfoButtonImpl.java#L64}  \\
+    \item \textbf{Method Reference} \\
+    permalink1: \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/9d158606c6f5d3f9b297de450441bb3df5c1d139/src/test/java/it/unibo/aurea/model/GameClockTest.java#L71}
     \item \textbf{Stream} \\
     Permalink1: \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/73489c086c7d02bec683ad10117f1d45959b317f/src/main/java/it/unibo/aurea/model/GameEngineImpl.java#L126} \\
     \item \textbf{Libreria di terze parti - JavaFX} \\
-    i seguenti permalink punntano a delle righe qualsiasi, perchè le seguenti classi sono state realizzate interamente da me. Alcuni metodi sono stati copiati da codice che Federico Locatelli(compagno) 
+    i seguenti permalink puntano a delle righe qualsiasi, perchè le seguenti classi sono state realizzate interamente da me. Alcuni metodi sono stati copiati da codice che Federico Locatelli (compagno) 
     aveva scritto in altre classi sostituite da quelle seguenti.
     permalink1: \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/73489c086c7d02bec683ad10117f1d45959b317f/src/main/java/it/unibo/aurea/view/EndgameOverlay.java#L48} \\
     permalink2: \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/73489c086c7d02bec683ad10117f1d45959b317f/src/main/java/it/unibo/aurea/view/ReportImpl.java#L19} \\
-    permalink2: \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/73489c086c7d02bec683ad10117f1d45959b317f/src/main/java/it/unibo/aurea/view/InfoButtonImpl.java#L20}
+    permalink3: \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/73489c086c7d02bec683ad10117f1d45959b317f/src/main/java/it/unibo/aurea/view/InfoButtonImpl.java#L20}
 \end{itemize}
 
 \paragraph{Codice di terze parti}
@@ -1498,9 +1500,9 @@ modalità \emph{Hard}.
 
 % --- Nikita -----------------------------------------------------
 \subsection{Nikita Piraino}
-Sono un ragazzo a cui piace molto l'azione di "unire i puntini" e il ruolo che ho scelto mi ha permesso di mettere ulteriormente in pratica le conoscenze necessarie per farlo bene. Ho avuto la possibilità di ripassare quasi ogni aspetto della materia studiata. \\
+Sono un ragazzo a cui piace molto l'azione di ``unire i puntini'' e il ruolo che ho scelto mi ha permesso di mettere ulteriormente in pratica le conoscenze necessarie per farlo bene. Ho avuto la possibilità di ripassare quasi ogni aspetto della materia studiata. \\
 
-Sono \textbf{soddisfatto} del lavoro che ho svolto perchè nella scrittura dei miei codici ho identificato velocemente una sequenza da seguire per evitare di  fare  modifiche "scomode" in futuro. Quando ho toccato  codici per la maggiorparte scritti dai miei compagni non mi sono trovato in difficoltà nel comprenderne il funzionamento(ignorando ovviamente le lacune riguardanti la non conoscenza iniziale delle liberie). \\
+Sono \textbf{soddisfatto} del lavoro che ho svolto perchè nella scrittura dei miei codici ho identificato velocemente una sequenza da seguire per evitare di  fare  modifiche ``scomode'' in futuro. Quando ho toccato  codici per la maggiorparte scritti dai miei compagni non mi sono trovato in difficoltà nel comprenderne il funzionamento(ignorando ovviamente le lacune riguardanti la non conoscenza iniziale delle liberie). \\
 Un aspetto per cui mi è stato molto utile lavorare a questo progetto è stato quello della documentazione: mi piace come attività, mi sono reso conto di quanto scriverla mi fornisse spunti per migliorare il codice; quindi \textbf{mi pento} di averla fatta per la maggior parte  verso la fine in quanto mi ha portato a voler rivedere alcune scelte e quindi riscriverla. La mia responsabilità principale era creare del codice che fosse chiaro, estendibile per nuove modifiche, adatto per le necessità di ogni mio compagno e futuro sviluppatore, quindi non ho avuto la necessità di creare costrutti particolarmente articolati dal punto di vista di \textit{feature avanzate di linguaggio}.\\
 
 Sempre legato all'unire i puntini sento di \textbf{essere stato} molto un connettore all'interno del gruppo, chiedevo aggiornamenti, organizzavo le riunioni che facevamo per sintonizzarci e se scoprivo qualcosa di interessante lo condividevo anche agli altri.
