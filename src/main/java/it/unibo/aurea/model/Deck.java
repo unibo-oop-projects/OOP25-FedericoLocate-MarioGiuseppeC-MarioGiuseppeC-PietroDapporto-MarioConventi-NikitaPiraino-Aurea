@@ -5,15 +5,12 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import it.unibo.aurea.model.api.Card;
-import it.unibo.aurea.model.api.CharacterType;
 import it.unibo.aurea.model.api.FollowUp;
-import it.unibo.aurea.model.api.ParameterType;
 import it.unibo.aurea.model.dto.CardDTO;
 import it.unibo.aurea.model.dto.CardsFile;
 import it.unibo.aurea.model.dto.EffectDTO;
@@ -104,47 +101,6 @@ public class Deck {
      */
     public List<FollowUp> getAllFollowUps() {
         return List.copyOf(this.followUps);
-    }
-
-    /**
-     * It filters an input list returning the cards associated with a character.
-     * 
-     * @param input the list to filter
-     * @param character the term of comparison
-     * @return a {@code List} of cards matched with the input {@code CharacterType}
-     */
-    public List<Card> getByCharacter(final List<Card> input, final CharacterType character) {
-        return input.stream()
-            .filter(c -> c.getCharacter() == character)
-            .collect(Collectors.toList());
-    }
-
-    /**
-     * It filters an input list returning the cards that modify a parameter.
-     * 
-     * @param input the list to filter
-     * @param parameter the term of comparison
-     * @return a {@code List} of cards with an effect on the input {@code ParameterType}
-     */
-    public List<Card> getByParameter(final List<Card> input, final ParameterType parameter) {
-        return input.stream()
-            .filter(c -> c.getAllEffects().stream()
-            .anyMatch(e -> e.getParameter() == parameter))
-            .collect(Collectors.toList());
-    }
-
-    /**
-     * It filters an input list returning the cards containing a specific delta.
-     * 
-     * @param input the list to filter
-     * @param delta the term of comparison
-     * @return a {@code List} of cards with an {@code int} of how a parameter change
-     */
-    public List<Card> getByDelta(final List<Card> input, final int delta) {
-        return input.stream()
-            .filter(c -> c.getAllEffects().stream()
-            .anyMatch(e -> e.getDelta() == delta))
-            .collect(Collectors.toList());
     }
 
     /**
