@@ -296,14 +296,13 @@ Infine, il flag \texttt{usage} permette di distinguere le carte già utilizzate 
 \textbf{UML} \\
 \begin{figure}[H]
     \centering
-    \fbox{\includegraphics[width=0.8\textwidth]{problema_modellazione_carte.png}}
+    \fbox{\includegraphics[width=0.70\textwidth]{problema_modellazione_carte.png}}
     \caption{Diagramma UML della carta e i suoi elementi}
     \label{fig:problema_modello_carte}
 \end{figure}
 
 \textbf{Pattern utilizzati} \\
 In questa parte non è stato applicato un design pattern comportamentale in senso stretto. 
-La scelta progettuale principale è basata sulla composizione: \texttt{Card} viene costruita aggregando oggetti più piccoli. 
 L'uso di interfacce come \texttt{Card} ed \texttt{Effect} consente comunque di mantenere il modello estendibile, poiché eventuali implementazioni alternative potrebbero essere introdotte senza modificare il codice che dipende dalle astrazioni.
 
 \subsubsection{Problema: scalare la creazione delle carte}
@@ -335,8 +334,9 @@ La soluzione introduce però anche un livello di astrazione aggiuntivo: potenzia
 \end{figure}
 
 \textbf{Pattern utilizzati} \\
-In questa parte non è stato applicato un design pattern classico. 
-Tuttavia per gestire il passaggio tra il file YAML e gli oggetti del model è stato utilizzato il concetto di DTO (\emph{Data Transfer Object}). 
+In questa parte è stato utilizzato il pattern Builder per la creazione di \texttt{CardImpl} nel metodo \texttt{toCard()} dentro la classe \texttt{Deck}.
+Il suo scopo è quello di convertire tutte le istanze di \texttt{CardDTO} in \texttt{CardImpl}.
+Inoltre, per gestire il passaggio tra il file YAML e gli oggetti del model è stato utilizzato il concetto di DTO (\emph{Data Transfer Object}). 
 Un DTO è un oggetto usato per trasferire dati tra due parti del sistema senza contenere logica di dominio significativa. 
 In questo ambito agiscono quindi come classi ponte tra la rappresentazione esterna delle carte, definita nel file YAML, e la rappresentazione interna usata dal model. 
 
@@ -1480,7 +1480,6 @@ fonti esterne.
 % =============================================================================
 \chapter{Commenti finali}
 % =============================================================================
-In quest'ultimo capitolo si tirano le somme del lavoro svolto e si delineano eventuali sviluppi futuri.
 
 % -----------------------------------------------------------------------------
 \section{Autovalutazione e lavori futuri}
@@ -1587,7 +1586,7 @@ leggere una breve spiegazione delle regole del gioco. Dopo aver completato i cam
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{schermata_iniziale.png}
+    \includegraphics[width=0.60\textwidth]{schermata_iniziale.png}
     \caption{Schermata iniziale: inserimento dei dati, scelta della difficoltà e avvio della partita.}
 \end{figure}
 
@@ -1611,13 +1610,13 @@ Durante il trascinamento compaiono alcuni indicatori sopra i parametri: essi seg
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{swipe_destra.png}
+    \includegraphics[width=0.65\textwidth]{swipe_destra.png}
     \caption{Swipe a destra per l'approvazione della proposta.}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{swipe_sinistra.png}
+    \includegraphics[width=0.65\textwidth]{swipe_sinistra.png}
     \caption{Swipe a sinistra per il rifiuto della proposta.}
 \end{figure}
 
@@ -1628,11 +1627,8 @@ oppure quando uno dei parametri raggiunge un valore critico (il minimo o il mass
 In questo caso viene mostrata una schermata finale con l'esito della partita.
 
 % =============================================================================
-\appendix
-% =============================================================================
 \chapter{Esercitazioni di laboratorio}
 % =============================================================================
-In questo capitolo ciascuno studente elenca gli esercizi di laboratorio svolti, indicando i permalink dei post sul forum dove \`e avvenuta la consegna.
 
 \section*{pietro.dapporto@studio.unibo.it}
 \begin{itemize}
