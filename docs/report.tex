@@ -208,44 +208,50 @@ esclusivamente da interfacce: nessuno strato conosce l'implementazione
 concreta degli altri, solo il contratto esposto.
 
 \begin{itemize}
-    \item Il \textbf{Model} (package \texttt{it.unibo.aurea.model})
-        racchiude la logica di gioco e lo stato dell'Ateneo.
-        Il punto di ingresso è l'interfaccia \texttt{GameEngine},
-        che orchestra \texttt{GameConfig} (configurazione della partita),
-        \texttt{GameClock} (progressione temporale), \texttt{Deck}
-        (mazzo di carte) e i quattro \texttt{Parameter} (stato
-        dell'Ateneo). Il Model non conosce né la View né il Controller.
+    \item Il \textbf{Model}, contenuto nel package \texttt{it.unibo.aurea.model}, 
+        rappresenta lo stato della partita e la logica di gioco. Il suo principale 
+        punto di ingresso è l'interfaccia \texttt{GameEngine}, che espone le operazioni 
+        necessarie per avanzare nella partita, ottenere la carta corrente, applicare gli 
+        effetti delle decisioni e consultare lo stato dei parametri dell'Ateneo. Attorno 
+        a \texttt{GameEngine} collaborano componenti come \texttt{GameConfig}, per la 
+        configurazione della partita, \texttt{GameClock}, per la progressione temporale, 
+        \texttt{Deck}, per la gestione delle carte, e \texttt{Parameter}, per rappresentare 
+        i quattro indicatori principali del gioco. Il Model non dipende dalla View concreta 
+        né dal Controller: espone il proprio stato tramite interfacce e, per gli aggiornamenti 
+        dei parametri, utilizza un meccanismo di notifica basato su observer.
 
-    \item Il \textbf{Controller} (package \texttt{it.unibo.aurea.controller})
-        coordina il flusso di interazione tramite l'interfaccia
-        \texttt{GameController}. Riceve le scelte del giocatore dalla
-        View (\texttt{makeDecision()}), le inoltra al Model e aggiorna
-        la View con il nuovo stato. Gestisce inoltre la connessione
-        reattiva fra Model e View registrando gli observer sui parametri.
+    \item Il \textbf{Controller}, contenuto nel package \texttt{it.unibo.aurea.controller}, 
+        ha come punto di ingresso l'interfaccia \texttt{GameController}. Esso coordina il flusso 
+        dell'applicazione: avvia la partita tramite \texttt{startGame()}, riceve dalla View le 
+        decisioni del giocatore tramite \texttt{makeDecision(boolean)}, le inoltra al Model 
+        attraverso \texttt{GameEngine}, e recupera le informazioni necessarie per aggiornare 
+        la rappresentazione grafica, ad esempio tramite \texttt{getCurrentParametersLevels()} 
+        e \texttt{previewDecisionDeltas(boolean)}. In questo modo il Controller contiene la 
+        logica di coordinamento, mentre non conserva direttamente lo stato del dominio, che 
+        rimane responsabilità del Model.
 
-    \item La \textbf{View} (package \texttt{it.unibo.aurea.view})
-        implementa l'interfaccia \texttt{GameView} e presenta
-        all'utente lo stato del gioco. Non accede mai direttamente
-        al Model: riceve aggiornamenti tramite il pattern Observer
-        (notifiche sui parametri) e tramite chiamate esplicite
-        del Controller (\texttt{displayCard()}, \texttt{updateTime()},
-        \texttt{showVictory()}, ecc.).
+    \item La \textbf{View}, contenuta nel package \texttt{it.unibo.aurea.view}, ha come punto di 
+        ingresso l'interfaccia \texttt{GameView}. Essa si occupa esclusivamente della presentazione 
+        dello stato del gioco e della raccolta degli input dell'utente. La View non accede direttamente 
+        al Model, ma comunica con il sistema attraverso il \texttt{GameController}. Le operazioni come 
+        \texttt{displayCard()}, \texttt{updateTime()} e l'aggiornamento dei parametri vengono invocate 
+        dal Controller o attivate tramite il meccanismo di observer previsto per i cambiamenti dello 
+        stato di gioco.
 \end{itemize}
 
 % -- inserire qui il diagramma UML architetturale --
 \begin{figure}[H]
     \centering
-    \fbox{\parbox[c][5cm][c]{0.9\linewidth}{\centering \textit{Diagramma UML architetturale (MVC, da inserire).}}}
+    \fbox{\includegraphics[width=0.9\textwidth]{architettura_mvc.png}}
     \caption{Architettura complessiva del sistema: interfacce principali di Model, View e Controller.}
     \label{fig:architecture}
 \end{figure}
 
-La scelta di MVC garantisce che: (i)~il Model sia completamente indipendente
-dalla libreria grafica utilizzata; (ii)~la View possa essere sostituita in
-blocco --- passando per esempio da JavaFX a un'interfaccia testuale ---
-senza modificare Model o Controller; (iii)~l'aggiunta di nuove funzionalità
-possa essere realizzata intervenendo soltanto sui componenti effettivamente
-coinvolti.
+Questa organizzazione consente di sostituire l'implementazione grafica senza modificare il Model. Ad 
+esempio, una diversa interfaccia utente potrebbe implementare \texttt{GameView} e continuare a comunicare 
+con il resto dell'applicazione attraverso \texttt{GameController}. Allo stesso modo, il Model rimarrebbe 
+riutilizzabile anche in un'applicazione diversa che condivida la stessa logica di gioco, poiché non contiene 
+riferimenti a elementi grafici o a classi specifiche della View.
 
 % -----------------------------------------------------------------------------
 \section{Design dettagliato}
@@ -259,6 +265,21 @@ progettazione applicato, ove presente.
 
 % --- 2.2.1 ---------------------------------------------------------
 \subsection{Pietro Dapporto -- Modello delle carte e contenuti}
+La mia responsabilità nel progetto riguarda la creazione e gestione delle carte.
+Di seguito si riassumono i principali problemi incontrati con un accenno agli elementi creati
+per risolverli.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{compito} & \textbf{nome interfaccia} & \textbf{nome implementazione} \\ \hline
+Modello delle carte e contenuti & Card, Effect & CardImpl, EffectImpl, Decision \\ \hline
+Scalare la creazione delle carte & - & Deck, CardsFile \\ \hline
+Gestione carte figlie & FollowUp & FollowUpImpl \\ \hline
+\end{tabular}
+\end{table}
+
 \subsubsection{Problema: modellazione delle carte di gioco}
 
 Nel gioco ogni carta rappresenta una proposta sottoposta al giocatore da un determinato personaggio. Si deve modellare una carta che non sia un semplice insieme di dati, ma che permetta di rappresentare in modo chiaro le due possibili decisioni del giocatore e le relative conseguenze sui parametri della partita. 
@@ -273,10 +294,15 @@ In questo modo la carta non deve conoscere direttamente la logica di aggiornamen
 Infine, il flag \texttt{usage} permette di distinguere le carte già utilizzate da quelle ancora disponibili, evitando che la stessa carta venga riproposta più volte durante la partita.
 
 \textbf{UML} \\
+\begin{figure}[H]
+    \centering
+    \fbox{\includegraphics[width=0.70\textwidth]{problema_modellazione_carte.png}}
+    \caption{Diagramma UML della carta e i suoi elementi}
+    \label{fig:problema_modello_carte}
+\end{figure}
 
 \textbf{Pattern utilizzati} \\
 In questa parte non è stato applicato un design pattern comportamentale in senso stretto. 
-La scelta progettuale principale è basata sulla composizione: \texttt{Card} viene costruita aggregando oggetti più piccoli. 
 L'uso di interfacce come \texttt{Card} ed \texttt{Effect} consente comunque di mantenere il modello estendibile, poiché eventuali implementazioni alternative potrebbero essere introdotte senza modificare il codice che dipende dalle astrazioni.
 
 \subsubsection{Problema: scalare la creazione delle carte}
@@ -300,10 +326,17 @@ Questa scelta migliora la mantenibilità perché nuove carte possono essere aggi
 La soluzione introduce però anche un livello di astrazione aggiuntivo: potenzialmente sarebbe possibile convertire le informazioni del file YAML in modelli di carta differenti, ma nel progetto attuale tutte le carte vengono ricondotte allo stesso modello interno. 
 
 \textbf{UML} \\
+\begin{figure}[H]
+    \centering
+    \fbox{\includegraphics[width=0.8\textwidth]{problema_scalabilità_carte.png}}
+    \caption{Diagramma UML della creazione delle carte}
+    \label{fig:problema_creazione_carte}
+\end{figure}
 
 \textbf{Pattern utilizzati} \\
-In questa parte non è stato applicato un design pattern classico. 
-Tuttavia per gestire il passaggio tra il file YAML e gli oggetti del model è stato utilizzato il concetto di DTO (\emph{Data Transfer Object}). 
+In questa parte è stato utilizzato il pattern Builder per la creazione di \texttt{CardImpl} nel metodo \texttt{toCard()} dentro la classe \texttt{Deck}.
+Il suo scopo è quello di convertire tutte le istanze di \texttt{CardDTO} in \texttt{CardImpl}.
+Inoltre, per gestire il passaggio tra il file YAML e gli oggetti del model è stato utilizzato il concetto di DTO (\emph{Data Transfer Object}). 
 Un DTO è un oggetto usato per trasferire dati tra due parti del sistema senza contenere logica di dominio significativa. 
 In questo ambito agiscono quindi come classi ponte tra la rappresentazione esterna delle carte, definita nel file YAML, e la rappresentazione interna usata dal model. 
 
@@ -324,6 +357,12 @@ Quando il giocatore prende una decisione su una carta, il sistema verifica se es
 In caso positivo, la carta figlia viene programmata per comparire dopo il numero di turni indicato. 
 
 \textbf{UML} \\
+\begin{figure}[H]
+    \centering
+    \fbox{\includegraphics[width=0.8\textwidth]{problema_carte_figlie.png}}
+    \caption{Diagramma UML del concetto di FollowUp}
+    \label{fig:problema_arte_figlie}
+\end{figure}
 
 \textbf{Pattern utilizzati} \\
 In questa parte non è stato applicato un design pattern classico in senso stretto. 
@@ -1148,12 +1187,12 @@ con test posti in \texttt{src/test/java} e package paralleli a quelli dei
 sorgenti. I test non richiedono alcuna interazione utente e sono eseguiti
 automaticamente dal task \texttt{gradle build}.
 
-I componenti sottoposti a test automatizzato comprendono il sottosistema
-model (configurazione, orologio, motore di gioco, mazzo di carte),
-il layer controller (comunicazione MVC e metodi di anteprima) e
-le astrazioni del model layer (parametri, observer, tipi).
+I test automatici sono stati organizzati per area funzionale, in modo da coprire
+le principali responsabilità dell'applicazione: la logica di avanzamento della
+partita, il caricamento delle carte da configurazione esterna e l'interazione tra
+Model, Controller e View.
 
-\paragraph{Nikita Piraino -- strategia di testing per transizioni di stato}
+\paragraph{Testing delle transizioni di stato del Model}
 La strategia adottata \`e il \emph{State Transition Testing}: ogni test
 verifica che il sistema si trovi nello stato corretto prima e dopo
 un'operazione che ne altera il comportamento. L'annotazione
@@ -1208,20 +1247,19 @@ valori strettamente positivi per la configurazione standard. Il contratto
 coperto \`e minimo per design: verificare i valori esatti (6~e~6) renderebbe
 il test fragile rispetto a future variazioni della configurazione standard.
 
-\paragraph{Pietro Dapporto -- testing caricamento elementi YAML} 
+\paragraph{Testing del caricamento delle carte da file YAML} 
 I test riguardano principalmente il sistema di carte e il caricamento dei dati da file YAML. Vista la brevità ho raggruppato in un'unica classe più test.
 
 Sono stati sottoposti a test i seguenti aspetti:
 \begin{itemize}
-    \item \texttt{shouldLoadCards()}: verifica che le informazioni scritte nei file YAML coincidano con ciò che è contenuto dentro l'implementazione delle carte create.
-    \item \texttt{shouldLoadFollowUp()}: esegue la stessa verifica ma sui followup.
-    \item \texttt{shouldHaveUniqueIdCards()}: verifica che le carte base abbiano tutte un identificatore (\texttt{String id}) diverso.
-    \item \texttt{shouldHaveUniqueIdChildCards()}: esegue la stessa verifica ma sulle carte figlie.
+    \item \texttt{shouldLoadCards()} e \texttt{shouldLoadFollowUp()}: verificano che le informazioni scritte nei file 
+    YAML coincidano rispettivamente con con ciò che è contenuto dentro l'implementazione delle carte create e dei followup.
+    \item \texttt{shouldHaveUniqueIdCards()} e \texttt{shouldHaveUniqueIdChildCards()}: verificano che a gruppi le carte base e quelle figlie abbiano tutte un identificatore (\texttt{String id}) diverso.
     \item \texttt{shouldNotBeSharedIds()}: verifica che non ci siano identificatori comuni tra le carte base e quelle figlie.
     \item \texttt{shouldCharacterImageExist()}: verifica che ogni personaggio all'interno delle carte abbia il riferimento ad un'immagine da mostrare durante il gioco.
 \end{itemize}
 
-\paragraph{Federico Locatelli -- strategia di testing per Model, Controller e Observer}
+\paragraph{Testing di parametri, Controller e Observer}
 
 La strategia adottata è la combinazione di \emph{State Transition Testing}
 e \emph{Boundary Testing}: ogni test verifica il comportamento del sistema
@@ -1417,7 +1455,6 @@ fonti esterne.
 % =============================================================================
 \chapter{Commenti finali}
 % =============================================================================
-In quest'ultimo capitolo si tirano le somme del lavoro svolto e si delineano eventuali sviluppi futuri.
 
 % -----------------------------------------------------------------------------
 \section{Autovalutazione e lavori futuri}
@@ -1425,15 +1462,37 @@ In quest'ultimo capitolo si tirano le somme del lavoro svolto e si delineano eve
 
 % --- Pietro -----------------------------------------------------
 \subsection{Pietro Dapporto}
-Il mio ruolo all'interno del gruppo ha riguardato soprattutto la struttura di base del gioco e la modellazione delle carte. Per questo motivo, in alcune parti del mio contributo non è stato necessario utilizzare costrutti Java particolarmente complessi: l'obiettivo principale era costruire una struttura chiara, coerente e facilmente estendibile.
+\paragraph{Contributi principali:}
+Il mio ruolo all'interno del gruppo ha riguardato soprattutto la struttura di base del gioco 
+e la modellazione delle carte. Per questo motivo, in alcune parti del mio contributo non è 
+stato necessario utilizzare costrutti Java particolarmente complessi: l'obiettivo principale 
+era costruire una struttura chiara, coerente e facilmente estendibile.
 
-La parte più creativa del lavoro, di cui sono particolarmente soddisfatto, è stata la creazione delle carte di gioco. Dal punto di vista implementativo, questa attività non ha richiesto tecnicismi avanzati, ma ha comportato un lavoro importante di progettazione del contenuto: definire le situazioni proposte al giocatore, le possibili risposte e i pesi associati agli effetti sui parametri del gioco. Ritengo inoltre di aver adottato soluzioni strutturali discrete, soprattutto per quanto riguarda la separazione tra i dati delle carte in file di configurazione esterni e la logica principale dell'applicazione.
+\paragraph{Aspetti di cui sono soddisfatto:}
+La parte più creativa del lavoro, di cui sono particolarmente soddisfatto, è stata la 
+creazione delle carte di gioco. Dal punto di vista implementativo, questa attività non ha 
+richiesto tecnicismi avanzati, ma ha comportato un lavoro importante di progettazione del 
+contenuto: definire le situazioni proposte al giocatore, le possibili risposte e i pesi 
+associati agli effetti sui parametri del gioco. Ritengo inoltre di aver adottato soluzioni 
+strutturali discrete, soprattutto per quanto riguarda la separazione tra i dati delle carte 
+in file di configurazione esterni e la logica principale dell'applicazione.
 
-Considero positivo il fatto di aver progressivamente migliorato l'architettura del sistema, passando da soluzioni inizialmente più semplici ma meno scalabili a una struttura più modulare e mantenibile. 
+Considero positivo il fatto di aver progressivamente migliorato l'architettura del sistema, 
+passando da soluzioni inizialmente più semplici ma meno scalabili a una struttura più modulare 
+e mantenibile. 
 
-Per quanto riguarda i punti deboli, il file YAML contenente le carte è diventato piuttosto esteso. Con l'aggiunta di altre carte la gestione di un unico file può diventare meno comoda. Ho valutato la possibilità di suddividerlo in più file, ma ho ritenuto che, almeno in questa fase del progetto, mantenere un unico file fosse più semplice da gestire e riducesse il rischio di frammentare eccessivamente le informazioni.
+\paragraph{Aspetti migliorabili e lavori futuri:}
+Per quanto riguarda i punti deboli, il file YAML contenente le carte è diventato piuttosto 
+esteso. Con l'aggiunta di altre carte la gestione di un unico file può diventare meno comoda. 
+Ho valutato la possibilità di suddividerlo in più file, ma ho ritenuto che, almeno in questa 
+fase del progetto, mantenere un unico file fosse più semplice da gestire e riducesse il 
+rischio di frammentare eccessivamente le informazioni.
 
-Un altro limite riguarda il livello di astrazione introdotto. In alcuni punti la struttura del codice è stata pensata per supportare possibili estensioni future, come modelli diversi di carte o di effetti, che però non sono state effettivamente sviluppate nel progetto finale. Lo stesso vale per l'utilizzo dei DTO, che separano bene la rappresentazione esterna dei dati dal model, ma introducono anche un passaggio intermedio aggiuntivo. Nel complesso, quindi, ritengo che la struttura realizzata sia abbastanza flessibile e adatta a evoluzioni future, anche se alcune di queste possibilità non sono state sfruttate pienamente nella versione attuale del progetto.
+Un altro limite riguarda il livello di astrazione introdotto. In alcuni punti la struttura 
+del codice è stata pensata per supportare possibili estensioni future, come modelli diversi 
+di carte o di effetti, che però non sono state effettivamente sviluppate nel progetto finale. 
+Lo stesso vale per l'utilizzo dei DTO, che separano bene la rappresentazione esterna dei dati 
+dal model, ma introducono anche un passaggio intermedio aggiuntivo.
 
 % --- Mario ------------------------------------------------------
 \subsection{Mario Conventi}
@@ -1482,12 +1541,6 @@ Un aspetto per cui mi è stato molto utile lavorare a questo progetto è stato q
 
 Sempre legato all'unire i puntini sento di \textbf{essere stato} molto un connettore all'interno del gruppo, chiedevo aggiornamenti, organizzavo le riunioni che facevamo per sintonizzarci e se scoprivo qualcosa di interessante lo condividevo anche agli altri.
 
-
-% -----------------------------------------------------------------------------
-\section{Difficolt\`a incontrate e commenti per i docenti}
-% -----------------------------------------------------------------------------
-\emph{[Sezione opzionale: eventuali difficolt\`a incontrate dal gruppo nel corso o nello svolgimento del progetto, e commenti utili al miglioramento del corso. Il contenuto della sezione non impatter\`a il voto finale.]}
-
 % =============================================================================
 \appendix
 % =============================================================================
@@ -1495,12 +1548,62 @@ Sempre legato all'unire i puntini sento di \textbf{essere stato} molto un connet
 % =============================================================================
 \chapter{Guida utente}
 % =============================================================================
-\emph{[Da redigere: istruzioni d'uso essenziali per consentire ai docenti di avviare ed esplorare le funzionalit\`a primarie dell'applicazione, eventualmente corredate di screenshot. In particolare: come avviare il JAR, come iniziare una partita, come effettuare una scelta su una carta, come interpretare la barra dei parametri, come consultare il riepilogo di fine semestre, come riconoscere la fine partita.]}
+Questa guida mostra i passaggi principali per iniziare e svolgere una partita ad \textit{Aurea Mediocritas}.
+
+\section{Avvio della partita}
+
+All'apertura del gioco viene mostrata la schermata iniziale. Prima di iniziare, 
+il giocatore deve inserire il proprio nome e il nome della facoltà o università. 
+Nella stessa schermata è possibile scegliere la difficoltà della partita.
+
+In basso a destra è presente il pulsante delle informazioni, che permette di 
+leggere una breve spiegazione delle regole del gioco. Dopo aver completato i campi richiesti, la partita può essere avviata premendo il pulsante \textit{Begin your Reign}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.60\textwidth]{schermata_iniziale.png}
+    \caption{Schermata iniziale: inserimento dei dati, scelta della difficoltà e avvio della partita.}
+\end{figure}
+
+\section{Schermata di gioco}
+
+Una volta iniziata la partita, al centro dello schermo viene mostrata una carta. Ogni carta rappresenta una situazione a cui il giocatore deve rispondere prendendo una decisione.
+
+Nella parte superiore della schermata sono visibili i parametri principali dell'università, che indicano lo stato della partita. Il giocatore deve cercare di mantenerli in equilibrio fino alla fine del gioco.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{schermata_gioco.png}
+    \caption{Schermata principale di gioco, con carta e parametri dell'università.}
+\end{figure}
+
+\section{Scelta delle decisioni}
+
+Per prendere una decisione, il giocatore deve tenere premuta la carta e trascinarla verso destra o verso sinistra. Lo spostamento della carta mostra le due possibili risposte.
+
+Durante il trascinamento compaiono alcuni indicatori sopra i parametri: essi segnalano quali aspetti della partita saranno modificati dalla scelta. Quando il giocatore rilascia la carta, la decisione viene confermata e il gioco passa alla carta successiva.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.65\textwidth]{swipe_destra.png}
+    \caption{Swipe a destra per l'approvazione della proposta.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.65\textwidth]{swipe_sinistra.png}
+    \caption{Swipe a sinistra per il rifiuto della proposta.}
+\end{figure}
+
+\section{Fine della partita}
+
+La partita termina quando il giocatore completa il periodo previsto dal gioco 
+oppure quando uno dei parametri raggiunge un valore critico (il minimo o il massimo). 
+In questo caso viene mostrata una schermata finale con l'esito della partita.
 
 % =============================================================================
 \chapter{Esercitazioni di laboratorio}
 % =============================================================================
-In questo capitolo ciascuno studente elenca gli esercizi di laboratorio svolti, indicando i permalink dei post sul forum dove \`e avvenuta la consegna.
 
 \section*{pietro.dapporto@studio.unibo.it}
 \begin{itemize}
