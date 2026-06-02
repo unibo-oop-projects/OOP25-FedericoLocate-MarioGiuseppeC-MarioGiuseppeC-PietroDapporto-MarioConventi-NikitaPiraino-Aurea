@@ -508,8 +508,6 @@ Stile visivo dell'applicazione & --- & \texttt{styles.css} \\ \hline
 \label{tab:locatelli-components}
 \end{table}
 
-\bigskip\noindent\rule{\linewidth}{0.4pt}\bigskip
-
 \bigskip
 \subsubsection{Pattern Observer: parametri reattivi}
 \smallskip
@@ -555,13 +553,9 @@ oggetto o, come in questo caso, da una lambda o method reference.
         intermedi (es. effetti concatenati su più parametri).
 \end{itemize}
 
-% -- UML Observer --
 \begin{figure}[H]
     \centering
-    \fbox{\parbox[c][4cm][c]{0.85\linewidth}{\centering
-        \textit{UML Observer: ParameterImpl (observable),
-        ParameterObserver (interfaccia), GameViewJavaFXImpl (observer
-        via method reference). Da inserire.}}}
+    \fbox{\includegraphics[width=0.6\textwidth]{UML-Locatelli-Observer.png}}
     \caption{Pattern Observer applicato ai parametri di gioco.}
     \label{fig:observer}
 \end{figure}
@@ -622,10 +616,7 @@ al Model tramite \texttt{model.applyEffects()}.
 % -- UML ISP --
 \begin{figure}[H]
     \centering
-    \fbox{\parbox[c][4cm][c]{0.85\linewidth}{\centering
-        \textit{UML ISP: ParameterView (sola lettura),
-        Parameter estende ParameterView aggiungendo modify(),
-        ParameterImpl implementa entrambe. Da inserire.}}}
+    \fbox{\includegraphics[width=0.3\textwidth]{UML-Locatelli-Interface-Segregation.png}}
     \caption{Interface Segregation applicata ai parametri di gioco.}
     \label{fig:isp}
 \end{figure}
@@ -697,9 +688,7 @@ il nome mostrato all'utente rimarrebbe invariato senza toccare la View.
 % -- UML Type-Safe Enum --
 \begin{figure}[H]
     \centering
-    \fbox{\parbox[c][3cm][c]{0.85\linewidth}{\centering
-        \textit{UML ParameterType: enum con campo displayName
-        e metodo getDisplayName(). Da inserire.}}}
+    \fbox{\includegraphics[width=0.8\textwidth]{UML-Locatelli-Enum.png}}
     \caption{Type-Safe Enum con comportamento applicato a ParameterType.}
     \label{fig:enum}
 \end{figure}
@@ -769,10 +758,7 @@ fittizie (stub) senza coinvolgere il Controller reale.
 % -- UML Strategy --
 \begin{figure}[H]
     \centering
-    \fbox{\parbox[c][4cm][c]{0.85\linewidth}{\centering
-        \textit{UML Strategy: CardPanel con i tre campi funzionali
-        (BiConsumer, Function, Runnable) iniettati da
-        GameViewJavaFXImpl. Da inserire.}}}
+    \fbox{\includegraphics[width=0.8\textwidth]{UML-Locatelli-Strategy.png}}
     \caption{Pattern Strategy applicato ai comportamenti di CardPanel.}
     \label{fig:strategy}
 \end{figure}
@@ -835,10 +821,7 @@ nulla di questo flusso: esegue un \texttt{Runnable} e basta.
 % -- UML IoC --
 \begin{figure}[H]
     \centering
-    \fbox{\parbox[c][4cm][c]{0.85\linewidth}{\centering
-        \textit{UML IoC: Main fornisce Runnable onRestart a
-        GameViewJavaFXImpl; EndgameOverlay lo invoca tramite
-        la View senza conoscere Main. Da inserire.}}}
+    \fbox{\includegraphics[width=0.8\textwidth]{UML-Locatelli-InversionOfControl.png}}
     \caption{Inversion of Control per la gestione del riavvio.}
     \label{fig:ioc}
 \end{figure}
@@ -910,10 +893,8 @@ del sistema che li utilizza.
 % -- UML Value Object --
 \begin{figure}[H]
     \centering
-    \fbox{\parbox[c][3cm][c]{0.85\linewidth}{\centering
-        \textit{UML PlayerInfo: record con tre campi immutabili
-        e costruttore compatto con validazione. Da inserire.}}}
-    \caption{Value Object PlayerInfo come Java record.}
+    \fbox{\includegraphics[width=0.8\textwidth]{UML-Locatelli-ValueObject.png}}
+    \caption{Value Object \texttt{PlayerInfo} come Java record.}
     \label{fig:playerinfo}
 \end{figure}
 
@@ -944,7 +925,7 @@ approccio riduce la complessità del metodo principale
 componente senza impattare gli altri.
 
 \bigskip
-\paragraph{Utility Class: CounsellorPopup:}
+\paragraph{Utility Class -- CounsellorPopup:}
 \smallskip
 \texttt{CounsellorPopup} è progettata come \emph{utility class}:
 costruttore privato, nessun campo di istanza, unico metodo
@@ -1379,12 +1360,6 @@ GitHub al punto del codice in cui è impiegata.
         a quello dimmed senza mascherare il canale alpha dell'immagine. \\
         \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/view/ParameterIconView.java#L87-L90}
 
-    \item \textbf{Java \texttt{record} con costruttore compatto} --
-        \texttt{PlayerInfo} è dichiarato come record immutabile; il
-        costruttore compatto applica la validazione fail-fast su tutti
-        e tre i campi. \\
-        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/controller/api/PlayerInfo.java#L14}
-
     \item \textbf{\texttt{Platform.runLater}} -- tutti i metodi della View
         che modificano nodi della scena delegano l'esecuzione al thread
         JavaFX, prevenendo eccezioni di accesso concorrente. \\
@@ -1481,8 +1456,8 @@ nel Controller si è rivelata elegante e ha reso il codice molto
 leggibile. Il pattern Strategy in \texttt{CardPanel} ha permesso
 di mantenere il componente visuale completamente disaccoppiato dalla
 logica di gioco. Sono soddisfatto anche della coerenza visiva
-dell'interfaccia: il file \texttt{styles.css} unifica il tema
-medievale, ma con ricordi a tema scolastico, in tutti i componenti senza ripetizioni.
+dell'interfaccia: il file \texttt{styles.css} unifica il tema visivo dell'Ateneo
+in tutti i componenti senza ripetizioni.
 
 \paragraph{Aspetti migliorabili e lavori futuri:}
 La gestione del threading è distribuita: ogni metodo della View
