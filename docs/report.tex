@@ -1367,10 +1367,10 @@ GitHub al punto del codice in cui è impiegata.
 
     \item \textbf{Interfacce funzionali \texttt{BiConsumer} e \texttt{Function}} --
         i tre comportamenti variabili di \texttt{CardPanel} sono rappresentati
-        da interfacce funzionali iniettate dall'esterno, disaccoppiando il
+        da interfacce funzionali generiche iniettate dall'esterno, disaccoppiando il
         componente visuale dal Controller. \\
-        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/view/CardPanel.java#L7-L8}
-
+        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/view/CardPanel.java#L92-L93}
+        
     \item \textbf{\texttt{TextFormatter} con lambda} -- i campi di testo
         del login limitano la lunghezza dell'input tramite un predicato
         lambda passato al \texttt{TextFormatter} di JavaFX. \\
@@ -1501,36 +1501,44 @@ dal model, ma introducono anche un passaggio intermedio aggiuntivo.
 % --- Federico ---------------------------------------------------
 \subsection{Federico Locatelli}
 
-\paragraph{Contributi principali:}
-Il mio contributo ha coperto tre livelli del sistema: la progettazione
-delle astrazioni reattive del Model (\texttt{ParameterView},
-\texttt{ParameterObserver}, \texttt{ParameterImpl}), l'intero layer
-View con i suoi componenti animati, e l'estensione del Controller
-con i metodi di anteprima. Ho infine curato il testing automatizzato.
+\paragraph{Il mio ruolo nel gruppo:}
+Fin dall'inizio mi sono ritrovato a gravitare verso la parte
+dell'applicazione che si vede e si tocca: la View. È la dimensione del
+progetto che mi diverte di più, perché mi costringe a ragionare non solo
+su ``cosa fa il programma'' ma su come l'esperienza arriva a chi gioca ---
+quanto è fluida un'animazione, se un suono cade nel momento giusto, se
+un'icona comunica subito ciò che deve. Mi sono occupato dell'intero layer
+grafico, delle astrazioni reattive del Model che lo alimentano
+(\texttt{Parameter}, \texttt{ParameterObserver}, \texttt{ParameterImpl})
+e dell'estensione del Controller con i metodi di anteprima. Ho infine
+curato buona parte del testing automatizzato. Tengo molto alla cura del
+dettaglio, e questa parte del progetto mi ha permesso di esprimerla.
 
 \paragraph{Aspetti di cui sono soddisfatto:}
-La scelta di rendere \texttt{ParameterObserver} una
-\texttt{@FunctionalInterface} e di collegarla tramite method reference
-nel Controller si è rivelata elegante e ha reso il codice molto
-leggibile. Il pattern Strategy in \texttt{CardPanel} ha permesso
-di mantenere il componente visuale completamente disaccoppiato dalla
-logica di gioco. Sono soddisfatto anche della coerenza visiva
-dell'interfaccia: il file \texttt{styles.css} unifica il tema visivo dell'Ateneo
-in tutti i componenti senza ripetizioni.
+La parte di cui sono più soddisfatto è il sistema reattivo dei parametri. Aver
+reso \texttt{ParameterObserver} una \texttt{@FunctionalInterface} e averla
+collegata tramite method reference nel Controller mi ha permesso di ottenere un
+collegamento Model--View pulito, in cui ogni componente conosce solo ciò che gli
+serve. Ritengo riuscito anche il disaccoppiamento della carta interattiva dalla
+logica di gioco: il componente visuale non ha alcun riferimento al Controller,
+eppure ne pilota il comportamento attraverso comportamenti iniettati
+dall'esterno. Sul piano della presentazione, considero positiva la coerenza
+visiva e sonora dell'applicazione: il foglio di stile unifica il tema
+dell'Ateneo in tutti i componenti, mentre il sistema audio ha dato al gioco un
+carattere che nelle prime versioni mancava.
 
 \paragraph{Aspetti migliorabili e lavori futuri:}
-La gestione del threading è distribuita: ogni metodo della View
-chiama \texttt{Platform.runLater()} individualmente. In una versione
-più matura si potrebbe centralizzare questa responsabilità in un
-wrapper dedicato, riducendo la verbosità. Il foglio di stile
-\texttt{styles.css}, pur funzionante, è cresciuto in modo organico
-e beneficerebbe di una suddivisione in moduli tematici.
-
-Fra i lavori futuri più interessanti: aggiungere effetti sonori
-contestuali alle decisioni, introdurre animazioni sui valori numerici
-dei parametri durante l'aggiornamento, e completare l'integrazione
-della difficoltà nella View con feedback visivo dedicato per la
-modalità \emph{Hard}.
+Un primo limite riguarda la gestione del threading JavaFX: attualmente ogni
+metodo della View invoca \texttt{Platform.runLater()} per conto proprio, e a
+posteriori avrei centralizzato questa responsabilità in un wrapper dedicato per
+ridurre la ripetizione. Un secondo limite è il foglio di stile, cresciuto in
+modo organico man mano che aggiungevo componenti: una suddivisione in moduli
+tematici, pianificata fin dall'inizio, lo avrebbe reso più mantenibile. Sono
+scelte di struttura che, ho imparato, conviene affrontare presto, prima che il
+codice cresca. Tra i possibili sviluppi futuri mi interesserebbe introdurre
+animazioni sui valori numerici dei parametri durante l'aggiornamento e
+completare l'integrazione della difficoltà nella View con un feedback visivo
+dedicato alla modalità \emph{Hard}.
 
 % --- Nikita -----------------------------------------------------
 \subsection{Nikita Piraino}
@@ -1548,58 +1556,106 @@ Sempre legato all'unire i puntini sento di \textbf{essere stato} molto un connet
 % =============================================================================
 \chapter{Guida utente}
 % =============================================================================
-Questa guida mostra i passaggi principali per iniziare e svolgere una partita ad \textit{Aurea Mediocritas}.
+Questa guida accompagna l'utente nei passaggi essenziali per avviare il
+programma e giocare una partita ad \textit{Aurea Mediocritas}.
 
-\section{Avvio della partita}
+\section{Avvio dell'applicazione}
 
-All'apertura del gioco viene mostrata la schermata iniziale. Prima di iniziare, 
-il giocatore deve inserire il proprio nome e il nome della facoltà o università. 
-Nella stessa schermata è possibile scegliere la difficoltà della partita.
+L'applicazione può essere avviata in due modi, a partire dalla cartella radice
+del progetto. Il primo, pensato per chi ha a disposizione l'ambiente di
+sviluppo, esegue direttamente il gioco tramite Gradle:
+\begin{lstlisting}[language=bash]
+./gradlew run
+\end{lstlisting}
+In alternativa è possibile generare un archivio eseguibile autocontenuto (che
+include JavaFX e tutte le dipendenze) e lanciarlo con Java:
+\begin{lstlisting}[language=bash]
+./gradlew shadowJar
+java -jar build/libs/Aurea-all.jar
+\end{lstlisting}
+È richiesto un Java Development Kit versione 21 o successiva.
 
-In basso a destra è presente il pulsante delle informazioni, che permette di 
-leggere una breve spiegazione delle regole del gioco. Dopo aver completato i campi richiesti, la partita può essere avviata premendo il pulsante \textit{Begin your Reign}.
+\section{Schermata iniziale e creazione della partita}
+
+All'avvio compare la schermata iniziale. Prima di cominciare, l'utente deve
+inserire il nome del Rettore e quello della facoltà (o università), e
+selezionare il livello di difficoltà desiderato fra quelli proposti. Il
+pulsante delle informazioni, in basso a destra, apre una breve spiegazione
+delle regole. Una volta compilati i campi, la partita si avvia premendo il
+pulsante \textit{Begin your Reign}.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.60\textwidth]{schermata_iniziale.png}
+    \includegraphics[width=0.55\textwidth]{schermata_iniziale.png}
     \caption{Schermata iniziale: inserimento dei dati, scelta della difficoltà e avvio della partita.}
 \end{figure}
 
 \section{Schermata di gioco}
 
-Una volta iniziata la partita, al centro dello schermo viene mostrata una carta. Ogni carta rappresenta una situazione a cui il giocatore deve rispondere prendendo una decisione.
-
-Nella parte superiore della schermata sono visibili i parametri principali dell'università, che indicano lo stato della partita. Il giocatore deve cercare di mantenerli in equilibrio fino alla fine del gioco.
+A partita avviata, al centro dello schermo compare una carta: ciascuna
+rappresenta una situazione a cui il Rettore deve rispondere con una decisione.
+Nella parte superiore sono mostrati i quattro parametri dell'Ateneo
+(Finanze, Studenti, Docenti e Reputazione), ognuno con un valore compreso fra
+0 e 100. L'obiettivo è mantenerli tutti in equilibrio fino al termine del
+mandato: se anche uno solo di essi raggiunge il minimo o il massimo, la partita
+si conclude con una sconfitta.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{schermata_gioco.png}
-    \caption{Schermata principale di gioco, con carta e parametri dell'università.}
+    \includegraphics[width=0.60\textwidth]{schermata_gioco.png}
+    \caption{Schermata principale di gioco, con la carta corrente e i parametri dell'Ateneo.}
 \end{figure}
 
 \section{Scelta delle decisioni}
 
-Per prendere una decisione, il giocatore deve tenere premuta la carta e trascinarla verso destra o verso sinistra. Lo spostamento della carta mostra le due possibili risposte.
-
-Durante il trascinamento compaiono alcuni indicatori sopra i parametri: essi segnalano quali aspetti della partita saranno modificati dalla scelta. Quando il giocatore rilascia la carta, la decisione viene confermata e il gioco passa alla carta successiva.
+Per rispondere a una carta, l'utente la tiene premuta e la trascina verso
+destra o verso sinistra: il trascinamento rivela progressivamente le due
+risposte possibili. Durante il movimento, alcuni indicatori compaiono sopra i
+parametri per anticipare quali verranno influenzati dalla scelta in corso. Al
+rilascio della carta la decisione viene confermata, i parametri si aggiornano e
+il gioco propone la carta successiva.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.65\textwidth]{swipe_destra.png}
-    \caption{Swipe a destra per l'approvazione della proposta.}
+    \caption{Swipe a destra: approvazione della proposta.}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.65\textwidth]{swipe_sinistra.png}
-    \caption{Swipe a sinistra per il rifiuto della proposta.}
+    \caption{Swipe a sinistra: rifiuto della proposta.}
 \end{figure}
 
-\section{Fine della partita}
+\section{Riepilogo e fine della partita}
 
-La partita termina quando il giocatore completa il periodo previsto dal gioco 
-oppure quando uno dei parametri raggiunge un valore critico (il minimo o il massimo). 
-In questo caso viene mostrata una schermata finale con l'esito della partita.
+Al termine di ogni semestre viene mostrata una schermata di riepilogo con i
+valori correnti dei quattro parametri, utile per valutare l'andamento del
+mandato prima di proseguire.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.70\textwidth]{riepilogo_semestre.png}
+    \caption{Schermata di riepilogo mostrata al termine di ogni semestre.}
+\end{figure}
+
+La partita termina in due casi: quando il Rettore completa l'intero mandato
+(vittoria) oppure quando uno dei parametri raggiunge un valore critico
+(sconfitta). In entrambi i casi compare una schermata finale con l'esito,
+dalla quale è possibile iniziare una nuova partita senza riavviare
+l'applicazione.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.70\textwidth]{schermata_vittoria.png}
+    \caption{Schermata di vittoria: il Rettore ha completato il mandato.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.70\textwidth]{schermata_sconfitta.png}
+    \caption{Schermata di sconfitta: un parametro ha raggiunto un valore critico.}
+\end{figure}
 
 % =============================================================================
 \chapter{Esercitazioni di laboratorio}
