@@ -1496,7 +1496,15 @@ dal model, ma introducono anche un passaggio intermedio aggiuntivo.
 
 % --- Mario ------------------------------------------------------
 \subsection{Mario Conventi}
-\emph{[Autovalutazione individuale da redigere.]}
+
+\paragraph{Contributi principali:}
+Il mio ruolo all'interno del progetto si è concentrato sulla progettazione e sullo sviluppo del nucleo computazionale del Model. Mi sono occupato della realizzazione del \texttt{GameEngineImpl}, l'orchestratore principale del gioco, e dei suoi sotto-componenti algoritmici specializzati: la selezione adattiva delle carte (\texttt{CardSelector}), il sistema asincrono per l'accodamento delle carte figlie (\texttt{FollowUpQueue}), e la gestione dinamica del bilanciamento tramite le impostazioni di difficoltà (\texttt{DifficultySettings}). Il mio obiettivo primario è stato trasformare una semplice macchina a stati in un motore di gioco adattivo e configurabile, in grado di rispondere in modo bilanciato alle scelte del giocatore.
+
+\paragraph{Aspetti di cui sono soddisfatto:}
+Sono particolarmente orgoglioso delle soluzioni adottate per risolvere i problemi architetturali legati agli algoritmi principali. L'implementazione del \texttt{CardSelector} con un sistema di selezione pesata dinamica garantisce un'ottima fluidità di gioco, prevenendo la frustrazione senza sfociare in un determinismo assoluto. Ritengo particolarmente riuscita la logica matematica alla base del bilanciamento: aver parametrizzato dinamicamente i pesi di estrazione e i moltiplicatori d'impatto tramite \texttt{DifficultySettings} permette al gioco di adattare la curva di difficoltà in modo elegante, modulando il "soccorso" algoritmico offerto al giocatore nelle situazioni critiche senza mai dover alterare il codice \textit{core} del motore.
+
+\paragraph{Aspetti migliorabili e lavori futuri:}
+Rivedendo il lavoro svolto, sebbene abbia cercato di applicare rigorosamente il Single Responsibility Principle (SRP) estraendo svariati sotto-componenti, il \texttt{GameEngineImpl} mantiene ancora una forte centralità come coordinatore; un possibile sviluppo futuro potrebbe prevedere l'introduzione di pattern più avanzati (come Event Bus o Mediator) per sgravare ulteriormente l'engine dalle interazioni troppo fitte. Inoltre, come sviluppo futuro per l'algoritmo di selezione delle carte, sarebbe interessante introdurre un sistema di "memoria a breve termine" per impedire che eventi tematicamente simili (ad esempio due eventi consecutivi legati ai professori) vengano estratti a distanza troppo ravvicinata, migliorando ancor di più la narrazione emergente del gioco.
 
 % --- Federico ---------------------------------------------------
 \subsection{Federico Locatelli}
