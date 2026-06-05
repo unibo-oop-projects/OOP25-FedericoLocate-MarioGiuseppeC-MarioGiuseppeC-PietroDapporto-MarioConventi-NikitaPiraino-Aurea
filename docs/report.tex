@@ -1126,14 +1126,14 @@ Lo stato viene calcolato ad ogni chiamata: l'approccio è stateless, elimina il 
 \noindent Alcune alternative sono:
 \begin{itemize}
     \item restituire una stringa al posto degli elementi dell'enum: non idoneo con gli standard di programmazione           moderni
-    \item nelle condizioni non richiamare delle funzioni ma mettere il loro contenuto direttamente nel metodo \texttt{getGameState()}: supporta meno per necessità future i principi Don't Repeat Yourself e Single Responsability.
+    \item nelle condizioni non richiamare delle funzioni ma mettere il loro contenuto direttamente nel metodo \texttt{getGameState()}: supporta meno per necessità future i principi Don't Repeat Yourself e Single Responsibility.
 \end{itemize}
 
 \subsubsection{Separazione accessi Parameter e ParameterView}
 
 \noindent\textbf{Problema} Esistono determinati oggetti che necessitano dell'accesso diretto agli oggetti parametri in lettura.
 
-\noindent\textbf{Soluzione} La soluzione adottata separa la lettura dalla scrittura attraverso due interfacce distinte, ripettando pure l'Interface Segregation Principle:
+\noindent\textbf{Soluzione} La soluzione adottata separa la lettura dalla scrittura attraverso due interfacce distinte, rispettando pure l'Interface Segregation Principle:
 
 \begin{enumerate}
 \item Interfaccia di sola lettura. \texttt{ParameterView} dichiara esclusivamente i metodi di interrogazione del parametro, rappresentando una vista immutabile sicura da esporre all'esterno del Model.
@@ -1150,7 +1150,7 @@ Lo stato viene calcolato ad ogni chiamata: l'approccio è stateless, elimina il 
 Alcune alternative sono:
 \begin{itemize}
 \item Esporre direttamente \texttt{Parameter}: avere un metodo \texttt{getParameters()} che restituiva il tipo mutabile e invece un metodo che \texttt{getCopyOfParameters} che restituiva una copia difensiva e che doveva essere usata da chiunque non avesse bisogno di modificare il valore dei parametri. Risultava più semplice, ma lasciava a chiunque la possibilità di chiamare il metodo di modifica, rendendo l'incapsulamento dello stato puramente convenzionale e non garantito dal compilatore.
-\item restituire una struttura dati contenente i valori dei parametri, sarebbe statauna soluzione semplice, però non avrebbe permesso l'utilizzo di metodi come isAlive e getDeathReason
+\item restituire una struttura dati contenente i valori dei parametri, sarebbe stata una soluzione semplice, però non avrebbe permesso l'utilizzo di metodi come isAlive e getDeathReason
 \end{itemize}
 
 
@@ -1253,7 +1253,7 @@ I test riguardano principalmente il sistema di carte e il caricamento dei dati d
 Sono stati sottoposti a test i seguenti aspetti:
 \begin{itemize}
     \item \texttt{shouldLoadCards()} e \texttt{shouldLoadFollowUp()}: verificano che le informazioni scritte nei file 
-    YAML coincidano rispettivamente con con ciò che è contenuto dentro l'implementazione delle carte create e dei followup.
+    YAML coincidano rispettivamente con ciò che è contenuto dentro l'implementazione delle carte create e dei followup.
     \item \texttt{shouldHaveUniqueIdCards()} e \texttt{shouldHaveUniqueIdChildCards()}: verificano che a gruppi le carte base e quelle figlie abbiano tutte un identificatore (\texttt{String id}) diverso.
     \item \texttt{shouldNotBeSharedIds()}: verifica che non ci siano identificatori comuni tra le carte base e quelle figlie.
     \item \texttt{shouldCharacterImageExist()}: verifica che ogni personaggio all'interno delle carte abbia il riferimento ad un'immagine da mostrare durante il gioco.
@@ -1324,8 +1324,6 @@ generino eccezioni sul thread JavaFX), \texttt{ParameterIconViewTest}
 di \texttt{setAffected()}) e \texttt{LoginSceneTest} (verifica login
 valido e validazione dei campi vuoti, interagendo direttamente con
 il grafo della scena tramite \texttt{robot.interact()}).
-
-\paragraph{Mario Conventi} 
 
 % -----------------------------------------------------------------------------
 \section{Note di sviluppo}
@@ -1552,7 +1550,7 @@ dedicato alla modalità \emph{Hard}.
 \subsection{Nikita Piraino}
 Sono un ragazzo a cui piace molto l'azione di ``unire i puntini'' e il ruolo che ho scelto mi ha permesso di mettere ulteriormente in pratica le conoscenze necessarie per farlo bene. Ho avuto la possibilità di ripassare quasi ogni aspetto della materia studiata. \\
 
-Sono \textbf{soddisfatto} del lavoro che ho svolto perchè nella scrittura dei miei codici ho identificato velocemente una sequenza da seguire per evitare di  fare  modifiche ``scomode'' in futuro. Quando ho toccato  codici per la maggiorparte scritti dai miei compagni non mi sono trovato in difficoltà nel comprenderne il funzionamento(ignorando ovviamente le lacune riguardanti la non conoscenza iniziale delle liberie). \\
+Sono \textbf{soddisfatto} del lavoro che ho svolto perchè nella scrittura dei miei codici ho identificato velocemente una sequenza da seguire per evitare di  fare  modifiche ``scomode'' in futuro. Quando ho toccato  codici per la maggior parte scritti dai miei compagni non mi sono trovato in difficoltà nel comprenderne il funzionamento(ignorando ovviamente le lacune riguardanti la non conoscenza iniziale delle liberie). \\
 Un aspetto per cui mi è stato molto utile lavorare a questo progetto è stato quello della documentazione: mi piace come attività, mi sono reso conto di quanto scriverla mi fornisse spunti per migliorare il codice; quindi \textbf{mi pento} di averla fatta per la maggior parte  verso la fine in quanto mi ha portato a voler rivedere alcune scelte e quindi riscriverla. La mia responsabilità principale era creare del codice che fosse chiaro, estendibile per nuove modifiche, adatto per le necessità di ogni mio compagno e futuro sviluppatore, quindi non ho avuto la necessità di creare costrutti particolarmente articolati dal punto di vista di \textit{feature avanzate di linguaggio}.\\
 
 Sempre legato all'unire i puntini sento di \textbf{essere stato} molto un connettore all'interno del gruppo, chiedevo aggiornamenti, organizzavo le riunioni che facevamo per sintonizzarci e se scoprivo qualcosa di interessante lo condividevo anche agli altri.
