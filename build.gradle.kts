@@ -29,10 +29,14 @@ java {
     }
 }
 
-// Configuration auto of JavaFX
+val javafxVersion = "23.0.2"
+val javafxModules = listOf("base", "controls", "graphics", "media")
+val javafxPlatforms = listOf("linux", "win", "mac-aarch64")
+
+// Configuration auto of JavaFX (per ./gradlew run sulla macchina di sviluppo)
 javafx {
-    version = "23.0.2"
-    modules = listOf("javafx.base", "javafx.controls", "javafx.graphics", "javafx.media")
+    version = javafxVersion
+    modules = javafxModules.map { "javafx.$it" }
 }
 
 dependencies {
@@ -62,6 +66,13 @@ dependencies {
     
     // Hamcrest
     testImplementation("org.hamcrest:hamcrest:2.2")
+
+    // JavaFX per TUTTE le piattaforme, così il jar gira su Linux/Windows/macOS (P8)
+    javafxPlatforms.forEach { platform ->
+        javafxModules.forEach { module ->
+            implementation("org.openjfx:javafx-$module:$javafxVersion:$platform")
+        }
+    }
 }
 
 tasks.withType<Test> {
@@ -70,7 +81,7 @@ tasks.withType<Test> {
 }
 
 application {
-    mainClass.set("it.unibo.aurea.Main")
+    mainClass.set("it.unibo.aurea.Launcher")
 }
 
 tasks.withType<JavaCompile> {

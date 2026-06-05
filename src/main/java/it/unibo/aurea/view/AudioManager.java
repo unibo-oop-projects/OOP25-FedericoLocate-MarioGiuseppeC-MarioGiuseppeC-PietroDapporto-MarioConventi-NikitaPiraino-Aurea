@@ -79,14 +79,14 @@ public final class AudioManager {
      * Plays the victory sound, stopping background music permanently.
      */
     public static void playVictory() {
-        playEndGame("/sounds/win.mp3");
+        playEndGame("/sounds/win.wav");
     }
 
     /**
      * Plays the defeat sound, stopping background music permanently.
      */
     public static void playDefeat() {
-        playEndGame("/sounds/lose.mp3");
+        playEndGame("/sounds/lose.wav");
     }
 
     private static void playClip(final String resourcePath, final double volume) {
@@ -121,13 +121,6 @@ public final class AudioManager {
 
     private static void playEndGame(final String resourcePath) {
         stopBackground();
-        final URL resource = AudioManager.class.getResource(resourcePath);
-        if (resource == null) {
-            LOGGER.log(Level.WARNING, SOUND_NOT_FOUND, resourcePath);
-            return;
-        }
-        effectPlayer = new MediaPlayer(new Media(resource.toExternalForm()));
-        effectPlayer.setVolume(ENDGAME_VOLUME);
-        effectPlayer.play();
+        playClip(resourcePath, ENDGAME_VOLUME);
     }
 }
