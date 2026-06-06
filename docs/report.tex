@@ -1348,19 +1348,19 @@ Di seguito le feature avanzate del linguaggio Java utilizzate nella mia parte di
 
 \begin{itemize}
     \item \textbf{Libreria esterna Jackson per parsing JSON/YAML in Record} -- la configurazione del bilanciamento del gioco viene letta dal file esterno tramite \texttt{ObjectMapper} e deserializzata automaticamente in un albero di Java Record immodificabili. \\
-    \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/model/DifficultySettings.java#L45-L51}
+    \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/f25267cad6c0293387dbc32852e679f9b4ac103c/src/main/java/it/unibo/aurea/model/DifficultySettings.java#L45-L51}
 
     \item \textbf{Gestione sicura dei null tramite \texttt{Optional}} -- l'estrazione delle carte figlie (\emph{FollowUp}) forzate dalla coda e la gestione dei \texttt{findFirst()} negli stream restituiscono e manipolano istanze di \texttt{Optional<Card>}, evitando in modo robusto eccezioni di tipo \texttt{NullPointerException}. \\
-    \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/model/FollowUpQueue.java#L38-L62}
+    \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/f25267cad6c0293387dbc32852e679f9b4ac103c/src/main/java/it/unibo/aurea/model/FollowUpQueue.java#L38-L62}
 
     \item \textbf{Stream API per pipeline di filtraggio} -- le code e i selettori di carte applicano filtri multipli e metodi come \texttt{allMatch} o \texttt{forEach} su \texttt{Stream} per isolare e registrare eventi in logiche compatte e dichiarative. \\
-    \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/model/FollowUpQueue.java#L74-L77}
+    \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/f25267cad6c0293387dbc32852e679f9b4ac103c/src/main/java/it/unibo/aurea/model/FollowUpQueue.java#L74-L77}
 
     \item \textbf{Copia difensiva (Defensive Copy) per incapsulamento} -- l'orchestratore principale del gioco nasconde il proprio stato interno fornendo unicamente copie immodificabili tramite \texttt{List.copyOf()}, proteggendo le collezioni e garantendo l'immutabilità richiesta esternamente. \\
-    \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/model/GameEngineImpl.java#L114-L116}
+    \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/f25267cad6c0293387dbc32852e679f9b4ac103c/src/main/java/it/unibo/aurea/model/GameEngineImpl.java#L114-L116}
 
     \item \textbf{Static Nested Class} -- il concetto di evento in attesa temporizzato all'interno della coda delle conseguenze è racchiuso privatamente all'interno di una classe annidata statica (\texttt{ActiveFollowUp}), oscurando i dettagli implementativi all'esterno. \\
-    \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/model/FollowUpQueue.java#L80-L100}
+    \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/f25267cad6c0293387dbc32852e679f9b4ac103c/src/main/java/it/unibo/aurea/model/FollowUpQueue.java#L80-L100}
 \end{itemize}
 
 \paragraph{Codice di terze parti}
@@ -1376,61 +1376,61 @@ GitHub al punto del codice in cui è impiegata.
     \item \textbf{\texttt{@FunctionalInterface}} -- \texttt{ParameterObserver}
         è dichiarata come interfaccia funzionale: può essere istanziata
         come lambda o method reference senza classi anonime. \\
-        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/model/api/ParameterObserver.java#L8-L16}
+        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/f25267cad6c0293387dbc32852e679f9b4ac103c/src/main/java/it/unibo/aurea/model/api/ParameterObserver.java#L8-L16}
 
     \item \textbf{Method reference come observer} -- la View viene collegata
         al Model tramite \texttt{this.view::updateSingleParameter}, passata
         come \texttt{ParameterObserver} senza lambda esplicita. \\
-        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/controller/GameControllerImpl.java#L48-L50}
+        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/f25267cad6c0293387dbc32852e679f9b4ac103c/src/main/java/it/unibo/aurea/controller/GameControllerImpl.java#L48-L50}
 
     \item \textbf{Interfacce funzionali \texttt{BiConsumer} e \texttt{Function}} --
         i tre comportamenti variabili di \texttt{CardPanel} sono rappresentati
         da interfacce funzionali generiche iniettate dall'esterno, disaccoppiando il
         componente visuale dal Controller. \\
-        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/view/CardPanel.java#L92-L93}
+        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/f25267cad6c0293387dbc32852e679f9b4ac103c/src/main/java/it/unibo/aurea/view/CardPanel.java#L92-L93}
         
     \item \textbf{\texttt{TextFormatter} con lambda} -- i campi di testo
         del login limitano la lunghezza dell'input tramite un predicato
         lambda passato al \texttt{TextFormatter} di JavaFX. \\
-        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/view/LoginScene.java#L85-L93}
+        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/f25267cad6c0293387dbc32852e679f9b4ac103c/src/main/java/it/unibo/aurea/view/LoginScene.java#L85-L93}
 
     \item \textbf{Switch expression Java~21} -- la selezione della difficoltà
         converte la stringa della \texttt{ChoiceBox} nell'enum
         \texttt{Difficulty} tramite switch expression con arrow syntax. \\
-        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/view/LoginScene.java#L116}
+        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/f25267cad6c0293387dbc32852e679f9b4ac103c/src/main/java/it/unibo/aurea/view/LoginScene.java#L116}
 
     \item \textbf{JavaFX \texttt{Timeline} / \texttt{KeyFrame} / \texttt{KeyValue}} --
         l'animazione di riempimento dell'icona parametro interpola
         fluidamente il livello tramite \texttt{Interpolator.EASE\_BOTH}. \\
-        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/view/ParameterIconView.java#L150-L152}
+        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/f25267cad6c0293387dbc32852e679f9b4ac103c/src/main/java/it/unibo/aurea/view/ParameterIconView.java#L150-L152}
 
     \item \textbf{JavaFX \texttt{ParallelTransition}} -- l'animazione di
         ingresso della carta compone in parallelo una
         \texttt{TranslateTransition} (scivolamento verticale) e una
         \texttt{FadeTransition} (dissolvenza), ottenendo un effetto
         fluido con una sola chiamata a \texttt{play()}. \\
-        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/view/CardPanel.java#L342}
+        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/f25267cad6c0293387dbc32852e679f9b4ac103c/src/main/java/it/unibo/aurea/view/CardPanel.java#L342}
 
     \item \textbf{JavaFX \texttt{BlendMode.SCREEN}} -- le icone dei parametri
         usano \texttt{BlendMode.SCREEN} per sovrapporre il layer attivo
         a quello dimmed senza mascherare il canale alpha dell'immagine. \\
-        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/view/ParameterIconView.java#L87-L90}
+        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/f25267cad6c0293387dbc32852e679f9b4ac103c/src/main/java/it/unibo/aurea/view/ParameterIconView.java#L87-L90}
 
     \item \textbf{\texttt{Platform.runLater}} -- tutti i metodi della View
         che modificano nodi della scena delegano l'esecuzione al thread
         JavaFX, prevenendo eccezioni di accesso concorrente. \\
-        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/view/GameViewJavaFXImpl.java#L322-L333}
+        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/f25267cad6c0293387dbc32852e679f9b4ac103c/src/main/java/it/unibo/aurea/view/GameViewJavaFXImpl.java#L322-L333}
 
     \item \textbf{\texttt{SVGPath} per grafica vettoriale} -- l'icona di
         chiusura è costruita tramite \texttt{SVGPath} con path data
         inline, scalabile a qualsiasi risoluzione senza immagini esterne. \\
-        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/view/GameViewJavaFXImpl.java#L193}
+        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/f25267cad6c0293387dbc32852e679f9b4ac103c/src/main/java/it/unibo/aurea/view/GameViewJavaFXImpl.java#L193}
     \item \textbf{JavaFX \texttt{MediaPlayer} e \texttt{AudioClip}} -- 
         il sistema audio usa \texttt{MediaPlayer} per la musica di 
         sottofondo in loop e \texttt{AudioClip} per gli effetti brevi 
         a bassa latenza; \texttt{setOnEndOfMedia} riprende il sottofondo 
         al termine di un suono speciale. \\
-        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/view/AudioManager.java#L109-L119}
+        \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/f25267cad6c0293387dbc32852e679f9b4ac103c/src/main/java/it/unibo/aurea/view/AudioManager.java#L109-L119}
 \end{itemize}
 
 \paragraph{Codice di terze parti}
