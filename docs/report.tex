@@ -1344,7 +1344,27 @@ il grafo della scena tramite \texttt{robot.interact()}).
 
 % --- 3.2.2 ---------------------------------------------------------
 \subsection{Mario Conventi}
-\emph{[Sezione da redigere: feature avanzate del linguaggio Java utilizzate, ciascuna con permalink GitHub al punto del codice.]}
+Di seguito le feature avanzate del linguaggio Java utilizzate nella mia parte di progetto, ciascuna corredata del permalink GitHub al punto del codice in cui è impiegata:
+
+\begin{itemize}
+    \item \textbf{Libreria esterna Jackson per parsing JSON/YAML in Record} -- la configurazione del bilanciamento del gioco viene letta dal file esterno tramite \texttt{ObjectMapper} e deserializzata automaticamente in un albero di Java Record immodificabili. \\
+    \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/model/DifficultySettings.java#L45-L51}
+
+    \item \textbf{Gestione sicura dei null tramite \texttt{Optional}} -- l'estrazione delle carte figlie (\emph{FollowUp}) forzate dalla coda e la gestione dei \texttt{findFirst()} negli stream restituiscono e manipolano istanze di \texttt{Optional<Card>}, evitando in modo robusto eccezioni di tipo \texttt{NullPointerException}. \\
+    \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/model/FollowUpQueue.java#L38-L62}
+
+    \item \textbf{Stream API per pipeline di filtraggio} -- le code e i selettori di carte applicano filtri multipli e metodi come \texttt{allMatch} o \texttt{forEach} su \texttt{Stream} per isolare e registrare eventi in logiche compatte e dichiarative. \\
+    \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/model/FollowUpQueue.java#L74-L77}
+
+    \item \textbf{Copia difensiva (Defensive Copy) per incapsulamento} -- l'orchestratore principale del gioco nasconde il proprio stato interno fornendo unicamente copie immodificabili tramite \texttt{List.copyOf()}, proteggendo le collezioni e garantendo l'immutabilità richiesta esternamente. \\
+    \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/model/GameEngineImpl.java#L114-L116}
+
+    \item \textbf{Static Nested Class} -- il concetto di evento in attesa temporizzato all'interno della coda delle conseguenze è racchiuso privatamente all'interno di una classe annidata statica (\texttt{ActiveFollowUp}), oscurando i dettagli implementativi all'esterno. \\
+    \url{https://github.com/Federicolocaa/OOP25-Aurea/blob/main/src/main/java/it/unibo/aurea/model/FollowUpQueue.java#L80-L100}
+\end{itemize}
+
+\paragraph{Codice di terze parti}
+Nessuna porzione di codice della mia parte di progetto è stata tratta da fonti esterne. Tra le librerie impiegate, si segnala l'uso di Jackson per la lettura dei file di configurazione YAML.
 
 % --- 3.2.3 ---------------------------------------------------------
 \subsection{Federico Locatelli}
