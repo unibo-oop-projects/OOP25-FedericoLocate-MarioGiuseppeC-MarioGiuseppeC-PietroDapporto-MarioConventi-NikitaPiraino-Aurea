@@ -55,6 +55,7 @@ public final class ReportImpl extends VBox implements Report {
         this.recapGrid.setHgap(RECAP_SPACING_H);
         this.recapGrid.setVgap(RECAP_SPACING_V);
         this.recapGrid.getStyleClass().add("endgame-recap");
+        this.recapGrid.setMaxWidth(USE_PREF_SIZE);
 
         final Button continueBtn = new Button("Continue");
         continueBtn.getStyleClass().add("counsellor-dismiss");
